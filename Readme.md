@@ -38,7 +38,7 @@ The [Ledger Canister](Sources/IcpKit/Canisters/ICPLedgerCanister.swift) is provi
 ### Starting from a seed
 We recommend using the [HdWalletKit.Swift](https://github.com/horizontalsystems/HdWalletKit.Swift) from HorizontalSystems in
 order to derive the public/private Key Pair from the seed.
-The ICP derivation path is `_m/44'/223'/0'/0/0_`
+The ICP derivation path is `m/44'/223'/0'/0/0`
 
 ### Starting from a public/private Key Pair
 1. Create a `ICPPrincipal` instance using `ICPPrincipal(publicKey)`.
