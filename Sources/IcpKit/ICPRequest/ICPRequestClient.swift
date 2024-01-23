@@ -66,20 +66,21 @@ public class ICPRequestClient {
     
     public init() {}
     
-    /// Makes a Query to the given canister and returns the result.
+    /// Makes a Query/Call Request to the given canister and returns the result.
     /// Queries do not affect the state of the blockchain and are generally fast.
     ///
     /// When the certification is `.uncertified`, this will perform a very fast query request which
     /// is not signed by ICP (therefore can be forged). Queries performed this way will result in a single HTTP request whose response contains the queried data.
     ///
-    /// When the certification is `.certified`, this will perform a call request and then rep
+    /// When the certification is `.certified`, this will perform a `callAndPoll`. Queries performed
+    /// this way will result in multiple HTTP requests until a response is provided by the ICP.
     ///
     /// - Parameters:
-    ///   - certification: <#certification description#>
-    ///   - method: <#method description#>
-    ///   - canister: <#canister description#>
-    ///   - sender: <#sender description#>
-    /// - Returns: <#description#>
+    ///   - certification: the certification level
+    ///   - method: the method
+    ///   - canister: the canister
+    ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
+    /// - Returns: the response
     public func query(_ certification: ICPRequestCertification, _ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> CandidValue {
         switch certification {
         case .uncertified: return try await query(method, effectiveCanister: canister, sender: sender)

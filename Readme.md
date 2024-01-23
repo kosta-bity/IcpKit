@@ -4,10 +4,16 @@ IcpKit aims at facilitating the interaction between iOS apps and the ICP blockch
 
 For more information about ICP Development, we recommend starting from https://internetcomputer.org/docs/current/references/
 
+## Contributors
+This Package has been built by [Bity SA](https://bity.com) with the help of the [DFinity Foundation Developer Grant Program](https://dfinity.org/grants).
+
+## License
+**MIT License** is applicable for all Swift Code (see [LICENSE](LICENSE)).
+
+The BLS12381 Rust Library is licensed by Levi Feldman (see [LICENSE](Sources/bls12381/LICENSE)).
+
 ## Installation
-
 ### Swift Package Manager
-
 The [Swift Package Manager](https://swift.org/package-manager/) is a tool for automating the distribution of Swift code
 and is integrated into the `swift` compiler. It is in early development, but HdWalletKit does support its use on
 supported platforms.
@@ -38,17 +44,53 @@ The [Ledger Canister](Sources/IcpKit/Canisters/ICPLedgerCanister.swift) is provi
 - Basic ICP Models for transactions, accounts, self-authenticating principals etc.
 - Ledger and Archive Canister implementation
 
-## How to create an ICP Principal
-### Starting from a seed
+## Examples
+
+### How can I interact with a canister?
+There are several ways to perform a request. Depending if it is a simple query or if the request actually changes the state
+of the blockchain.
+
+#### Define the method you wish to call :
+```swift
+let method = ICPMethod(
+    canister: ICPSystemCanisters.ledger,
+    methodName: "account_balance",
+    args: .record([
+        "account": .blob(account.accountId)
+    ])
+)
+```
+#### Make the a simple query request:
+```swift
+let response = try await client.query(method, effectiveCanister: ICPSystemCanisters.ledger)
+```
+equivalently we can also do
+```swift
+let reponse = try await client.query(.uncertified, method, effectiveCanister: ICPSystemCanisters.ledger)
+```
+
+#### Make a call request and then poll for the response
+```swift
+let requestId = try await client.call(method, effectiveCanister: ICPSystemCanisters.ledger)
+let reponse = try await client.pollRequestStatus(requestId: requestId, effectiveCanister: ICPSystemCanisters.ledger)
+```
+equivalently we can also do 
+```swift
+let reponse = try await client.callAndPoll(requestId: requestId, effectiveCanister: ICPSystemCanisters.ledger)
+```
+or even
+```swift
+let reponse = try await client.query(.certified, method, effectiveCanister: ICPSystemCanisters.ledger)
+```
+All these have the exact same result.
+
+### How can I create an ICP Principal?
+#### Starting from a seed
 We recommend using the [HdWalletKit.Swift](https://github.com/horizontalsystems/HdWalletKit.Swift) from HorizontalSystems in
 order to derive the public/private Key Pair from the seed.
 The ICP derivation path is `m/44'/223'/0'/0/0`
 
-### Starting from a public/private Key Pair
+#### Starting from a public/private Key Pair
 1. Create a `ICPPrincipal` instance using `ICPCryptography.selfAuthenticatingPrincipal(uncompressedPublicKey:)`.
 2. If you need to sign requests (eg. to send transactions) you also need to create a `ICPSigningPrincipal`.
 3. The main account of this principal can be created using `ICPAccount.mainAccount(of:)`.
-
-## License
-**MIT License**
-see [LICENSE](LICENSE)
