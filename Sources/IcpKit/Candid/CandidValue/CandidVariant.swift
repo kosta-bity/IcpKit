@@ -1,6 +1,6 @@
 //
 //  CandidVariant.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 08.05.23.
 //

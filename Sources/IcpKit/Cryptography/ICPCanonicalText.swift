@@ -1,6 +1,6 @@
 //
 //  ICPCanonicalText.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 25.04.23.
 //
@@ -8,6 +8,10 @@
 import Foundation
 
 public extension ICPCryptography {
+    public enum ICPCrc32Error: Error {
+        case invalidChecksum
+    }
+    
     private static let canonicalTextSeparator: String = "-"
     ///
     ///     The canonical textual representation of a blob b is
@@ -18,7 +22,7 @@ public extension ICPCryptography {
     ///    - Base32 is the Base32 encoding as defined in RFC 4648, with no padding character added.
     ///    - The middle dot denotes concatenation.
     ///    - Grouped takes an ASCII string and inserts the separator - (dash) every 5 characters. The last group may contain less than 5 characters. A separator never appears at the beginning or end.
-    static func encodeCanonicalText(_ data: Data) -> String {
+    public static func encodeCanonicalText(_ data: Data) -> String {
         let checksum = Cryptography.crc32(data)
         let dataWithChecksum = checksum + data
         let base32Encoded = Cryptography.base32.encode(dataWithChecksum).lowercased().filter { $0 != "=" }
@@ -26,13 +30,18 @@ public extension ICPCryptography {
         return grouped
     }
     
-    static func decodeCanonicalText(_ text: String) throws -> Data {
+    public static func decodeCanonicalText(_ text: String) throws -> Data {
         let degrouped = text.replacingOccurrences(of: canonicalTextSeparator, with: "")
         let base32Encoded: String
         if degrouped.count % 2 != 0 { base32Encoded = degrouped + "=" }
         else { base32Encoded = degrouped }
         let decoded = try Cryptography.base32.decode(base32Encoded)
+        let checksum = decoded.prefix(Cryptography.crc32Length)
         let data = decoded.suffix(from: Cryptography.crc32Length)
+        let expectedChecksum = Cryptography.crc32(data)
+        guard expectedChecksum == checksum else {
+            throw ICPCryptography.ICPCrc32Error.invalidChecksum
+        }
         return data
     }
 }

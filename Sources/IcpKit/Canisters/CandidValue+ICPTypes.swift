@@ -1,6 +1,6 @@
 //
 //  CandidValue+ICPTypes.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 16.05.23.
 //
@@ -9,20 +9,23 @@ import Foundation
 
 extension CandidValue {
     var ICPAmount: UInt64? { recordValue?["e8s"]?.natural64Value }
-    var ICPTimestamp: Date? {
+    var ICPTimestamp: UInt64? {
         guard let nanos = recordValue?["timestamp_nanos"]?.natural64Value else { return nil }
-        return Date(timeIntervalSince1970: Double(nanos) / 1_000_000_000)
+        return nanos
     }
     
     static func ICPAmount(_ amount: UInt64) -> CandidValue {
         .record(["e8s": .natural64(amount)])
     }
     
-    static func ICPTimestamp(_ date: Date = .now) -> CandidValue {
-        let timestamp = UInt64(Date.now.timeIntervalSince1970) * 1_000_000_000
+    static func ICPTimestamp(_ timestamp: UInt64) -> CandidValue {
         return .record([
             "timestamp_nanos": .natural64(timestamp)
         ])
+    }
+    
+    static func ICPTimestampNow() -> CandidValue {
+        return ICPTimestamp(UInt64(Date.now.timeIntervalSince1970) * 1_000_000_000)
     }
 }
 
@@ -58,7 +61,7 @@ extension ICPBlock.Transaction {
             throw ICPCandidDecodingError.invalidTransactionStructure
         }
         let operation = try ICPBlock.Transaction.Operation.from(operationValue)
-        return ICPBlock.Transaction(memo: memo, created: created, operation: operation)
+        return ICPBlock.Transaction(memo: memo, createdNanos: created, operation: operation)
     }
 }
 

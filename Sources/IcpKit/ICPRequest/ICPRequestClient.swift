@@ -1,6 +1,6 @@
 //
 //  ICPHttpClient.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 21.04.23.
 //
@@ -31,9 +31,9 @@ public enum ICPPollingError: Error {
     case timeout
 }
 
-enum ICPRemoteClientError: Error {
+public enum ICPRemoteClientError: Error {
     case httpError(Error, String?)
-    case failed(HttpStatusCode, String?)
+    case failed(statusCode: Int, error: String?)
     case invalidCborEncoding
     case requestRejected(rejectCode: ICPRequestRejectCode?, rejectMessage: String?, error_code: String?)
     case malformedResponse
@@ -62,7 +62,6 @@ public enum ICPRequestCertification {
 
 public class ICPRequestClient {
     private let client = SimpleHttpClient()
-//    private let logger = BTLogger(module: "ICPRequestClient")
     
     public init() {}
     
@@ -75,7 +74,6 @@ public class ICPRequestClient {
     
     /// returns the requestId, use `pollRequestStatus` to get the current status of the request
     public func call(_ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> Data {
-//        logger.info("Call: \(canister.string).\(method.methodName)")
         let icpRequest = try await ICPRequest(.call(method), canister: canister, sender: sender)
         _ = try await fetchCbor(icpRequest, canister: canister)
         return icpRequest.requestId
@@ -95,7 +93,6 @@ public class ICPRequestClient {
     }
     
     public func query(_ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> CandidValue {
-//        logger.info("Query: \(canister.string).\(method.methodName)")
         let icpRequest = try await ICPRequest(.query(method), canister: canister, sender: sender)
         guard let cborEncodedResponse = try await fetchCbor(icpRequest, canister: canister) else {
             throw ICPRemoteClientError.noResponseData
@@ -128,7 +125,6 @@ public class ICPRequestClient {
             ].map { ICPStateTreePath($0) }
             
             repeat {
-//                logger.debug("polling request status: 0x\(requestId.hex)")
                 let statusResponse = try await readState(paths: paths, effectiveCanister: canister, sender: sender)
                 if let statusString = statusResponse.stringValueForPath(endingWith: "status") {
                     guard let status = ICPRequestStatusCode(rawValue: statusString) else {
@@ -136,11 +132,9 @@ public class ICPRequestClient {
                     }
                     switch status {
                     case .done:
-//                        logger.info("request status: DONE 0x\(requestId.hex)")
                         throw ICPPollingError.requestIsDone
                         
                     case .rejected:
-//                        logger.info("request status: REJECTED 0x\(requestId.hex)")
                         guard let rejectCodeValue = statusResponse.rawValueForPath(endingWith: "reject_code"),
                               let rejectCode = ICPRequestRejectCode(rawValue: UInt8.from(rejectCodeValue)) else {
                             throw ICPPollingError.parsingError
@@ -149,7 +143,6 @@ public class ICPRequestClient {
                         throw ICPPollingError.requestRejected(rejectCode, rejectMessage)
                         
                     case .replied:
-//                        logger.info("request status: REPLIED 0x\(requestId.hex)")
                         guard let replyData = statusResponse.rawValueForPath(endingWith: "reply"),
                               let candidValue = try CandidDeserialiser().decode(replyData).first else {
                             throw ICPPollingError.parsingError
@@ -157,19 +150,14 @@ public class ICPRequestClient {
                         return candidValue
                         
                     case .processing:
-//                        logger.debug("request status: PROCESSING 0x\(requestId.hex)")
                         // wait and try again later
                         break
                         
                     case .received:
-//                        logger.debug("request status: RECEIVED 0x\(requestId.hex)")
                         // wait and try again later
                         break
                     }
-                } else {
-//                    logger.debug("polling request status: not found...0x\(requestId.hex)")
                 }
-//                logger.debug("polling request: waiting... 0x\(requestId.hex)")
                 try await Task.sleep(for: waitDuration)
             } while endTime > .now
             
@@ -182,11 +170,9 @@ public class ICPRequestClient {
         guard response.statusCode == .ok || response.statusCode == .accepted else {
             let errorString = String(data: response.data ?? Data(), encoding: .utf8)
             if let error = response.error {
-//                logger.error("\(error.localizedDescription) -- \(String(describing: errorString))")
                 throw ICPRemoteClientError.httpError(error, errorString)
             }
-//            logger.error("failed with \(response.statusCode) -- \(String(describing: errorString))")
-            throw ICPRemoteClientError.failed(response.statusCode, errorString)
+            throw ICPRemoteClientError.failed(statusCode: response.statusCode.rawValue, error: errorString)
         }
         return response.data
     }

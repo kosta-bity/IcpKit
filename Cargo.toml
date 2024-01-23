@@ -1,4 +1,4 @@
 [workspace]
 members = [
-    "Sources/Rust/bls12381"
+    "Sources/bls12381"
 ]

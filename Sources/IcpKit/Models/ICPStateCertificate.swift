@@ -1,6 +1,6 @@
 //
 //  ICPStateCertificate.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 04.05.23.
 //
@@ -9,25 +9,25 @@ import Foundation
 
 /// see https://internetcomputer.org/docs/current/references/ic-interface-spec/#certification
 /// and https://internetcomputer.org/docs/current/references/ic-interface-spec/#certificate
-public struct ICPStateCertificate {
-    public let tree: HashTreeNode
-    public let signature: Data
+struct ICPStateCertificate {
+    let tree: HashTreeNode
+    let signature: Data
     
-    public indirect enum HashTreeNode: Equatable {
+    indirect enum HashTreeNode: Equatable {
         case empty
         case fork(left: HashTreeNode, right: HashTreeNode)
         case labeled(Data, HashTreeNode)
         case leaf(Data)
         case pruned(Data)
         
-        public static func labeled(_ string: String, _ node: HashTreeNode) -> HashTreeNode {
+        static func labeled(_ string: String, _ node: HashTreeNode) -> HashTreeNode {
             return .labeled(Data(string.utf8), node)
         }
     }
 }
 
 // MARK: Lookup
-public extension ICPStateCertificate.HashTreeNode {
+extension ICPStateCertificate.HashTreeNode {
     func getNode(for path: ICPStateTreePath) -> ICPStateCertificate.HashTreeNode? {
         if path.isEmpty { return self }
         switch self {

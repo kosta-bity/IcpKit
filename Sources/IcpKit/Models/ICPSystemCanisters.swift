@@ -1,6 +1,6 @@
 //
 //  ICPSystemCanisters.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 25.04.23.
 //

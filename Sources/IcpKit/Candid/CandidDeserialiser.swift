@@ -1,6 +1,6 @@
 //
 //  CandidDeserialiser.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 01.05.23.
 //

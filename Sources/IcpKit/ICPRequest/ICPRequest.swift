@@ -1,6 +1,6 @@
 //
 //  ICPRequest.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 21.04.23.
 //
@@ -12,9 +12,9 @@ import PotentCBOR
 private let canisterBaseUrl: URL = "https://icp-api.io/api/v2/canister"
 
 public struct ICPMethod {
-    public let canister: ICPPrincipal
-    public let methodName: String
-    public let args: CandidValue?
+    let canister: ICPPrincipal
+    let methodName: String
+    let args: CandidValue?
 }
 
 public enum ICPRequestType {
@@ -29,7 +29,7 @@ public struct ICPRequest {
     let httpRequest: HttpRequest
     
     public init(_ request: ICPRequestType, canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws {
-        let content = ICPRequestBuilder.buildContent(request, sender: sender?.principal)
+        let content = try ICPRequestBuilder.buildContent(request, sender: sender?.principal)
         requestId = try content.calculateRequestId()
         let envelope = try await ICPRequestBuilder.buildEnvelope(content, sender: sender)
         let rawBody = try ICPCryptography.CBOR.serialise(envelope)

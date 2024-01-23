@@ -1,6 +1,6 @@
 //
 //  Leb128.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 26.04.23.
 //
@@ -10,16 +10,16 @@ import BigInt
 
 public extension ICPCryptography {
     // MARK: Encoding
-    enum Leb128 {
-        static func encodeUnsigned(_ literal: IntegerLiteralType) -> Data {
+    public enum Leb128 {
+        public static func encodeUnsigned(_ literal: IntegerLiteralType) -> Data {
             return encodeUnsigned(BigUInt(literal))
         }
         
-        static func encodeUnsigned(_ int: UInt) -> Data {
+        public static func encodeUnsigned(_ int: UInt) -> Data {
             return encodeUnsigned(BigUInt(int))
         }
         
-        static func encodeUnsigned(_ bigInt: BigUInt) -> Data {
+        public static func encodeUnsigned(_ bigInt: BigUInt) -> Data {
             var value = bigInt
             var bytes = Data()
             
@@ -35,7 +35,7 @@ public extension ICPCryptography {
             return bytes
         }
         
-        static func encodeSigned(_ bigInt: BigInt) -> Data {
+        public static func encodeSigned(_ bigInt: BigInt) -> Data {
             // TODO: Make this work with BigInts
             // the BigInt shift operator >> does not produce the same results as the int shift operator...
             // eg.    Int(-129) >> 7 = -2
@@ -47,7 +47,7 @@ public extension ICPCryptography {
             return encodeSigned(integerValue)
         }
         
-        static func encodeSigned(_ integer: Int) -> Data {
+        public static func encodeSigned(_ integer: Int) -> Data {
             var value = integer
             var more = true
             var bytes = Data()
@@ -69,8 +69,8 @@ public extension ICPCryptography {
 }
 
 // MARK: Decoding
-extension ICPCryptography.Leb128 {
-    static func decodeUnsigned<T: BinaryInteger>(_ stream: ByteInputStream) throws -> T {
+public extension ICPCryptography.Leb128 {
+    internal static func decodeUnsigned<T: BinaryInteger>(_ stream: ByteInputStream) throws -> T {
         //        result = 0;
         //        shift = 0;
         //        while (true) {
@@ -91,7 +91,7 @@ extension ICPCryptography.Leb128 {
         return result
     }
     
-    static func decodeSigned<T: BinaryInteger>(_ stream: ByteInputStream) throws -> T {
+    internal static func decodeSigned<T: BinaryInteger>(_ stream: ByteInputStream) throws -> T {
         //        result = 0;
         //        shift = 0;
         //
@@ -124,12 +124,12 @@ extension ICPCryptography.Leb128 {
         return result
     }
     
-    static func decodeUnsigned<T: BinaryInteger>(_ data: Data) throws -> T {
+    public static func decodeUnsigned<T: BinaryInteger>(_ data: Data) throws -> T {
         let stream = ByteInputStream(data)
         return try decodeUnsigned(stream)
     }
     
-    static func decodeSigned<T: BinaryInteger>(_ data: Data) throws -> T {
+    public static func decodeSigned<T: BinaryInteger>(_ data: Data) throws -> T {
         let stream = ByteInputStream(data)
         return try decodeSigned(stream)
     }

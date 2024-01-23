@@ -36,14 +36,17 @@ let package = Package(
                 .product(name: "Base32", package: "Bases"),
                 .product(name: "secp256k1", package: "secp256k1.swift"),
                 .product(name: "HsCryptoKit", package: "HsCryptoKit.Swift"),
-                //.target(name: "bls12381"),
-            ],
-            cSettings: [.headerSearchPath("include")]
+//                .target(name: "bls12381"),
+            ]
+//            cSettings: [.headerSearchPath("Sources/bls12381/include"),
+//                        .unsafeFlags(["-ISources/bls12381/include/Bls12381.h"])],
+//            cxxSettings: [.headerSearchPath("Sources/bls12381/include"),
+//                          .unsafeFlags(["-ISources/bls12381/include/Bls12381.h"])]
         ),
-        .binaryTarget(
-            name: "bls12381",
-            path: "Binaries/xcframeworks/Bls12381.xcframework"
-        ),
+//        .binaryTarget(
+//            name: "bls12381",
+//            path: "Binaries/Bls12381.xcframework"
+//        ),
         .testTarget(
             name: "IcpKitTests",
             dependencies: [

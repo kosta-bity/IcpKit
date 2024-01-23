@@ -1,20 +1,19 @@
 //
 //  ICPCryptography+Account.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 25.04.23.
 //
 
 import Foundation
-import secp256k1
 
 public extension ICPCryptography {
-    enum ICPAccountError: Error {
+    public enum ICPAccountError: Error {
         case invalidSubAccountId
     }    
     
     /// https://internetcomputer.org/docs/current/developer-docs/integrations/icrc-1/#account
-    static func accountId(of principal: ICPPrincipal, subAccountId: Data) throws -> Data {
+    public static func accountId(of principal: ICPPrincipal, subAccountId: Data) throws -> Data {
         guard subAccountId.count == 32 else {
             throw ICPAccountError.invalidSubAccountId
         }
@@ -28,7 +27,7 @@ public extension ICPCryptography {
         return accountId
     }
     
-    static func validateAccountId(_ accountId: String) -> Bool {
+    public static func validateAccountId(_ accountId: String) -> Bool {
         guard let data = Data.fromHex(accountId),
               data.count == 32 else {
             return false

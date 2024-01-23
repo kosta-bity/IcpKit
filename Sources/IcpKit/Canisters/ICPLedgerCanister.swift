@@ -1,6 +1,6 @@
 //
 //  ICPLedgerCanister.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 26.04.23.
 //
@@ -21,9 +21,12 @@ public enum ICPTransferError: Error {
     case transactionTooOld(allowedWindowNanoSeconds: UInt64)
     case transactionCreatedInFuture
     case transactionDuplicate(blockIndex: UInt64)
+    case couldNotFindPostedTransaction
 }
 
 public enum ICPLedgerCanister {
+    public static let defaultFee: UInt64 = 10_000 // 0.0001 ICP
+    
     public static func accountBalance(_ certification: ICPRequestCertification = .certified, of account: ICPAccount, _ client: ICPRequestClient) async throws -> UInt64 {
         let method = accountBalanceMethod(account)
         let response = try await client.query(certification, method, effectiveCanister: ICPSystemCanisters.ledger)
@@ -35,7 +38,7 @@ public enum ICPLedgerCanister {
                          to receivingAddress: String,
                          amount: UInt64,
                          signingPrincipal: ICPSigningPrincipal,
-                         fee: UInt64 = 10000,    // 0.0001 ICP
+                         fee: UInt64 = Self.defaultFee,
                          memo: UInt64? = nil,
                          _ client: ICPRequestClient) async throws -> UInt64 {
         guard ICPCryptography.validateAccountId(receivingAddress) else {
@@ -139,7 +142,7 @@ private extension ICPLedgerCanister {
                 "amount": .ICPAmount(amount),
                 "fee": .ICPAmount(fee),
                 "memo": .natural64(memo ?? 0),
-                "created_at_time": .ICPTimestamp(.now)
+                "created_at_time": .ICPTimestampNow()
             ])
         )
     }

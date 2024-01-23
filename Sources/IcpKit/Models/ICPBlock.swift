@@ -1,6 +1,6 @@
 //
 //  ICPBlock.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 16.05.23.
 //
@@ -9,12 +9,12 @@ import Foundation
 
 public struct ICPBlock {
     public let parentHash: Data
-    public let timestamp: Date
+    public let timestamp: UInt64
     public let transaction: Transaction
     
     public struct Transaction {
         public let memo: UInt64
-        public let created: Date
+        public let createdNanos: UInt64
         public let operation: Operation
         
         public enum Operation {
@@ -46,7 +46,7 @@ public struct ICPBlock {
             hash: hash,
             blockIndex: blockIndex,
             memo: transaction.memo,
-            created: transaction.created
+            createdNanos: transaction.createdNanos
         )
     }
 }

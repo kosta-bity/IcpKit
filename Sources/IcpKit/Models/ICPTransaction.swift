@@ -1,6 +1,6 @@
 //
 //  ICPTransaction.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 10.05.23.
 //
@@ -36,5 +36,16 @@ public struct ICPTransaction {
     public let hash: Data
     public let blockIndex: UInt
     public let memo: UInt64
-    public let created: Date
+    public let createdNanos: UInt64
+    public var created: Date { Date(timeIntervalSince1970: Double(createdNanos) / 1_000_000_000) }
+    
+    public init(type: ICPTransactionType, amount: UInt, fee: UInt?, hash: Data, blockIndex: UInt, memo: UInt64, createdNanos: UInt64) {
+        self.type = type
+        self.amount = amount
+        self.fee = fee
+        self.hash = hash
+        self.blockIndex = blockIndex
+        self.memo = memo
+        self.createdNanos = createdNanos
+    }
 }

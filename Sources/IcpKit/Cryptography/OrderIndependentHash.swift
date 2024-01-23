@@ -1,6 +1,6 @@
 //
 //  OrderIndependentHash.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 26.04.23.
 //
@@ -8,14 +8,13 @@
 import Foundation
 import PotentCodables
 import BigInt
+import CryptoKit
 
 public extension ICPCryptography {
     /// https://internetcomputer.org/docs/current/references/ic-interface-spec/#hash-of-map
-    static func orderIndependentHash(
-        _ value: any Encodable,
-        _ hashFunction: ((any DataProtocol) -> Data)? = nil) throws -> Data
+    public static func orderIndependentHash(_ value: any Encodable) throws -> Data
     {
-        return try OIHasher(hashFunction ?? Cryptography.sha256).encode(value)
+        return try OIHasher({Data(CryptoKit.SHA256.hash(data: $0).bytes)}).encode(value)
     }
 }
 

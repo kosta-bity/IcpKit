@@ -1,6 +1,6 @@
 //
 //  CandidSerialiser.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 26.04.23.
 //
@@ -37,7 +37,7 @@ public indirect enum CandidValue: Equatable {
 }
 
 // MARK: CandidType
-extension CandidValue {
+public extension CandidValue {
     public var candidType: CandidType {
         switch self {
         case .null: return .primitive(.null)

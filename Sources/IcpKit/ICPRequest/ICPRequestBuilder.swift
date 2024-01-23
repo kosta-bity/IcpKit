@@ -1,6 +1,6 @@
 //
 //  ICPRequestBuilder.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 02.05.23.
 //
@@ -10,8 +10,8 @@ import Foundation
 enum ICPRequestBuilder {
     static let defaultIngressExpirySeconds: TimeInterval = 4 * 60 // 4 minutes
     
-    static func buildContent(_ request: ICPRequestType, sender: ICPPrincipal?) -> ICPRequestContent {
-        let nonce = Data(from: UUID().uuid)
+    static func buildContent(_ request: ICPRequestType, sender: ICPPrincipal?) throws -> ICPRequestContent {
+        let nonce = try ICPCryptography.secureRandom(32)
         let ingressExpiry = createIngressExpiry()
         let senderBytes = sender?.bytes ?? Data([4])
         

@@ -1,6 +1,6 @@
 //
 //  ICPCryptography.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 20.04.23.
 //

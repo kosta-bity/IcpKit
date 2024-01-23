@@ -1,6 +1,6 @@
 //
 //  ICPStateTreePath.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 06.05.23.
 //
@@ -19,8 +19,8 @@ public struct ICPStateTreePath: Hashable {
         self.components = Array(components)
     }
     
-    var firstComponent: ICPStateTreePathComponent? { components.first }
-    var removingFirstComponent: ICPStateTreePath { .init(components.suffix(from: 1)) }
+    public var firstComponent: ICPStateTreePathComponent? { components.first }
+    public var removingFirstComponent: ICPStateTreePath { .init(components.suffix(from: 1)) }
     public var isEmpty: Bool { components.isEmpty }
 }
 
@@ -28,24 +28,24 @@ public enum ICPStateTreePathComponent: Hashable {
     case data(Data)
     case string(String)
     
-    var stringValue: String? {
+    public var stringValue: String? {
         guard case .string(let string) = self else { return nil }
         return string
     }
     
-    var dataValue: Data? {
+    public var dataValue: Data? {
         guard case .data(let data) = self else { return nil }
         return data
     }
 }
 
 // MARK: Encoding
-extension ICPStateTreePath {
+public extension ICPStateTreePath {
     func encodedComponents() -> [Data] { components.map { $0.encoded() } }
 }
 
-extension ICPStateTreePathComponent {
-    func encoded() -> Data {
+public extension ICPStateTreePathComponent {
+    public func encoded() -> Data {
         switch self {
         case .data(let data): return data
         case .string(let string): return Data(string.utf8)

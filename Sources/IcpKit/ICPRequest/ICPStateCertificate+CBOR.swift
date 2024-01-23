@@ -1,6 +1,6 @@
 //
 //  ICPStateCertificate+CBOR.swift
-//  IcpKit
+//  Runner
 //
 //  Created by Konstantinos Gaitanis on 12.05.23.
 //
