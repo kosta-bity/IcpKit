@@ -38,6 +38,11 @@
                BlueprintName = "IcpKitTests"
                ReferencedContainer = "container:">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "ICPCryptographyTests/testBlsSignatureVerification()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

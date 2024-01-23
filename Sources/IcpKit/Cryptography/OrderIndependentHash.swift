@@ -12,7 +12,7 @@ import CryptoKit
 
 public extension ICPCryptography {
     /// https://internetcomputer.org/docs/current/references/ic-interface-spec/#hash-of-map
-    public static func orderIndependentHash(_ value: any Encodable) throws -> Data
+    static func orderIndependentHash(_ value: any Encodable) throws -> Data
     {
         return try OIHasher({Data(CryptoKit.SHA256.hash(data: $0).bytes)}).encode(value)
     }

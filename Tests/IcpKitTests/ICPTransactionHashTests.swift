@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Runner
+@testable import IcpKit
 
 final class ICPTransactionHashTests: XCTestCase {
     func testHash() throws {

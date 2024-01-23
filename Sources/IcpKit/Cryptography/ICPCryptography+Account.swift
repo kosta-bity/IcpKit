@@ -8,12 +8,12 @@
 import Foundation
 
 public extension ICPCryptography {
-    public enum ICPAccountError: Error {
+    enum ICPAccountError: Error {
         case invalidSubAccountId
     }    
     
     /// https://internetcomputer.org/docs/current/developer-docs/integrations/icrc-1/#account
-    public static func accountId(of principal: ICPPrincipal, subAccountId: Data) throws -> Data {
+    static func accountId(of principal: ICPPrincipal, subAccountId: Data) throws -> Data {
         guard subAccountId.count == 32 else {
             throw ICPAccountError.invalidSubAccountId
         }
@@ -27,7 +27,7 @@ public extension ICPCryptography {
         return accountId
     }
     
-    public static func validateAccountId(_ accountId: String) -> Bool {
+    static func validateAccountId(_ accountId: String) -> Bool {
         guard let data = Data.fromHex(accountId),
               data.count == 32 else {
             return false

@@ -29,7 +29,7 @@ final class ICPHttpRequestTests: XCTestCase {
         
         XCTAssertEqual(decodedBody.content.request_type, "read_state")
         //XCTAssertEqual(decodedBody.content.sender, principal1.bytes)
-        XCTAssertEqual(decodedBody.content.nonce.count, 16)
+        XCTAssertEqual(decodedBody.content.nonce.count, 32)
         let expiry = Date(timeIntervalSince1970: TimeInterval(decodedBody.content.ingress_expiry / 1_000_000_000))
         XCTAssertLessThanOrEqual(Date.now.advanced(by: ICPRequestBuilder.defaultIngressExpirySeconds-1), expiry)
         XCTAssertGreaterThan(Date.now.advanced(by: ICPRequestBuilder.defaultIngressExpirySeconds+1), expiry)

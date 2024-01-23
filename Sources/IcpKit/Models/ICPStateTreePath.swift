@@ -45,7 +45,7 @@ public extension ICPStateTreePath {
 }
 
 public extension ICPStateTreePathComponent {
-    public func encoded() -> Data {
+    func encoded() -> Data {
         switch self {
         case .data(let data): return data
         case .string(let string): return Data(string.utf8)

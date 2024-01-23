@@ -38,7 +38,7 @@ public indirect enum CandidValue: Equatable {
 
 // MARK: CandidType
 public extension CandidValue {
-    public var candidType: CandidType {
+    var candidType: CandidType {
         switch self {
         case .null: return .primitive(.null)
         case .bool: return .primitive(.bool)

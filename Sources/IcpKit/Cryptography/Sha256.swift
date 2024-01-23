@@ -9,7 +9,7 @@ import Foundation
 import CryptoKit
 
 public extension ICPCryptography {
-    public static func sha256(_ data: any DataProtocol) -> Data {
+    static func sha256(_ data: any DataProtocol) -> Data {
         return CryptoKit.SHA256.hash(data: data).data
     }
 }

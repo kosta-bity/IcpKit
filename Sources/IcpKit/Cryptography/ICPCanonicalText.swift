@@ -8,7 +8,7 @@
 import Foundation
 
 public extension ICPCryptography {
-    public enum ICPCrc32Error: Error {
+    enum ICPCrc32Error: Error {
         case invalidChecksum
     }
     
@@ -22,7 +22,7 @@ public extension ICPCryptography {
     ///    - Base32 is the Base32 encoding as defined in RFC 4648, with no padding character added.
     ///    - The middle dot denotes concatenation.
     ///    - Grouped takes an ASCII string and inserts the separator - (dash) every 5 characters. The last group may contain less than 5 characters. A separator never appears at the beginning or end.
-    public static func encodeCanonicalText(_ data: Data) -> String {
+    static func encodeCanonicalText(_ data: Data) -> String {
         let checksum = Cryptography.crc32(data)
         let dataWithChecksum = checksum + data
         let base32Encoded = Cryptography.base32.encode(dataWithChecksum).lowercased().filter { $0 != "=" }
@@ -30,7 +30,7 @@ public extension ICPCryptography {
         return grouped
     }
     
-    public static func decodeCanonicalText(_ text: String) throws -> Data {
+    static func decodeCanonicalText(_ text: String) throws -> Data {
         let degrouped = text.replacingOccurrences(of: canonicalTextSeparator, with: "")
         let base32Encoded: String
         if degrouped.count % 2 != 0 { base32Encoded = degrouped + "=" }

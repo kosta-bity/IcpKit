@@ -9,7 +9,7 @@ import Foundation
 import PotentCBOR
 
 public extension ICPCryptography {
-    public static func transactionHash(_ transaction: ICPBlock.Transaction) throws -> Data {
+    static func transactionHash(_ transaction: ICPBlock.Transaction) throws -> Data {
         let serialised = try CBORSerialization.data(from: transaction.cbor)
         let txHash = Cryptography.sha256(serialised)
         return txHash

@@ -9,7 +9,7 @@ import Foundation
 import PotentCBOR
 
 public extension ICPCryptography {
-    public enum CBOR {
+    enum CBOR {
         public static func serialise(_ value: any Encodable, wrapWithCborTag: Bool = true) throws -> Data {
             var cbor = try CBOREncoder.default.encodeTree(value)
             if wrapWithCborTag {

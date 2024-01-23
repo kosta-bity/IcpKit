@@ -10,7 +10,7 @@ import BigInt
 
 public extension ICPCryptography {
     // MARK: Encoding
-    public enum Leb128 {
+    enum Leb128 {
         public static func encodeUnsigned(_ literal: IntegerLiteralType) -> Data {
             return encodeUnsigned(BigUInt(literal))
         }
@@ -124,12 +124,12 @@ public extension ICPCryptography.Leb128 {
         return result
     }
     
-    public static func decodeUnsigned<T: BinaryInteger>(_ data: Data) throws -> T {
+    static func decodeUnsigned<T: BinaryInteger>(_ data: Data) throws -> T {
         let stream = ByteInputStream(data)
         return try decodeUnsigned(stream)
     }
     
-    public static func decodeSigned<T: BinaryInteger>(_ data: Data) throws -> T {
+    static func decodeSigned<T: BinaryInteger>(_ data: Data) throws -> T {
         let stream = ByteInputStream(data)
         return try decodeSigned(stream)
     }
