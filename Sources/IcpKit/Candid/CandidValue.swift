@@ -8,7 +8,7 @@
 import Foundation
 import BigInt
 
-// https://github.com/dfinity/candid/blob/master/spec/Candid.md
+/// https://github.com/dfinity/candid/blob/master/spec/Candid.md
 public indirect enum CandidValue: Equatable {
     case null
     case bool(Bool)

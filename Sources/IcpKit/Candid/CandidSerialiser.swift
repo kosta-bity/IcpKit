@@ -9,12 +9,14 @@ import Foundation
 import BigInt
 import OrderedCollections
 
-// see section Serialisation at the bottom of
-// https://github.com/dfinity/candid/blob/master/spec/Candid.md
-
+/// see section Serialisation at the bottom of
+/// https://github.com/dfinity/candid/blob/master/spec/Candid.md
 class CandidSerialiser {
     static let magicBytes = Data("DIDL".utf8)  //0x4449444C
     
+    /// Serialises a single candid value. The given CandidValue instance is wrapped in a single element list before being serialised.
+    /// - Parameter value: An optional CandidValue, if none provided this will serialise an empty list.
+    /// - Returns: the Candid serialisation of the given CandidValue
     func encode(_ value: CandidValue?) -> Data {
         guard let value = value else {
             return encode([])
@@ -22,6 +24,9 @@ class CandidSerialiser {
         return encode([value])
     }
     
+    /// Serialises a list of Candid Values
+    /// - Parameter values: The Candid Values to be serialised
+    /// - Returns: The serialisation of the given Candid Values
     func encode(_ values: [CandidValue]) -> Data {
         let typeTable = CandidTypeTable()
         let encodableValues = values.map { Self.buildTree($0, typeTable) }

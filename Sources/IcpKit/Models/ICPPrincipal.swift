@@ -7,7 +7,7 @@
 
 import Foundation
 
-///     from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal
+/// from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal
 public struct ICPPrincipal {
     public let bytes: Data
     public let string: String

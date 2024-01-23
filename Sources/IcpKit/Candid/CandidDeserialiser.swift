@@ -7,7 +7,12 @@
 
 import Foundation
 
+/// see section Serialisation at the bottom of
+/// https://github.com/dfinity/candid/blob/master/spec/Candid.md
 class CandidDeserialiser {
+    /// Desrialises the given data into a list of CandidValues or throws a `CandidDeserialisationError`
+    /// - Parameter data: Candid serialised Data
+    /// - Returns: The list of deserialised Candid Values
     func decode(_ data: Data) throws -> [CandidValue] {
         guard data.prefix(CandidSerialiser.magicBytes.count) == CandidSerialiser.magicBytes else {
             throw CandidDeserialisationError.invalidPrefix

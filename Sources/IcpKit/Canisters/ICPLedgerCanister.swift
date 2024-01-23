@@ -25,15 +25,35 @@ public enum ICPTransferError: Error {
 }
 
 public enum ICPLedgerCanister {
+    /// The fixed fee to be applied on all ICP transactions
     public static let defaultFee: UInt64 = 10_000 // 0.0001 ICP
     
+    
+    /// Queries the Ledger Canister for the ICP balance of the given `ICPAccount`
+    ///
+    /// This can be performed in different ways depending on the required certification level.
+    ///
+    /// - Parameters:
+    ///   - certification: The certification level
+    ///   - account: The account
+    ///   - client: The client to use
+    /// - Returns: The account balance in ICP (8 digits precision)
     public static func accountBalance(_ certification: ICPRequestCertification = .certified, of account: ICPAccount, _ client: ICPRequestClient) async throws -> UInt64 {
         let method = accountBalanceMethod(account)
         let response = try await client.query(certification, method, effectiveCanister: ICPSystemCanisters.ledger)
         return try parseAccountBalanceResponse(response)
     }
     
-    /// returns the blockIndex of the transaction
+    /// Sends a transaction request to the Ledger Canister and waits for its response
+    /// - Parameters:
+    ///   - sendingAccount: The `from` account
+    ///   - receivingAddress: The `to` account
+    ///   - amount: How much to the `to` account will receive. The sender will send this amount + the fee
+    ///   - signingPrincipal: The signing principal
+    ///   - fee: The fee to use. Defaults to the standard ICP fee of 0.0001 ICP
+    ///   - memo: An optional memo to attach to the transaction
+    ///   - client: The client to use
+    /// - Returns: the blockIndex of the transaction
     public static func transfer(from sendingAccount: ICPAccount,
                          to receivingAddress: String,
                          amount: UInt64,
@@ -49,6 +69,16 @@ public enum ICPLedgerCanister {
         return try parseTranserResponse(response)
     }
     
+    /// Queries the Ledger Canister for information about a certain block.
+    ///
+    /// If the block is archived, this will also perform the corresponding Archive Query to fetch it
+    /// seamlessly.
+    ///
+    /// - Parameters:
+    ///   - certification: The certification level
+    ///   - index: The block index to query
+    ///   - client: The client to use
+    /// - Returns: The `ICPBlock` instance corresponding to the block index
     public static func queryBlock(_ certification: ICPRequestCertification = .certified, index: UInt64, _ client: ICPRequestClient) async throws -> ICPBlock {
         let method = queryBlocksMethod(startAt: index, length: 1)
         let response = try await client.query(certification, method, effectiveCanister: ICPSystemCanisters.ledger)

@@ -7,4 +7,5 @@
 
 import Foundation
 
+/// Umbrella class containing the necessary Cryptographic functions
 public enum ICPCryptography {}

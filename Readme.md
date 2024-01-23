@@ -2,6 +2,8 @@
 A comprehensive iOS package for writing mobile applications that interact with the Internet Computer Protocol (ICP), written in Swift.
 IcpKit aims at facilitating the interaction between iOS apps and the ICP blockchain.
 
+For more information about ICP Development, we recommend starting from https://internetcomputer.org/docs/current/references/
+
 ## Installation
 
 ### Swift Package Manager
@@ -30,9 +32,11 @@ The [Ledger Canister](Sources/IcpKit/Canisters/ICPLedgerCanister.swift) is provi
 
 ## Main Functionalities
 - Handles serialisation and encoding 
-- Candid implementation for Swift
+- Candid implementation and serialisation/desirialisation for Swift
+- CBOR serialisation
 - Cryptographic methods applicable to ICP
 - Basic ICP Models for transactions, accounts, self-authenticating principals etc.
+- Ledger and Archive Canister implementation
 
 ## How to create an ICP Principal
 ### Starting from a seed
@@ -41,9 +45,9 @@ order to derive the public/private Key Pair from the seed.
 The ICP derivation path is `m/44'/223'/0'/0/0`
 
 ### Starting from a public/private Key Pair
-1. Create a `ICPPrincipal` instance using `ICPPrincipal(publicKey)`.
+1. Create a `ICPPrincipal` instance using `ICPCryptography.selfAuthenticatingPrincipal(uncompressedPublicKey:)`.
 2. If you need to sign requests (eg. to send transactions) you also need to create a `ICPSigningPrincipal`.
-3. The main account of this principal can be created using `ICPAccount.mainAccount(of: principal)`.
+3. The main account of this principal can be created using `ICPAccount.mainAccount(of:)`.
 
 ## License
 **MIT License**

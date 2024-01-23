@@ -60,11 +60,26 @@ public enum ICPRequestCertification {
     case certified
 }
 
+/// The HttpClient that takes care of encoding and serialising all requests
 public class ICPRequestClient {
     private let client = SimpleHttpClient()
     
     public init() {}
     
+    /// Makes a Query to the given canister and returns the result.
+    /// Queries do not affect the state of the blockchain and are generally fast.
+    ///
+    /// When the certification is `.uncertified`, this will perform a very fast query request which
+    /// is not signed by ICP (therefore can be forged). Queries performed this way will result in a single HTTP request whose response contains the queried data.
+    ///
+    /// When the certification is `.certified`, this will perform a call request and then rep
+    ///
+    /// - Parameters:
+    ///   - certification: <#certification description#>
+    ///   - method: <#method description#>
+    ///   - canister: <#canister description#>
+    ///   - sender: <#sender description#>
+    /// - Returns: <#description#>
     public func query(_ certification: ICPRequestCertification, _ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> CandidValue {
         switch certification {
         case .uncertified: return try await query(method, effectiveCanister: canister, sender: sender)
@@ -72,13 +87,31 @@ public class ICPRequestClient {
         }
     }
     
-    /// returns the requestId, use `pollRequestStatus` to get the current status of the request
+    /// Makes a Call Request to ICP.
+    /// Calls can potentially affect the blockchain state and are always signed by the ICP.
+    ///
+    /// The response is just the requestId. Upon receiving a response from this call, it does not mean that the ICP has processed the request. The status of the request can be queried using
+    /// `pollRequestStatus`.
+    ///
+    /// - Parameters:
+    ///   - method: The method to be called
+    ///   - canister: The canister
+    ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
+    /// - Returns: the requestId of the newly created request
     public func call(_ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> Data {
         let icpRequest = try await ICPRequest(.call(method), canister: canister, sender: sender)
         _ = try await fetchCbor(icpRequest, canister: canister)
         return icpRequest.requestId
     }
     
+    /// Makes a call request and then polls the canister until the request has been either processed or has failed.
+    /// - Parameters:
+    ///   - method: The method to be called
+    ///   - canister: The canister
+    ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
+    ///   - duration: The maximum duration of polling
+    ///   - waitDuration: The wait time between two consecutive polls
+    /// - Returns: The response of the request
     public func callAndPoll(_ method: ICPMethod,
                      effectiveCanister canister: ICPPrincipal,
                      sender: ICPSigningPrincipal? = nil,
@@ -92,6 +125,12 @@ public class ICPRequestClient {
                                            repeatEvery: waitDuration)
     }
     
+    /// Performs a Query request to the canister and returns the response
+    /// - Parameters:
+    ///   - method: The method to be called
+    ///   - canister: The canister
+    ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
+    /// - Returns: The response of the query
     public func query(_ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> CandidValue {
         let icpRequest = try await ICPRequest(.query(method), canister: canister, sender: sender)
         guard let cborEncodedResponse = try await fetchCbor(icpRequest, canister: canister) else {
@@ -101,6 +140,12 @@ public class ICPRequestClient {
         return parsedResponse
     }
     
+    /// Performs a ReadState request to the canister.
+    /// - Parameters:
+    ///   - paths: The Paths of the State Tree we wish to query
+    ///   - canister: The canister
+    ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
+    /// - Returns: The ReadState response
     public func readState(paths: [ICPStateTreePath], effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> ICPReadStateResponse {
         let icpRequest = try await ICPRequest(.readState(paths: paths), canister: canister, sender: sender)
         guard let cborEncodedResponse = try await fetchCbor(icpRequest, canister: canister) else {
@@ -110,6 +155,15 @@ public class ICPRequestClient {
         return parsedResponse
     }
     
+    /// Will poll the canister every `waitDuration` for the response of the request with the given requestId until we
+    /// either get a response or the `duration` is exceeded
+    /// - Parameters:
+    ///   - requestId: the requestId that we are querying
+    ///   - canister: the canister
+    ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
+    ///   - duration: The duration for the polling will take place, defaults to 2 minutes
+    ///   - waitDuration: The time between two consecutive calls, defaults to 2 seconds
+    /// - Returns: The response of the query
     public func pollRequestStatus(requestId: Data,
                            effectiveCanister canister: ICPPrincipal,
                            sender: ICPSigningPrincipal? = nil,
