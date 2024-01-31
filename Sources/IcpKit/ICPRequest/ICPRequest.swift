@@ -38,6 +38,7 @@ public struct ICPRequest {
             $0.method = .post
             $0.url = Self.buildUrl(request, canister)
             $0.body = .data(rawBody, contentType: "application/cbor")
+            $0.timeout = 120
         }
     }
     
