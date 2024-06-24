@@ -235,7 +235,7 @@ private extension CandidValue {
             let rowTypes = type.keyedContainerRowTypes!
             var dictionary: [Int: CandidValue] = [:]
             for rowType in rowTypes {
-                dictionary[rowType.hashedKey] = try decodeValue(rowType.type, stream)
+                dictionary[rowType.key.hash] = try decodeValue(rowType.type, stream)
             }
             return .record(CandidDictionary(dictionary))
             

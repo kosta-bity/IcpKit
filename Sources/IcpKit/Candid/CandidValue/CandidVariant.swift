@@ -15,7 +15,7 @@ public struct CandidVariant: Equatable {
     public let candidTypes: [CandidDictionaryItemType]
     public let value: CandidValue
     public let valueIndex: UInt
-    public var hashedKey: Int { candidTypes[Int(valueIndex)].hashedKey }
+    public var key: CandidDictionaryKey { candidTypes[Int(valueIndex)].key }
     
     public init(candidTypes: [CandidDictionaryItemType], value: CandidValue, valueIndex: UInt) {
         self.candidTypes = candidTypes
@@ -33,11 +33,11 @@ public struct CandidVariant: Equatable {
     }
     
     public subscript (_ key: String) -> CandidValue? {
-        self[CandidDictionary.hash(key)]
+        self[CandidDictionaryKey.hash(key)]
     }
     
     public subscript (_ key: Int) -> CandidValue? {
-        guard hashedKey == key else { return nil }
+        guard self.key.hash == key else { return nil }
         return value
     }
 }

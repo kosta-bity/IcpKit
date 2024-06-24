@@ -84,7 +84,7 @@ private extension CandidSerialiser {
             return .record(
                 typeRef: typeReference,
                 dictionary.candidSortedItems.map { .init(
-                    hashedKey: $0.hashedKey,
+                    hashedKey: $0.key.hash,
                     value: buildTree($0.value, typeTable)
                 )}
             )
@@ -161,7 +161,7 @@ private class CandidTypeTable {
                     ]
                     + types.flatMap {
                         [
-                            .unsigned(UInt($0.hashedKey)),
+                            .unsigned(UInt($0.key.hash)),
                             .signed(getReference(for: $0.type))
                         ]
                     }

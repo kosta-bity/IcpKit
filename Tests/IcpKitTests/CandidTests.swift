@@ -56,7 +56,7 @@ final class CandidTests: XCTestCase {
             (String(repeating: "abcd", count: 1000), 3277195728),
         ]
         for (string, expectedHash) in testVectors {
-            let hashed = CandidDictionary.hash(string)
+            let hashed = CandidDictionaryKey.hash(string)
             XCTAssertEqual(hashed, expectedHash)
         }
     }
