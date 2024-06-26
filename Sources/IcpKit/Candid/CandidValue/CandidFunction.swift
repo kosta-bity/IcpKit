@@ -18,6 +18,11 @@ public struct CandidFunction: Equatable {
 }
 
 public struct CandidFunctionSignature: Equatable {
+    struct Parameter {
+        let index: Int
+        let name: String?
+        let type: CandidType
+    }
     public let inputs: [CandidType]
     public let outputs: [CandidType]
     

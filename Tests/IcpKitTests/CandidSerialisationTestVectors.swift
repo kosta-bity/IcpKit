@@ -61,9 +61,9 @@ enum CandidSerialisationTestVectors {
         ])), [4, 0x6D, 0x7B, 0x6D, 0, 0x6C, 2, 97, 0, 98, 1, 0x6E, 2, 0x01, 3, 1, 1, 0x44, 1, 2, 0x45, 0x47]),
         (.variant(try! CandidVariant(
             candidTypes: [
-                ("a", .primitive(.bool)),
-                ("b", .primitive(.natural8)),
-                ("c", .container(.vector, .primitive(.natural8))),
+                ("a", .bool),
+                ("b", .natural8),
+                ("c", .vector(.natural8)),
             ],
             value: ("b", .natural8(15)))),
          // 2 types in table, (0) vector, nat8, (1) variant, 3 keys, leb(hash("a")), bool, leb(hash("b")), nat8, leb(hash("c")), type 0, 1 candidValue, type 1, row 1, 15

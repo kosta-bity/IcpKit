@@ -75,7 +75,7 @@ extension ICPBlock.Transaction.Operation {
             throw ICPCandidDecodingError.invalidOperationStructure
         }
         switch operation.key.hash {
-        case CandidDictionaryKey.hash("Mint"):
+        case CandidContainerKey.hash("Mint"):
             guard let transfer = operation.value.recordValue,
                   let to = transfer["to"]?.blobValue,
                   let amount = transfer["amount"]?.ICPAmount else {
@@ -83,7 +83,7 @@ extension ICPBlock.Transaction.Operation {
             }
             return .mint(to: to, amount: amount)
             
-        case CandidDictionaryKey.hash("Burn"):
+        case CandidContainerKey.hash("Burn"):
             guard let transfer = operation.value.recordValue,
                   let from = transfer["from"]?.blobValue,
                   let amount = transfer["amount"]?.ICPAmount else {
@@ -91,7 +91,7 @@ extension ICPBlock.Transaction.Operation {
             }
             return .burn(from: from, amount: amount)
             
-        case CandidDictionaryKey.hash("Transfer"):
+        case CandidContainerKey.hash("Transfer"):
             guard let transfer = operation.value.recordValue,
                   let from = transfer["from"]?.blobValue,
                   let to = transfer["to"]?.blobValue,

@@ -16,10 +16,6 @@ extension CandidValue {
         return .option(.none(containedType))
     }
     
-    static func option(_ containedType: CandidPrimitiveType) -> CandidValue {
-        return .option(.primitive(containedType))
-    }
-    
     static func option(_ containedType: CandidType, _ value: CandidValue?) -> CandidValue {
         guard let value = value else {
             return .option(containedType)
@@ -28,10 +24,6 @@ extension CandidValue {
     }
     
     static func vector(_ containedType: CandidType) -> CandidValue {
-        return .vector(CandidVector(containedType))
-    }
-    
-    static func vector(_ containedType: CandidPrimitiveType) -> CandidValue {
         return .vector(CandidVector(containedType))
     }
 }

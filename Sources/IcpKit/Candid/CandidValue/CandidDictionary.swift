@@ -8,25 +8,25 @@
 import Foundation
 
 public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable {
-    public let candidSortedItems: [CandidDictionaryItem]
+    public let candidSortedItems: [CandidKeyedItem]
     
     public var candidValues: [CandidValue] {
         candidSortedItems.map { $0.value }
     }
     
-    public var candidTypes: [CandidDictionaryItemType] {
-        candidSortedItems.map(CandidDictionaryItemType.init)
+    public var candidTypes: [CandidKeyedItemType] {
+        candidSortedItems.map(CandidKeyedItemType.init)
     }
     
     public init(_ dictionary: [String: CandidValue]) {
         candidSortedItems = dictionary
-            .map(CandidDictionaryItem.init)
+            .map(CandidKeyedItem.init)
             .sorted { $0.key.hash < $1.key.hash }  // sort by ascending keys
     }
     
     public init(_ hashedDictionary: [Int: CandidValue]) {
         candidSortedItems = hashedDictionary
-            .map(CandidDictionaryItem.init)
+            .map(CandidKeyedItem.init)
             .sorted { $0.key.hash < $1.key.hash }  // sort by ascending keys
     }
     
@@ -40,47 +40,47 @@ public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable {
     }
     
     public subscript (_ key: String) -> CandidValue? {
-        let hashedKey = CandidDictionaryKey.hash(key)
+        let hashedKey = CandidContainerKey.hash(key)
         return self[hashedKey]
     }
 }
 
-public struct CandidDictionaryItem: Equatable {
-    public let key: CandidDictionaryKey
+public struct CandidKeyedItem: Equatable {
+    public let key: CandidContainerKey
     public let value: CandidValue
     
     public init(_ hashedKey: Int, _ value: CandidValue) {
-        key = CandidDictionaryKey(hashedKey)
+        key = CandidContainerKey(hashedKey)
         self.value = value
     }
     
     public init(_ key: String, _ value: CandidValue) {
-        self.key = CandidDictionaryKey(key)
+        self.key = CandidContainerKey(key)
         self.value = value
     }
 }
 
-public struct CandidDictionaryItemType: Equatable {
-    public let key: CandidDictionaryKey
+public struct CandidKeyedItemType: Equatable {
+    public let key: CandidContainerKey
     public let type: CandidType
     
     public init(hashedKey: Int, type: CandidType) {
-        key = CandidDictionaryKey(hashedKey)
+        key = CandidContainerKey(hashedKey)
         self.type = type
     }
     
-    public init(_ item: CandidDictionaryItem) {
+    public init(_ item: CandidKeyedItem) {
         key = item.key
         self.type = item.value.candidType
     }
     
     public init(_ key: String, _ type: CandidType) {
-        self.key = CandidDictionaryKey(key)
+        self.key = CandidContainerKey(key)
         self.type = type
     }
 }
 
-public struct CandidDictionaryKey: Equatable, Hashable {
+public struct CandidContainerKey: Equatable, Hashable {
     public let hash: Int
     public let string: String?
     
@@ -98,7 +98,7 @@ public struct CandidDictionaryKey: Equatable, Hashable {
         hasher.combine(hash)
     }
     
-    public static func ==(lhs: CandidDictionaryKey, rhs: CandidDictionaryKey) -> Bool {
+    public static func ==(lhs: CandidContainerKey, rhs: CandidContainerKey) -> Bool {
         lhs.hash == rhs.hash
     }
     

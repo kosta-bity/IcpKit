@@ -34,6 +34,7 @@ public indirect enum CandidValue: Equatable {
     case variant(CandidVariant)
     case function(CandidFunction)
     //case service(CandidService)
+    //case principal(CandidPrincipal)  ?
 }
 
 // MARK: CandidType

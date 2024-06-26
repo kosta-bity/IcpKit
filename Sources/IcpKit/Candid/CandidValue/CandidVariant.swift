@@ -12,12 +12,12 @@ enum CandidVariantError: Error {
 }
 
 public struct CandidVariant: Equatable {
-    public let candidTypes: [CandidDictionaryItemType]
+    public let candidTypes: [CandidKeyedItemType]
     public let value: CandidValue
     public let valueIndex: UInt
-    public var key: CandidDictionaryKey { candidTypes[Int(valueIndex)].key }
+    public var key: CandidContainerKey { candidTypes[Int(valueIndex)].key }
     
-    public init(candidTypes: [CandidDictionaryItemType], value: CandidValue, valueIndex: UInt) {
+    public init(candidTypes: [CandidKeyedItemType], value: CandidValue, valueIndex: UInt) {
         self.candidTypes = candidTypes
         self.value = value
         self.valueIndex = valueIndex
@@ -28,12 +28,12 @@ public struct CandidVariant: Equatable {
             throw CandidVariantError.valueNotPartOfTypes
         }
         self.valueIndex = UInt(index)
-        self.candidTypes = candidTypes.map(CandidDictionaryItemType.init)
+        self.candidTypes = candidTypes.map(CandidKeyedItemType.init)
         self.value = value.1
     }
     
     public subscript (_ key: String) -> CandidValue? {
-        self[CandidDictionaryKey.hash(key)]
+        self[CandidContainerKey.hash(key)]
     }
     
     public subscript (_ key: Int) -> CandidValue? {

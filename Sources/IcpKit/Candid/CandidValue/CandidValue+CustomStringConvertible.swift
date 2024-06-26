@@ -61,7 +61,7 @@ extension CandidDictionary: CustomStringConvertible {
     }
 }
 
-extension CandidDictionaryItemType: CustomStringConvertible {
+extension CandidKeyedItemType: CustomStringConvertible {
     public var description: String {
         return "\(key.hash): \(type)"
     }

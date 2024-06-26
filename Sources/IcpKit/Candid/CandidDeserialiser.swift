@@ -65,7 +65,7 @@ private class CandidDecodableTypeTable {
         case .keyedContainer(let containerType, let rows):
             let rowTypes = try rows.map {
                 let rowType = try candidType(for: $0.type, with: rawTypeData)
-                return CandidDictionaryItemType(hashedKey: $0.hashedKey, type: rowType)
+                return CandidKeyedItemType(hashedKey: $0.hashedKey, type: rowType)
             }
             return .keyedContainer(containerType, rowTypes)
             
@@ -309,7 +309,7 @@ private extension CandidType {
         return type
     }
     
-    var keyedContainerRowTypes: [CandidDictionaryItemType]? {
+    var keyedContainerRowTypes: [CandidKeyedItemType]? {
         guard case .keyedContainer(_, let rowTypes) = self else { return nil }
         return rowTypes
     }
