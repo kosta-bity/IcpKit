@@ -75,4 +75,24 @@ final class CandidParserTests: XCTestCase {
         XCTAssertEqual(try parser.parseType(#"record { text; text; opt bool }"#), .record(["0": .text, "1": .text, "2": .option(.bool)]))
         XCTAssertEqual(try parser.parseType(#"record{record{opt bool};"key":text;}"#), .record(["0": .record(["0": .option(.bool)]), "key": .text]))
     }
+    
+    func testFunctionType() throws {
+        XCTAssertEqual(try parser.parseType("func () -> ()"), .function())
+        XCTAssertEqual(try parser.parseType("func () -> () oneway"), .function(oneWay: true))
+        XCTAssertEqual(try parser.parseType("func (text, opt bool) -> (text)"), .function([.text, .option(.bool)], [.text]))
+        XCTAssertEqual(try parser.parseType("func () -> (int) query"), .function([], [.integer], query: true))
+        XCTAssertEqual(try parser.parseType("func (func (int) -> ()) -> ()"), .function([.function([.integer], [])], []))
+        
+        let named = try parser.parseType("func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);")
+        XCTAssertEqual(named, .function([.natural, .natural], [.natural, .natural]))
+        guard case .function(let signature) = named else {
+            XCTFail()
+            return
+        }
+        XCTAssertEqual(signature.arguments[0].name, "dividend")
+        XCTAssertEqual(signature.arguments[1].name, "divisor")
+        XCTAssertEqual(signature.results[0].name, "div")
+        XCTAssertEqual(signature.results[1].name, "mod")
+    }
 }
+//  .function([("a", .text)])

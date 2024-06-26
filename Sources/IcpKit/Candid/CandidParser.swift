@@ -30,7 +30,7 @@ private extension CandidParser {
     func parseType(_ stream: CandidStringStream) throws -> CandidType {
         let token = try stream.takeNext()
         guard case .text(let type) = token else {
-            throw CandidParserError.unrecognisedType(token.debugDescription)
+            throw CandidParserError.unrecognisedType(token.syntax)
         }
         switch type {
         case CandidPrimitiveType.null.syntax: return .null
@@ -57,7 +57,7 @@ private extension CandidParser {
         case CandidPrimitiveType.function.syntax: return .function(try parseFunctionSignature(stream))
             
         default:
-            throw CandidParserError.unrecognisedType(token.debugDescription)
+            throw CandidParserError.unrecognisedType(token.syntax)
         }
     }
     
@@ -67,31 +67,8 @@ private extension CandidParser {
     // record { text; text; opt bool }
     private func parseRecordKeyedTypes(_ stream: CandidStringStream) throws -> [CandidKeyedItemType] {
         try stream.expectNext(.openBracket)
-        var items: [CandidKeyedItemType] = []
-        var unnamedItemCount = 0
-        while try stream.peekNext() != .closeBracket {
-            let key: String
-            if try stream.peekSecondNext() == .colon {
-                // key : type
-                let keyToken = try stream.takeNext()
-                guard let stringKey = keyToken.textValue else {
-                    throw CandidParserError.expecting("anyString", butGot: keyToken.debugDescription)
-                }
-                key = stringKey
-                try stream.expectNext(.colon)
-            } else {
-                // type only, use sequentially-increasing labels
-                key = String(unnamedItemCount)
-                unnamedItemCount += 1
-            }
-            
-            let keyType = try parseType(stream)
-            items.append(CandidKeyedItemType(key, keyType))
-            if (try stream.peekNext() == .semicolon) {
-                try stream.expectNext(.semicolon)
-            }
-        }
-        try stream.expectNext(.closeBracket)
+        let items = try parseOptionalNamedTypes(stream, .semicolon, .closeBracket)
+            .map { CandidKeyedItemType($0.name ?? String($0.index), $0.type)}
         return items
     }
     
@@ -105,7 +82,7 @@ private extension CandidParser {
         var nextToken = try stream.takeNext()
         while nextToken != .closeBracket {
             guard let key = nextToken.textValue else {
-                throw CandidParserError.expecting("anyString", butGot: nextToken.debugDescription)
+                throw CandidParserError.expecting("anyString", butGot: nextToken.syntax)
             }
             nextToken = try stream.takeNext()
             if nextToken == .colon {
@@ -127,13 +104,56 @@ private extension CandidParser {
     // func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);
     // func () -> (int) query
     // func (func (int) -> ()) -> ()
-    private func parseFunctionSignature(_ stream: CandidStringStream) throws -> CandidFunctionSignature {
-        
-        return CandidFunctionSignature(inputs: <#T##[CandidType]#>, outputs: <#T##[CandidType]#>, isQuery: <#T##Bool#>, isOneWay: <#T##Bool#>)
+    private func parseFunctionSignature(_ stream: CandidStringStream) throws -> CandidFunctionSignature {        
+        let inputs = try parseFunctionParameters(stream)
+        try stream.expectNext(.rightArrow)
+        let outputs = try parseFunctionParameters(stream)
+        let query = try stream.takeIfNext(is: .text("query"))
+        let oneway = try stream.takeIfNext(is: .text("oneway"))
+        return CandidFunctionSignature(inputs: inputs, outputs: outputs, query: query, oneWay: oneway)
+    }
+    
+    private struct Parameter {
+        let index: Int
+        let name: String?
+        let type: CandidType
+    }
+    private func parseOptionalNamedTypes(_ stream: CandidStringStream, _ separatorToken: CandidParserToken, _ closingToken: CandidParserToken) throws -> [Parameter] {
+        var parameters: [Parameter] = []
+        while try stream.peekNext() != closingToken {
+            let name: String?
+            if try stream.peekSecondNext() == .colon {
+                // key : type
+                let keyToken = try stream.takeNext()
+                guard let stringKey = keyToken.textValue else {
+                    throw CandidParserError.expecting("anyString", butGot: keyToken.syntax)
+                }
+                name = stringKey
+                try stream.expectNext(.colon)
+            } else {
+                // type only, use sequentially-increasing labels
+                name = nil
+            }
+            
+            let keyType = try parseType(stream)
+            parameters.append(Parameter(index: parameters.count, name: name, type: keyType))
+            if (try stream.peekNext() == separatorToken) {
+                try stream.expectNext(separatorToken)
+            }
+        }
+        try stream.expectNext(closingToken)
+        return parameters
+    }
+    
+    private func parseFunctionParameters(_ stream: CandidStringStream) throws -> [CandidFunctionSignature.Parameter] {
+        try stream.expectNext(.openParenthesis)
+        let parameters = try parseOptionalNamedTypes(stream, .comma, .closeParenthesis)
+            .map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name, type: $0.type) }
+        return parameters
     }
 }
 
-private enum CandidParserToken: Equatable, CustomDebugStringConvertible {
+private enum CandidParserToken: Equatable {
     case text(String)         // text_without_spaces
     case quotedText(String)   // "quoted text with spaces"
     case openBracket
@@ -143,6 +163,8 @@ private enum CandidParserToken: Equatable, CustomDebugStringConvertible {
     case semicolon
     case colon
     case equals
+    case comma
+    case rightArrow
     
     var textValue: String? {
         switch self {
@@ -151,9 +173,10 @@ private enum CandidParserToken: Equatable, CustomDebugStringConvertible {
         }
     }
     
-    var debugDescription: String {
+    var syntax: String {
         switch self {
-        case .text(let s), .quotedText(let s): return s
+        case .text(let s): return s
+        case .quotedText(let s): return "\"\(s)\""
         case .openBracket: return "{"
         case .closeBracket: return "}"
         case .openParenthesis: return "("
@@ -161,18 +184,22 @@ private enum CandidParserToken: Equatable, CustomDebugStringConvertible {
         case .semicolon: return ";"
         case .colon: return ":"
         case .equals: return "="
+        case .comma: return ","
+        case .rightArrow: return "->"
         }
     }
     
     init(_ string: String) throws {
         switch string {
-        case "{": self = .openBracket
-        case "}": self = .closeBracket
-        case "(": self = .openParenthesis
-        case ")": self = .closeParenthesis
-        case ":": self = .colon
-        case ";": self = .semicolon
-        case "=": self = .equals
+        case Self.openBracket.syntax: self = .openBracket
+        case Self.closeBracket.syntax: self = .closeBracket
+        case Self.openParenthesis.syntax: self = .openParenthesis
+        case Self.closeParenthesis.syntax: self = .closeParenthesis
+        case Self.colon.syntax: self = .colon
+        case Self.semicolon.syntax: self = .semicolon
+        case Self.equals.syntax: self = .equals
+        case Self.comma.syntax: self = .comma
+        case Self.rightArrow.syntax:  self = .rightArrow
         default:
             let match = try Self.quotedString.firstMatch(in: string)
             if let quoted = match?["string"]?.substring {
@@ -204,7 +231,7 @@ private class CandidStringStream {
     func expectNext(_ token: CandidParserToken) throws {
         let next = try takeNext()
         guard next == token else {
-            throw CandidParserError.expecting(token.debugDescription, butGot: next.debugDescription)
+            throw CandidParserError.expecting(token.syntax, butGot: next.syntax)
         }
     }
     
@@ -220,6 +247,14 @@ private class CandidStringStream {
             throw CandidParserError.unexpectedEnd
         }
         return tokens[1]
+    }
+    
+    func takeIfNext(is token: CandidParserToken) throws -> Bool {
+        guard tokens.first == token else {
+            return false
+        }
+        try expectNext(token)
+        return true
     }
     
     private static func splitTokens(_ string: String) throws -> [CandidParserToken] {
@@ -240,5 +275,5 @@ private class CandidStringStream {
         return try CandidParserToken(String(token))
     }
     
-    private static let firstToken = try! Regex(#"\s*(?'token'"[^"]*"|->|[={}\(\):;]|[^\s:=;\(\)}{]+)\s*(?'rest'[\s\S]*)"#)
+    private static let firstToken = try! Regex(#"\s*(?'token'"[^"]*"|->|[={}\(\):;,]|[^\s:=;,\(\)}{]+)\s*(?'rest'[\s\S]*)"#)
 }

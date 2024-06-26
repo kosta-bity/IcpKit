@@ -171,13 +171,13 @@ private class CandidTypeTable {
         case .function(let functionSignature):
             var typeData: [CandidTypeData.EncodableType] = []
             typeData.append(.signed(CandidPrimitiveType.function.rawValue))
-            typeData.append(.unsigned(UInt(functionSignature.inputs.count)))
-            typeData.append(contentsOf: functionSignature.inputs.map { .signed(getReference(for: $0)) })
-            typeData.append(.unsigned(UInt(functionSignature.outputs.count)))
-            typeData.append(contentsOf: functionSignature.outputs.map { .signed(getReference(for: $0)) })
+            typeData.append(.unsigned(UInt(functionSignature.arguments.count)))
+            typeData.append(contentsOf: functionSignature.arguments.map { .signed(getReference(for: $0.type)) })
+            typeData.append(.unsigned(UInt(functionSignature.results.count)))
+            typeData.append(contentsOf: functionSignature.results.map { .signed(getReference(for: $0.type)) })
             var annotations: [CandidTypeData.EncodableType] = []
-            if functionSignature.isQuery { annotations.append(.unsigned(0x01)) }
-            if functionSignature.isOneWay { annotations.append(.unsigned(0x02)) }
+            if functionSignature.query { annotations.append(.unsigned(0x01)) }
+            if functionSignature.oneWay { annotations.append(.unsigned(0x02)) }
             typeData.append(.unsigned(UInt(annotations.count)))
             typeData.append(contentsOf: annotations)
             return addOrFind(CandidTypeData(types: typeData))

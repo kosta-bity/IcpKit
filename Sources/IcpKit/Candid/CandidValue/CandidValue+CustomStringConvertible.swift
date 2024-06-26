@@ -76,11 +76,11 @@ extension CandidVariant: CustomStringConvertible {
 
 extension CandidFunction: CustomStringConvertible {
     public var description: String {
-        let inputs = signature.inputs.map { "\($0)" }.joined(separator: ", ")
-        let outputs = signature.outputs.map { "\($0)" }.joined(separator: ", ")
+        let inputs = signature.arguments.map { "\($0)" }.joined(separator: ", ")
+        let outputs = signature.results.map { "\($0)" }.joined(separator: ", ")
         let annotations = [
-            signature.isQuery ? "Q" : "",
-            signature.isOneWay ? "OW" : "",
+            signature.query ? "Q" : "",
+            signature.oneWay ? "OW" : "",
         ].joined(separator: "|")
         let methodString: String
         if let method = method {
@@ -101,11 +101,11 @@ extension CandidType: CustomStringConvertible {
             let typesString = types.map { "\($0)" }.joined(separator: ", ")
             return "\(containerType)(\(typesString))"
         case .function(let signature):
-            let inputs = signature.inputs.map { "\($0)" }.joined(separator: ", ")
-            let outputs = signature.outputs.map { "\($0)" }.joined(separator: ", ")
+            let inputs = signature.arguments.map { "\($0)" }.joined(separator: ", ")
+            let outputs = signature.results.map { "\($0)" }.joined(separator: ", ")
             let annotations = [
-                signature.isQuery ? "Q" : "",
-                signature.isOneWay ? "OW" : "",
+                signature.query ? "Q" : "",
+                signature.oneWay ? "OW" : "",
             ].joined(separator: "|")
             return "function( \(annotations) (\(inputs)) -> (\(outputs)))"
 //        case .service(let methods):

@@ -49,6 +49,14 @@ extension CandidType {
     static func record(_ containedTypes: [Int: CandidType]) -> CandidType {
         .keyedContainer(.record, containedTypes.map { CandidKeyedItemType(hashedKey: $0.0, type: $0.1) }.keyHashSorted())
     }
+    
+    static func function(_ inputs: [CandidFunctionSignature.Parameter] = [], _ outputs: [CandidFunctionSignature.Parameter] = [], query: Bool = false, oneWay: Bool = false) -> CandidType {
+        .function(CandidFunctionSignature(inputs: inputs, outputs: outputs, query: query, oneWay: oneWay))
+    }
+    
+    static func function(_ inputs: [CandidType], _ outputs: [CandidType], query: Bool = false, oneWay: Bool = false) -> CandidType {
+        .function(CandidFunctionSignature(inputs: inputs, outputs: outputs, query: query, oneWay: oneWay))
+    }
 }
 
 private extension Sequence<CandidKeyedItemType> {

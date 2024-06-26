@@ -73,8 +73,8 @@ private class CandidDecodableTypeTable {
             return .function(.init(
                 inputs: try inputTypes.map { try candidType(for: $0, with: rawTypeData) },
                 outputs: try outputTypes.map { try candidType(for: $0, with: rawTypeData) },
-                isQuery: annotations.contains(0x01),
-                isOneWay: annotations.contains(0x02)
+                query: annotations.contains(0x01),
+                oneWay: annotations.contains(0x02)
             ))
             
 //        case .service(let methods):
