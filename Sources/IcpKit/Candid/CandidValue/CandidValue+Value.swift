@@ -109,6 +109,11 @@ extension CandidValue {
         return candidFunction
     }
     
+    var principalValue: CandidPrincipal? {
+        guard case .principal(let candidPrincipal) = self else { return nil }
+        return candidPrincipal
+    }
+    
 //    var serviceValue: CandidService? {
 //        guard case .service(let candidService) = self else { return nil }
 //        return candidService

@@ -85,7 +85,7 @@ extension CandidFunction: CustomStringConvertible {
         ].joined(separator: "|")
         let methodString: String
         if let method = method {
-            methodString = "\(method.principalId.hex).\(method.name)"
+            methodString = "\(method.principal.string).\(method.name)"
         } else {
             methodString = "none"
         }

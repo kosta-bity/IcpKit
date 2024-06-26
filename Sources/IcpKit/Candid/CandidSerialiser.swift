@@ -185,6 +185,7 @@ private class CandidTypeTable {
             var annotations: [CandidTypeData.EncodableType] = []
             if functionSignature.query { annotations.append(.unsigned(0x01)) }
             if functionSignature.oneWay { annotations.append(.unsigned(0x02)) }
+            if functionSignature.compositeQuery { annotations.append(.unsigned(0x03)) }
             typeData.append(.unsigned(UInt(annotations.count)))
             typeData.append(contentsOf: annotations)
             return addOrFind(CandidTypeData(types: typeData))
@@ -336,8 +337,9 @@ private indirect enum CandidEncodableValue {
                 return Data([0x00])
             }
             let methodName = Data(method.name.utf8)
-            return Data([0x01]) + encodeUnsigned(UInt(method.principalId.count)) + method.principalId
-                 + Data([0x01]) + encodeUnsigned(UInt(methodName.count)) + methodName
+            return Data([0x01]) +   // tag method present
+                  Data([0x01]) + encodeUnsigned(UInt(method.principal.bytes.count)) + method.principal.bytes    // same as service
+                  + encodeUnsigned(UInt(methodName.count)) + methodName
           
         case .principal(_, let principal):
             guard let principal = principal else {

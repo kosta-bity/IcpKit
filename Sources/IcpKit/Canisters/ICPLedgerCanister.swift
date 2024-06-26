@@ -102,7 +102,7 @@ public enum ICPLedgerCanister {
     }
     
     private static func queryArchivedBlock(_ certification: ICPRequestCertification = .certified, _ method: CandidFunction.ServiceMethod, start: UInt64, length: UInt64, _ client: ICPRequestClient) async throws -> [ICPBlock] {
-        let archivePrincipal = ICPPrincipal(method.principalId)
+        let archivePrincipal = ICPPrincipal(method.principal.bytes)
         let queryArchiveMethod = ICPMethod(
             canister: archivePrincipal,
             methodName: method.name,

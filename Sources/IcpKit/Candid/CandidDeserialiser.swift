@@ -71,10 +71,11 @@ private class CandidDecodableTypeTable {
             
         case .functionSignature(let inputTypes, let outputTypes, let annotations):
             return .function(.init(
-                inputs: try inputTypes.map { try candidType(for: $0, with: rawTypeData) },
-                outputs: try outputTypes.map { try candidType(for: $0, with: rawTypeData) },
+                try inputTypes.map { try candidType(for: $0, with: rawTypeData) },
+                try outputTypes.map { try candidType(for: $0, with: rawTypeData) },
                 query: annotations.contains(0x01),
-                oneWay: annotations.contains(0x02)
+                oneWay: annotations.contains(0x02),
+                compositeQuery: annotations.contains(0x03)
             ))
             
 //        case .service(let methods):
@@ -264,7 +265,7 @@ private extension CandidValue {
                     throw CandidDeserialisationError.invalidUtf8String
                 }
                 
-                serviceMethod = CandidFunction.ServiceMethod(name: name, principalId: principalId)
+                serviceMethod = CandidFunction.ServiceMethod(name: name, principal: CandidPrincipal(principalId))
                 
             } else {
                 serviceMethod = nil

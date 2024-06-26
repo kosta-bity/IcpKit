@@ -34,4 +34,16 @@ extension CandidValue {
     static func principal(_ bytes: Data) -> CandidValue {
         return .principal(CandidPrincipal(bytes))
     }
+    
+    static func function(_ inputs: [CandidFunctionSignature.Parameter], _ outputs: [CandidFunctionSignature.Parameter], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) -> CandidValue {
+        .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: nil))
+    }
+    
+    static func function(_ inputs: [CandidType] = [], _ outputs: [CandidType] = [], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) -> CandidValue {
+        .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: nil))
+    }
+    
+    static func function(_ inputs: [CandidType] = [], _ outputs: [CandidType] = [], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false, _ principal: String, _ methodName: String) throws -> CandidValue {
+        .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: .init(name: methodName, principal: try CandidPrincipal(principal))))
+    }
 }

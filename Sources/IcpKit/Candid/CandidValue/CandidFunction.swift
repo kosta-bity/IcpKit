@@ -13,7 +13,7 @@ public struct CandidFunction: Equatable {
     
     public struct ServiceMethod: Equatable {
         public let name: String
-        public let principalId: Data
+        public let principal: CandidPrincipal
     }
 }
 
@@ -38,20 +38,30 @@ public struct CandidFunctionSignature: Equatable {
     /// meaning it does not alter the state of its canister, and that
     /// it can be invoked using the cheaper “query call” mechanism.
     public let query: Bool
+    
     /// indicates that this function returns no response, intended for fire-and-forget scenarios.
     public let oneWay: Bool
     
-    public init(inputs: [Parameter], outputs: [Parameter], query: Bool, oneWay: Bool) {
+    /// composite_query is a special query function that has IC-specific features and limitations:
+    ///  - composite_query function can only call other composite_query and query functions.
+    ///  - composite_query function can only be called from other composite_query functions (not callable from query or update functions) and from outside of IC. Therefore, query is not a subtype of composite_query.
+    ///  - composite_query cannot be made cross-subnets.
+    ///  - All these limitations are temporary due to the implementation. Eventually, query and composite_query functions will become the same thing.
+    public let compositeQuery: Bool
+    
+    public init(_ inputs: [Parameter], _ outputs: [Parameter], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) {
         self.arguments = inputs.sorted { $0.index < $1.index }
         self.results = outputs.sorted { $0.index < $1.index }
         self.query = query
         self.oneWay = oneWay
+        self.compositeQuery = compositeQuery
     }
     
-    public init(inputs: [CandidType], outputs: [CandidType], query: Bool, oneWay: Bool) {
+    public init(_ inputs: [CandidType], _ outputs: [CandidType], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) {
         self.arguments = inputs.enumerated().map { Parameter(index: $0.offset, name: nil, type: $0.element) }
         self.results = outputs.enumerated().map { Parameter(index: $0.offset, name: nil, type: $0.element) }
         self.query = query
         self.oneWay = oneWay
+        self.compositeQuery = compositeQuery
     }
 }

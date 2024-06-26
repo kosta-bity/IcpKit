@@ -110,7 +110,8 @@ private extension CandidParser {
         let outputs = try parseFunctionParameters(stream)
         let query = try stream.takeIfNext(is: .text("query"))
         let oneway = try stream.takeIfNext(is: .text("oneway"))
-        return CandidFunctionSignature(inputs: inputs, outputs: outputs, query: query, oneWay: oneway)
+        let compositeQuery = try stream.takeIfNext(is: .text("composite_query"))
+        return CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneway, compositeQuery: compositeQuery)
     }
     
     private struct Parameter {

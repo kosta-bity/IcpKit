@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct CandidService: Equatable {
-    let methods: [Method]
-    let principalId: Data?
+public struct CandidService: Equatable {
+    public let methods: [Method]
+    public let principalId: CandidPrincipal?
     
-    struct Method: Equatable {
-        let name: String
-        let functionSignature: CandidFunctionSignature
+    public struct Method: Equatable {
+        public let name: String
+        public let functionSignature: CandidFunctionSignature
     }
 }
