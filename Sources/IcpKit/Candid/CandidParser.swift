@@ -55,7 +55,7 @@ private extension CandidParser {
         case CandidPrimitiveType.record.syntax: return .record(try parseRecordKeyedTypes(stream))
         case CandidPrimitiveType.variant.syntax: return .variant(try parseVariantKeyedTypes(stream))
         case CandidPrimitiveType.function.syntax: return .function(try parseFunctionSignature(stream))
-            
+        case CandidPrimitiveType.principal.syntax: return .principal
         default:
             throw CandidParserError.unrecognisedType(token.syntax)
         }

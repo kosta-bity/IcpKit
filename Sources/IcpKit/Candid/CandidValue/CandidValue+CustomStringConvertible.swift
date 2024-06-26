@@ -33,6 +33,7 @@ extension CandidValue: CustomStringConvertible {
         case .record(let dictionary): return "record(\(dictionary))"
         case .variant(let variant): return "variant(\(variant))"
         case .function(let function): return "function(\(function))"
+        case .principal(let principal): return "principal \(principal?.string ?? "")"
         //case .service: return "service()"
         }
     }
@@ -140,6 +141,7 @@ extension CandidPrimitiveType: CustomStringConvertible {
         case .record: return "record"
         case .variant: return "variant"
         case .function: return "function"
+        case .principal: return "principal"
         //case .service: return "service"
         }
     }

@@ -1,14 +1,13 @@
 //
-//  ICPPrincipal.swift
-//  Runner
+//  File.swift
+//  
 //
-//  Created by Konstantinos Gaitanis on 19.04.23.
+//  Created by Konstantinos Gaitanis on 26.06.24.
 //
 
 import Foundation
 
-/// from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal
-public struct ICPPrincipal: Equatable {
+public struct CandidPrincipal: Equatable {
     public let bytes: Data
     public let string: String
     

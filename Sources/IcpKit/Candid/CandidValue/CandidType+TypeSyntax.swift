@@ -50,6 +50,7 @@ extension CandidPrimitiveType {
         case .record: return "record"
         case .variant: return "variant"
         case .function: return "func"
+        case .principal: return "principal"
             //case .service: return "service:"
         }
     }

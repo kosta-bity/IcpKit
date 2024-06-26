@@ -25,6 +25,8 @@ extension CandidType {
     static let text: CandidType = .primitive(.text)
     static let reserved: CandidType = .primitive(.reserved)
     static let empty: CandidType = .primitive(.empty)
+    static let principal: CandidType = .primitive(.principal)
+    
     static func option(_ containedType: CandidType) -> CandidType { .container(.option, containedType) }
     static func vector(_ containedType: CandidType) -> CandidType { .container(.vector, containedType) }
     

@@ -274,6 +274,17 @@ private extension CandidValue {
                 method: serviceMethod
             ))
             
+        case .principal:
+            let isPresent = try stream.readNextByte() == 1
+            if isPresent {
+                let nBytes: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                let bytes = try (0..<nBytes).map { _ in
+                    try UInt8.readFrom(stream)
+                }
+                return .principal(Data(bytes))
+            } else {
+                return .principal(nil)
+            }
             
 //        case .service:
 //            let isPresent = try stream.readNextByte() == 1

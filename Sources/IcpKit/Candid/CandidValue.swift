@@ -33,37 +33,38 @@ public indirect enum CandidValue: Equatable {
     case record(CandidDictionary)
     case variant(CandidVariant)
     case function(CandidFunction)
+    case principal(CandidPrincipal?)
     //case service(CandidService)
-    //case principal(CandidPrincipal)  ?
 }
 
 // MARK: CandidType
 public extension CandidValue {
     var candidType: CandidType {
         switch self {
-        case .null: return .primitive(.null)
-        case .bool: return .primitive(.bool)
-        case .natural: return .primitive(.natural)
-        case .integer: return .primitive(.integer)
-        case .natural8: return .primitive(.natural8)
-        case .natural16: return .primitive(.natural16)
-        case .natural32: return .primitive(.natural32)
-        case .natural64: return .primitive(.natural64)
-        case .integer8: return .primitive(.integer8)
-        case .integer16: return .primitive(.integer16)
-        case .integer32: return .primitive(.integer32)
-        case .integer64: return .primitive(.integer64)
-        case .float32: return .primitive(.float32)
-        case .float64: return .primitive(.float64)
-        case .text: return .primitive(.text)
-        case .reserved: return .primitive(.reserved)
-        case .empty: return .primitive(.empty)
-        case .blob: return .container(.vector, .primitive(.natural8))
-        case .option(let option): return .container(.option, option.containedType)
-        case .vector(let vector): return .container(.vector, vector.containedType)
-        case .record(let dictionary): return .keyedContainer(.record, dictionary.candidTypes)
-        case .variant(let variant): return .keyedContainer(.variant, variant.candidTypes)
+        case .null: return .null
+        case .bool: return .bool
+        case .natural: return .natural
+        case .integer: return .integer
+        case .natural8: return .natural8
+        case .natural16: return .natural16
+        case .natural32: return .natural32
+        case .natural64: return .natural64
+        case .integer8: return .integer8
+        case .integer16: return .integer16
+        case .integer32: return .integer32
+        case .integer64: return .integer64
+        case .float32: return .float32
+        case .float64: return .float64
+        case .text: return .text
+        case .reserved: return .reserved
+        case .empty: return .empty
+        case .blob: return .vector(.natural8)
+        case .option(let option): return .option(option.containedType)
+        case .vector(let vector): return .vector(vector.containedType)
+        case .record(let dictionary): return .record(dictionary.candidTypes)
+        case .variant(let variant): return .variant(variant.candidTypes)
         case .function(let function): return .function(function.signature)
+        case .principal: return .principal
         //case .service(let service): return .service(service.methods)
         }
     }

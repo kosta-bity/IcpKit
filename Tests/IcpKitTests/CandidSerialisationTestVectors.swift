@@ -68,6 +68,9 @@ enum CandidSerialisationTestVectors {
             value: ("b", .natural8(15)))),
          // 2 types in table, (0) vector, nat8, (1) variant, 3 keys, leb(hash("a")), bool, leb(hash("b")), nat8, leb(hash("c")), type 0, 1 candidValue, type 1, row 1, 15
          [2, 0x6D, 0x7B, 0x6B, 3, 97, 0x7E, 98, 0x7B, 99, 0, 1, 1, 1, 0x0f]),
+        (try! .principal("aaaaa-aa"), [0x00,0x01,0x68,0x01,0x00]),
+        (try! .principal("w7x7r-cok77-xa"), [0x00,0x01,0x68,0x01,0x03, 0xca, 0xff, 0xee]),
+        (try! .principal("2chl6-4hpzw-vqaaa-aaaaa-c"), [0x00,0x01,0x68,0x01,0x09, 0xef, 0xcd, 0xab, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]),
     ]
     
     static let multipleValuesTestVectors: [([CandidValue], [UInt8])] = [

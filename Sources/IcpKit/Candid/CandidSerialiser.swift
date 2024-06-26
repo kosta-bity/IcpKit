@@ -58,6 +58,13 @@ private extension CandidSerialiser {
         case .text(let string): return .text(string)
         case .reserved: return .reserved
         case .empty: return .empty
+        case .principal(let principal): 
+            let typeReference = typeTable.getReference(for: .principal)
+            if let principal = principal {
+                return .principal(typeRef: typeReference, principal.bytes)
+            } else {
+                return .principal(typeRef: typeReference, nil)
+            }
             
         case .option(let option):
             let typeReference = typeTable.getReference(for: value.candidType)
@@ -248,6 +255,7 @@ private indirect enum CandidEncodableValue {
     case variant(typeRef: Int, VariantEncodableItem)
     case function(typeRef: Int, CandidFunction.ServiceMethod?)
     case service(typeRef: Int, Data?)
+    case principal(typeRef: Int, Data?)
     
     func encodeType() -> Data {
         let encodeSigned: (Int) -> Data = ICPCryptography.Leb128.encodeSigned
@@ -275,6 +283,7 @@ private indirect enum CandidEncodableValue {
              .record(let typeReference, _),
              .variant(let typeReference, _),
              .function(let typeReference, _),
+             .principal(let typeReference, _),
              .service(let typeReference, _):
             return encodeSigned(typeReference)
         }
@@ -329,6 +338,12 @@ private indirect enum CandidEncodableValue {
             let methodName = Data(method.name.utf8)
             return Data([0x01]) + encodeUnsigned(UInt(method.principalId.count)) + method.principalId
                  + Data([0x01]) + encodeUnsigned(UInt(methodName.count)) + methodName
+          
+        case .principal(_, let principal):
+            guard let principal = principal else {
+                return Data([0x00])
+            }
+            return Data([0x01] + encodeUnsigned(UInt(principal.bytes.count)) + principal.bytes)
             
         case .service(_, let principalId):
             guard let principalId = principalId else {

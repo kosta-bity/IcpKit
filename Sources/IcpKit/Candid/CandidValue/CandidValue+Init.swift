@@ -26,4 +26,12 @@ extension CandidValue {
     static func vector(_ containedType: CandidType) -> CandidValue {
         return .vector(CandidVector(containedType))
     }
+    
+    static func principal(_ string: String) throws -> CandidValue {
+        return .principal(try CandidPrincipal(string))
+    }
+    
+    static func principal(_ bytes: Data) -> CandidValue {
+        return .principal(CandidPrincipal(bytes))
+    }
 }

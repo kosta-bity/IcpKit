@@ -29,6 +29,7 @@ final class CandidParserTests: XCTestCase {
         XCTAssertEqual(try parser.parseType("text"), .text)
         XCTAssertEqual(try parser.parseType("reserved"), .reserved)
         XCTAssertEqual(try parser.parseType("empty"), .empty)
+        XCTAssertEqual(try parser.parseType("principal"), .principal)
         
         XCTAssertThrowsError(try parser.parseType(""))
         XCTAssertThrowsError(try parser.parseType("\t"))
@@ -89,10 +90,7 @@ final class CandidParserTests: XCTestCase {
             XCTFail()
             return
         }
-        XCTAssertEqual(signature.arguments[0].name, "dividend")
-        XCTAssertEqual(signature.arguments[1].name, "divisor")
-        XCTAssertEqual(signature.results[0].name, "div")
-        XCTAssertEqual(signature.results[1].name, "mod")
+        XCTAssertEqual(signature.arguments.map { $0.name }, ["dividend", "divisor"])
+        XCTAssertEqual(signature.results.map { $0.name }, ["div", "mod"])
     }
 }
-//  .function([("a", .text)])
