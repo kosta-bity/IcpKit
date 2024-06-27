@@ -7,11 +7,34 @@
 
 import Foundation
 
-public struct CandidInterfaceDefinition {
-    public struct ServiceDefinition {
+public struct CandidInterfaceDefinition: Equatable {
+    public struct ServiceDefinition: Equatable {
+        public enum SignatureType: Equatable {
+            case concrete(CandidServiceSignature)
+            case reference(String)
+        }
+        
         public let name: String?
         public let initialisationArguments: [CandidFunctionSignature.Parameter]?
-        public let signature: CandidServiceSignature
+        public let signature: SignatureType
+        
+        init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]?, signature: CandidServiceSignature) {
+            self.name = name
+            self.initialisationArguments = initialisationArguments
+            self.signature = .concrete(signature)
+        }
+        
+        init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]?, signatureReference: String) {
+            self.name = name
+            self.initialisationArguments = initialisationArguments
+            self.signature = .reference(signatureReference)
+        }
+        
+        init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]?, signature: SignatureType) {
+            self.name = name
+            self.initialisationArguments = initialisationArguments
+            self.signature = signature
+        }
     }
     
     public let namedTypes: [String: CandidType]
@@ -19,7 +42,7 @@ public struct CandidInterfaceDefinition {
     
     public func isResolved() -> Bool {
         namedTypes.values.allSatisfy { $0.isResolved(namedTypes) } &&
-        service?.signature.isResolved(namedTypes) ?? true
+        service?.isResolved(namedTypes) ?? true
     }
 }
 
@@ -46,5 +69,26 @@ private extension CandidFunctionSignature {
 private extension CandidServiceSignature {
     func isResolved(_ storage: [String: CandidType]) -> Bool {
         methods.allSatisfy { $0.functionSignature.isResolved(storage) }
+    }
+}
+
+private extension CandidInterfaceDefinition.ServiceDefinition {
+    func isResolved(_ storage: [String: CandidType]) -> Bool {
+        (initialisationArguments ?? []).allSatisfy { $0.type.isResolved(storage) } &&
+        signature.isResolved(storage)
+    }
+}
+
+private extension CandidInterfaceDefinition.ServiceDefinition.SignatureType {
+    func isResolved(_ storage: [String: CandidType]) -> Bool {
+        switch self {
+        case .concrete(let candidServiceSignature): return candidServiceSignature.isResolved(storage)
+        case .reference(let name):
+            guard let stored = storage[name],
+                  case .service = stored else {
+                return false
+            }
+            return true
+        }
     }
 }

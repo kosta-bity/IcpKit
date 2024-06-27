@@ -36,18 +36,19 @@ final class CandidParserTests: XCTestCase {
         }
     }
     
-    func testNamedTypes() throws {
-        let did = try parser.parseInterfaceDescription(didFile)
-        XCTAssertTrue(did.isResolved())
+    func testDidFiles() throws {
+        for (did, namedTypes, service) in CandidParserTestVectors.didFiles {
+            let interface = try parser.parseInterfaceDescription(did)
+            XCTAssertEqual(interface.namedTypes, namedTypes)
+            XCTAssertEqual(interface.service, service)
+            XCTAssertTrue(interface.isResolved())
+        }
+    }
+    
+    func testUnresolvedDidFiles() throws {
+        for did in CandidParserTestVectors.unresolvedDidFiles {
+            let interface = try parser.parseInterfaceDescription(did)
+            XCTAssertFalse(interface.isResolved(), did)
+        }
     }
 }
-
-let didFile = """
-type A = nat;
-type B = vec A;
-type C = service { "foo": (A) -> (B); };
-type stream = opt record {head : nat; next : func () -> (stream)};
-type node = record {head : nat; tail : list};
-type list = opt node;
-service add: (A) -> C;
-"""

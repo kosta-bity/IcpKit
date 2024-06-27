@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import IcpKit
+@testable import IcpKit
 
 enum CandidParserTestVectors {
     static let vectors: [(String, CandidType)] = [
@@ -87,12 +87,41 @@ enum CandidParserTestVectors {
         "opt vec",
     ]
     
-//     ("service foo: {}", .service("foo")),
-//     ("service address_book : { set_address: (name : text, addr : nat) -> (); get_address: (name : text) -> (opt nat) query; }",
-//        .service("address_book", [
-//            .init("set_address", [("name", .text), ("addr", .natural)], []),
-//            .init("get_address", [("name", .text)], [(nil, .option(.natural))], query: true),
-//        ])),
-//    ("service : (text) -> {}", .service(nil, [.init(index: 0, name: nil, type: .text)], [])),
-//    ("service foo : (arg:text) -> {}", .service("foo", [.init(index: 0, name: "arg", type: .text)], []))
+    static let didFiles: [(String, [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
+        ("", [:], nil),
+        ("type A = nat;", ["A": .natural], nil),
+        ("type A = nat;type B = vec A;", ["A": .natural, "B": .vector(.named("A"))], nil),
+        ("type stream = opt record {head : nat; next : func () -> (stream)};", ["stream": .option(.record([
+            .init("head", .natural), .init("next", .function([], [.named("stream")]))
+        ]))], nil),
+        ("type node = record {head : nat; tail : list};type list = opt node;", [
+            "node": .record([.init("head", .natural), .init("tail", .named("list"))]),
+            "list": .option(.named("node")),
+        ], nil),
+        (#"type A = nat;type B = vec A;type C = service { "foo": (A) -> (B); };"#, [
+            "A": .natural,
+            "B": .vector(.named("A")),
+            "C": .service([.init("foo", [.named("A")], [.named("B")])])
+        ], nil),
+        ("service: {};", [:], .init(name: nil, initialisationArguments: nil, signature: .init([]))),
+        ("service:(nat)-> {};", [:], .init(name: nil, initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signature: .init([]))),
+        ("service:()-> {};", [:], .init(name: nil, initialisationArguments: [], signature: .init([]))),
+        ("service:(nat:nat)-> {};", [:], .init(name: nil, initialisationArguments: [.init(index: 0, name: "nat", type: .natural)], signature: .init([]))),
+        ("service add:(nat)-> {foo: ()->()query;};", [:], .init(name: "add", initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signature: .init([.init("foo", query: true)]))),
+        ("type s = service{};service: s;", ["s":.service()], .init(name: nil, initialisationArguments: nil, signatureReference: "s")),
+        ("type s = service{};service foo: (nat)-> s;", ["s":.service()], .init(name: "foo", initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signatureReference: "s")),
+    ]
+    
+    static let unresolvedDidFiles: [String] = [
+        "type B = vec A;",
+        "type B = A;",
+        "type B = record { a: A };",
+        "type B = func (A) -> ();",
+        "type B = func () -> (A);",
+        "type B = service { foo: (A) -> (); };",
+        "service: B;",
+        "type A = nat; service: A;",
+        "service: (B) -> {};",
+        "service: { foo: (B) -> (); };",
+    ]
 }

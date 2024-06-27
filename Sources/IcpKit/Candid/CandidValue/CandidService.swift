@@ -22,7 +22,7 @@ public struct CandidServiceSignature: Equatable {
             self.functionSignature = functionSignature
         }
         
-        public init(_ name: String, _ arguments: [CandidType], _ results: [CandidType], query: Bool = false, oneway: Bool = false, compositeQuery: Bool = false) {
+        public init(_ name: String, _ arguments: [CandidType] = [], _ results: [CandidType] = [], query: Bool = false, oneway: Bool = false, compositeQuery: Bool = false) {
             self.name = name
             self.functionSignature = CandidFunctionSignature(arguments, results, query: query, oneWay: oneway, compositeQuery: compositeQuery)
         }

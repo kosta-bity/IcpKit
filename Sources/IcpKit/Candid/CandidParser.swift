@@ -223,19 +223,15 @@ private extension CandidParser {
             initialisationParameters = nil
         }
         
-        let serviceSignature: CandidServiceSignature
+        let serviceSignature: CandidInterfaceDefinition.ServiceDefinition.SignatureType
         if try stream.peekNext() == .openBracket {
-            serviceSignature = try parseServiceSignature(stream)
+            serviceSignature = .concrete(try parseServiceSignature(stream))
         } else {
             let typeNameToken = try stream.takeNext()
             guard case .text(let typeName) = typeNameToken else {
                 throw CandidParserError.expecting("service reference name", butGot: typeNameToken.syntax)
             }
-            let storedType = try storage.get(typeName)
-            guard case .service(let storedServiceSignature) = storedType else {
-                throw CandidParserError.expecting("service", butGot: storedType.syntax)
-            }
-            serviceSignature = storedServiceSignature
+            serviceSignature = .reference(typeName)
         }
         try stream.expectNext(.semicolon)
         
