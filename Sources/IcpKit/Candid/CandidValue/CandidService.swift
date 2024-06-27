@@ -32,14 +32,9 @@ public struct CandidServiceSignature: Equatable {
             self.functionSignature = CandidFunctionSignature(arguments, results, query: query, oneWay: oneway, compositeQuery: compositeQuery)
         }
     }
-    
-    public let initialisationArguments: [CandidFunctionSignature.Parameter]?
-    public let name: String?
     public let methods: [Method]
     
-    public init(initialisationArguments: [CandidFunctionSignature.Parameter]?, name: String?, methods: [Method]) {
-        self.initialisationArguments = initialisationArguments
-        self.name = name
+    public init(_ methods: [Method]) {
         self.methods = methods
     }
 }

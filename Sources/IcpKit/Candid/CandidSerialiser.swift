@@ -203,6 +203,8 @@ private class CandidTypeTable {
                 ]}
             )
             return addOrFind(typeData)
+            
+        case .named: fatalError()
         }
     }
     

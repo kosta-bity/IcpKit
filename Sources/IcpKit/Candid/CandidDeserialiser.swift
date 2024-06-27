@@ -88,7 +88,7 @@ private class CandidDecodableTypeTable {
                     functionSignature: signature
                 )
             }
-            return .service(CandidServiceSignature(initialisationArguments: nil, name: nil, methods: serviceMethods))
+            return .service(CandidServiceSignature(serviceMethods))
         }
     }
     
@@ -299,7 +299,7 @@ private extension CandidValue {
             }
             return .service(CandidService(
                 principal: principal,
-                signature: .init(initialisationArguments: nil, name: nil, methods: type.serviceSignature!.methods)
+                signature: CandidServiceSignature(type.serviceSignature!.methods)
             ))
         }
         
@@ -314,6 +314,7 @@ private extension CandidType {
              .keyedContainer(let primitive, _): return primitive
         case .function: return .function
         case .service: return .service
+        case .named: fatalError()
         }
     }
     

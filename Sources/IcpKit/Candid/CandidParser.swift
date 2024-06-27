@@ -7,18 +7,90 @@
 
 import Foundation
 
-enum CandidParserError: Error {
+public enum CandidParserError: Error {
     case unrecognisedType(String)
     case unexpectedEnd
     case expecting(String, butGot: String)
     case unexpectedToken(String)
+    case typeAlreadyDefined(String)
+    case referencedTypeNotDefined(String)
 }
 
 /// https://internetcomputer.org/docs/current/references/candid-ref#supported-types
-class CandidParser {
-    func parseType(_ input: String) throws -> CandidType {
+/// https://github.com/dfinity/candid/blob/master/spec/Candid.md
+/// An interface description consists of a sequence of imports and type definitions, possibly followed by a service declaration. A service declaration names and specifies a service actor by specifying an actor type. The actor type may also be given by referring to the name of a type definition for an actor reference type.
+/// The optional name given to the service in an interface description is immaterial; it only serves as documentation.
+///
+/// The Grammar used:
+/// <prog>  ::= <def>;* <actor>?
+/// <def>   ::= type <id> = <datatype> | import service? <text>
+/// <actor> ::= service <id>? : (<tuptype> ->)? (<actortype> | <id>) ;?
+///
+/// <actortype> ::= { <methtype>;* }
+/// <methtype>  ::= <name> : (<functype> | <id>)
+/// <functype>  ::= <tuptype> -> <tuptype> <funcann>*
+/// <funcann>   ::= oneway | query | composite_query
+/// <tuptype>   ::= ( <argtype>,* )
+/// <argtype>   ::= <datatype>
+/// <fieldtype> ::= <nat> : <datatype>
+/// <datatype>  ::= <id> | <primtype> | <comptype>
+/// <comptype>  ::= <constype> | <reftype>
+///
+/// <primtype>  ::=
+/// | <numtype>
+/// | bool
+/// | text
+/// | null
+/// | reserved
+/// | empty
+/// | principal
+///
+/// <numtype>  ::=
+/// | nat | nat8 | nat16 | nat32 | nat64
+/// | int | int8 | int16 | int32 | int64
+/// | float32 | float64
+///
+/// <constype>  ::=
+/// | opt <datatype>
+/// | vec <datatype>
+/// | record { <fieldtype>;* }
+/// | variant { <fieldtype>;* }
+///
+/// <reftype>  ::=
+/// | func <functype>
+/// | service <actortype>
+///
+/// <name> ::= <id> | <text>
+public class CandidParser {
+    public init() {}
+    
+    func parseSingleType(_ input: String) throws -> CandidType {
         let stream = try CandidStringStream(string: input)
-        return try parseType(stream)
+        return try parseCandidType(stream)
+    }
+    
+    public func parseInterfaceDescription(_ input: String) throws -> CandidInterfaceDefinition {
+        let stream = try CandidStringStream(string: input)
+        let storage = NamedTypeStorage()
+        while try !stream.tokens.isEmpty && stream.peekNext() != .text(CandidPrimitiveType.service.syntax) {
+            if try stream.takeIfNext(is: .text("type")) {
+                let (name, type) = try parseNamedType(stream)
+                try storage.add(name, type)
+                
+            } else if try stream.takeIfNext(is: .text("import")) {
+                throw CandidParserError.unexpectedToken("import")
+                
+            } else {
+                throw CandidParserError.expecting("'type', 'import' or 'service'", butGot: try stream.takeNext().syntax)
+            }
+        }
+        let service: CandidInterfaceDefinition.ServiceDefinition?
+        if try stream.takeIfNext(is: .text(CandidPrimitiveType.service.syntax)) {
+            service = try parseServiceDefinition(stream, storage)
+        } else {
+            service = nil
+        }
+        return CandidInterfaceDefinition(namedTypes: storage.namedTypes, service: service)
     }
     
 //    func parseValue(_ input: String) throws -> CandidValue {
@@ -27,7 +99,19 @@ class CandidParser {
 }
 
 private extension CandidParser {
-    func parseType(_ stream: CandidStringStream) throws -> CandidType {
+    /// <def>   ::= type <id> = <datatype> | import service? <text>
+    func parseNamedType(_ stream: CandidStringStream) throws -> (String, CandidType) {
+        let nameToken = try stream.takeNext()
+        guard let name = nameToken.textValue else {
+            throw CandidParserError.expecting("type name", butGot: nameToken.syntax)
+        }
+        try stream.expectNext(.equals)
+        let type = try parseCandidType(stream)
+        try stream.expectNext(.semicolon)
+        return (name, type)
+    }
+    
+    func parseCandidType(_ stream: CandidStringStream) throws -> CandidType {
         let token = try stream.takeNext()
         guard case .text(let type) = token else {
             throw CandidParserError.unrecognisedType(token.syntax)
@@ -50,15 +134,14 @@ private extension CandidParser {
         case CandidPrimitiveType.text.syntax: return .text
         case CandidPrimitiveType.reserved.syntax: return .reserved
         case CandidPrimitiveType.empty.syntax: return .empty
-        case CandidPrimitiveType.option.syntax: return .option(try parseType(stream))
-        case CandidPrimitiveType.vector.syntax: return .vector(try parseType(stream))
+        case CandidPrimitiveType.principal.syntax: return .principal
+        case CandidPrimitiveType.option.syntax: return .option(try parseCandidType(stream))
+        case CandidPrimitiveType.vector.syntax: return .vector(try parseCandidType(stream))
         case CandidPrimitiveType.record.syntax: return .record(try parseRecordKeyedTypes(stream))
         case CandidPrimitiveType.variant.syntax: return .variant(try parseVariantKeyedTypes(stream))
         case CandidPrimitiveType.function.syntax: return .function(try parseFunctionSignature(stream))
-        case CandidPrimitiveType.principal.syntax: return .principal
         case CandidPrimitiveType.service.syntax: return .service(try parseServiceSignature(stream))
-        default:
-            throw CandidParserError.unrecognisedType(token.syntax)
+        default: return .named(type)
         }
     }
     
@@ -87,7 +170,7 @@ private extension CandidParser {
             }
             nextToken = try stream.takeNext()
             if nextToken == .colon {
-                let keyType = try parseType(stream)
+                let keyType = try parseCandidType(stream)
                 cases.append(CandidKeyedItemType(key, keyType))
                 nextToken = try stream.takeNext()
             } else {
@@ -100,12 +183,17 @@ private extension CandidParser {
         return cases
     }
     
-    // func () -> ()
-    // func (text) -> (text)
-    // func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);
-    // func () -> (int) query
-    // func (func (int) -> ()) -> ()
-    private func parseFunctionSignature(_ stream: CandidStringStream) throws -> CandidFunctionSignature {        
+    /// func () -> ()
+    /// func (text) -> (text)
+    /// func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);
+    /// func () -> (int) query
+    /// func (func (int) -> ()) -> ()
+    ///
+    /// func <functype>
+    /// <functype>  ::= <tuptype> -> <tuptype> <funcann>*
+    /// <funcann>   ::= oneway | query | composite_query
+    /// <tuptype>   ::= ( <argtype>,* )
+    private func parseFunctionSignature(_ stream: CandidStringStream) throws -> CandidFunctionSignature {
         let inputs = try parseFunctionParameters(stream)
         try stream.expectNext(.rightArrow)
         let outputs = try parseFunctionParameters(stream)
@@ -115,19 +203,9 @@ private extension CandidParser {
         return CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneway, compositeQuery: compositeQuery)
     }
     
-    // service address_book : {
-    //     set_address: (name : text, addr : address) -> ();
-    //     get_address: (name : text) -> (opt address) query;
-    // }
-    // service : {
-    //    reverse : (text) -> (text);
-    //    divMod : (dividend : nat, divisor : nat) -> (div : nat, mod : nat);
-    // }
-    // service : (InitArgs) -> {
-    //    authorize : (principal, Auth) -> (success : bool);
-    // };
-    // type A = service { f : () -> () };
-    private func parseServiceSignature(_ stream: CandidStringStream) throws -> CandidServiceSignature {
+    /// <actor> ::= service <id>? : (<tuptype> ->)? (<actortype> | <id>) ;?
+    /// <actortype> ::= { <methtype>;* }
+    private func parseServiceDefinition(_ stream: CandidStringStream, _ storage: NamedTypeStorage) throws -> CandidInterfaceDefinition.ServiceDefinition {
         let serviceName: String?
         if try stream.peekNext().textValue != nil {
             serviceName = try stream.takeNext().textValue!
@@ -145,11 +223,44 @@ private extension CandidParser {
             initialisationParameters = nil
         }
         
-        let methods = try parseServiceMethods(stream)
-        return CandidServiceSignature(initialisationArguments: initialisationParameters, name: serviceName, methods: methods)
+        let serviceSignature: CandidServiceSignature
+        if try stream.peekNext() == .openBracket {
+            serviceSignature = try parseServiceSignature(stream)
+        } else {
+            let typeNameToken = try stream.takeNext()
+            guard case .text(let typeName) = typeNameToken else {
+                throw CandidParserError.expecting("service reference name", butGot: typeNameToken.syntax)
+            }
+            let storedType = try storage.get(typeName)
+            guard case .service(let storedServiceSignature) = storedType else {
+                throw CandidParserError.expecting("service", butGot: storedType.syntax)
+            }
+            serviceSignature = storedServiceSignature
+        }
+        try stream.expectNext(.semicolon)
+        
+        return CandidInterfaceDefinition.ServiceDefinition(
+            name: serviceName,
+            initialisationArguments: initialisationParameters, 
+            signature: serviceSignature)
     }
     
-    private func parseServiceMethods(_ stream: CandidStringStream) throws -> [CandidServiceSignature.Method] {
+    /// service {
+    ///     set_address: (name : text, addr : address) -> ();
+    ///     get_address: (name : text) -> (opt address) query;
+    /// }
+    /// service {
+    ///    reverse : (text) -> (text);
+    ///    divMod : (dividend : nat, divisor : nat) -> (div : nat, mod : nat);
+    /// }
+    /// service {
+    ///    authorize : (principal, Auth) -> (success : bool);
+    /// };
+    /// type A = service { f : () -> () };
+    ///
+    /// <actortype> ::= { <methtype>;* }
+    /// <methtype>  ::= <name> : (<functype> | <id>)
+    private func parseServiceSignature(_ stream: CandidStringStream) throws -> CandidServiceSignature {
         try stream.expectNext(.openBracket)
         var token = try stream.takeNext()
         var methods: [CandidServiceSignature.Method] = []
@@ -163,7 +274,7 @@ private extension CandidParser {
             token = try stream.takeNext()
             methods.append(.init(name: methodName, functionSignature: methodSignature))
         }
-        return methods
+        return CandidServiceSignature(methods)
     }
     
     private func parseOptionalNamedTypes(_ stream: CandidStringStream, _ separatorToken: CandidParserToken, _ closingToken: CandidParserToken) throws -> [CandidFunctionSignature.Parameter] {
@@ -183,7 +294,7 @@ private extension CandidParser {
                 name = nil
             }
             
-            let keyType = try parseType(stream)
+            let keyType = try parseCandidType(stream)
             parameters.append(CandidFunctionSignature.Parameter(index: parameters.count, name: name, type: keyType))
             if (try stream.peekNext() == separatorToken) {
                 try stream.expectNext(separatorToken)
@@ -323,4 +434,28 @@ private class CandidStringStream {
     }
     
     private static let firstToken = try! Regex(#"\s*(?'token'"[^"]*"|->|[={}\(\):;,]|[^\s:=;,\(\)}{]+)\s*(?'rest'[\s\S]*)"#)
+}
+
+class NamedTypeStorage {
+    private (set) var namedTypes: [String: CandidType] = [:]
+    
+    subscript (_ name: String) -> CandidType? {
+        return namedTypes[name]
+    }
+    
+    func add(_ name: String, _ type: CandidType) throws {
+        guard !contains(name) else {
+            throw CandidParserError.typeAlreadyDefined(name)
+        }
+        namedTypes[name] = type
+    }
+    
+    func get(_ name: String) throws -> CandidType {
+        guard let type = self[name] else {
+            throw CandidParserError.referencedTypeNotDefined(name)
+        }
+        return type
+    }
+    
+    func contains(_ name: String) -> Bool { namedTypes.keys.contains(name) }
 }

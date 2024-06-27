@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension CandidType {
+public extension CandidType {
     var syntax: String {
         switch self {
         case .primitive(let type): return type.syntax
@@ -23,11 +23,12 @@ extension CandidType {
             return "\(CandidPrimitiveType.function.syntax) () -> ()"
         case .service(_):
             return "\(CandidPrimitiveType.service.syntax): {}"
+        case .named(let name): return name
         }
     }
 }
 
-extension CandidPrimitiveType {
+public extension CandidPrimitiveType {
     var syntax: String {
         switch self {
         case .null: return "null"

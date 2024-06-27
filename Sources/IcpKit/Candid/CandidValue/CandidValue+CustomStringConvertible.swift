@@ -112,6 +112,7 @@ extension CandidType: CustomStringConvertible {
         case .service(let signature):
             let methodsString = signature.methods.map { "\($0.name): \($0.functionSignature)" }.joined(separator: ",\n")
             return "service(methods: [\(methodsString)])"
+        case .named(let name): return name
         }
     }
 }

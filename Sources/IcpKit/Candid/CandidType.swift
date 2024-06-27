@@ -16,4 +16,5 @@ public indirect enum CandidType: Equatable {
     case keyedContainer(CandidPrimitiveType, [CandidKeyedItemType])
     case function(CandidFunctionSignature)
     case service(CandidServiceSignature)
+    case named(String)
 }
