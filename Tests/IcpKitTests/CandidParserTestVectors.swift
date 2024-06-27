@@ -66,26 +66,15 @@ enum CandidParserTestVectors {
         ("service foo: {}", .service("foo")),
         ("service address_book : { set_address: (name : text, addr : nat) -> (); get_address: (name : text) -> (opt nat) query; }",
             .service("address_book", [
-                .init(name: "set_address", functionSignature: .init([
-                    .init(index: 0, name: "name", type: .text),
-                    .init(index: 1, name: "addr", type: .natural),
-                ], [])),
-                .init(name: "get_address", functionSignature: .init(
-                    [.init(index: 0, name: "name", type: .text)],
-                    [.init(index: 0, name: nil, type: .option(.natural))],
-                    query: true
-                ))
+                .init("set_address", [("name", .text), ("addr", .natural)], []),
+                .init("get_address", [("name", .text)], [(nil, .option(.natural))], query: true),
             ])),
         ("service: { search : (query : text, callback : func (vec nat) -> ()) -> (); }", 
-            .service(nil, [
-                .init(name: "search", functionSignature: .init(
-                    [
-                        .init(index: 0, name: "query", type: .text),
-                        .init(index: 1, name: "callback", type: .function([.vector(.natural)], [])),
-                    ], []))
+            .service([
+                .init("search", [("query", .text), ("callback", .function([.vector(.natural)], []))],[])
             ])),
-        ("service : (text) -> {}", .service(CandidServiceSignature(initialisationArguments: [.init(index: 0, name: nil, type: .text)], name: nil, methods: []))),
-        ("service foo : (arg:text) -> {}", .service(CandidServiceSignature(initialisationArguments: [.init(index: 0, name: "arg", type: .text)], name: "foo", methods: [])))
+        ("service : (text) -> {}", .service(nil, [.init(index: 0, name: nil, type: .text)], [])),
+        ("service foo : (arg:text) -> {}", .service("foo", [.init(index: 0, name: "arg", type: .text)], []))
     ]
     
     static let functionNames: [(String, CandidType, [String], [String])] = [

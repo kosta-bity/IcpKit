@@ -66,6 +66,12 @@ public struct CandidFunctionSignature: Equatable {
         annotations = Annotations(query: query, oneWay: oneWay, compositeQuery: compositeQuery)
     }
     
+    public init(_ inputs: [(String?, CandidType)], _ outputs: [(String?, CandidType)], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) {
+        self.arguments = inputs.enumerated().map { Parameter(index: $0.offset, name: $0.element.0, type: $0.element.1) }
+        self.results = outputs.enumerated().map { Parameter(index: $0.offset, name: $0.element.0, type: $0.element.1) }
+        annotations = Annotations(query: query, oneWay: oneWay, compositeQuery: compositeQuery)
+    }
+    
     public init(_ inputs: [CandidType], _ outputs: [CandidType], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) {
         self.arguments = inputs.enumerated().map { Parameter(index: $0.offset, name: nil, type: $0.element) }
         self.results = outputs.enumerated().map { Parameter(index: $0.offset, name: nil, type: $0.element) }

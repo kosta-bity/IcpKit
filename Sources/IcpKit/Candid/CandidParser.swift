@@ -166,13 +166,8 @@ private extension CandidParser {
         return methods
     }
     
-    private struct Parameter {
-        let index: Int
-        let name: String?
-        let type: CandidType
-    }
-    private func parseOptionalNamedTypes(_ stream: CandidStringStream, _ separatorToken: CandidParserToken, _ closingToken: CandidParserToken) throws -> [Parameter] {
-        var parameters: [Parameter] = []
+    private func parseOptionalNamedTypes(_ stream: CandidStringStream, _ separatorToken: CandidParserToken, _ closingToken: CandidParserToken) throws -> [CandidFunctionSignature.Parameter] {
+        var parameters: [CandidFunctionSignature.Parameter] = []
         while try stream.peekNext() != closingToken {
             let name: String?
             if try stream.peekSecondNext() == .colon {
@@ -189,7 +184,7 @@ private extension CandidParser {
             }
             
             let keyType = try parseType(stream)
-            parameters.append(Parameter(index: parameters.count, name: name, type: keyType))
+            parameters.append(CandidFunctionSignature.Parameter(index: parameters.count, name: name, type: keyType))
             if (try stream.peekNext() == separatorToken) {
                 try stream.expectNext(separatorToken)
             }
@@ -201,7 +196,6 @@ private extension CandidParser {
     private func parseFunctionParameters(_ stream: CandidStringStream) throws -> [CandidFunctionSignature.Parameter] {
         try stream.expectNext(.openParenthesis)
         let parameters = try parseOptionalNamedTypes(stream, .comma, .closeParenthesis)
-            .map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name, type: $0.type) }
         return parameters
     }
 }

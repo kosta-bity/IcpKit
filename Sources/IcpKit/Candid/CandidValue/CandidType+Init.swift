@@ -59,9 +59,17 @@ public extension CandidType {
     static func function(_ inputs: [CandidType], _ outputs: [CandidType], query: Bool = false, oneWay: Bool = false) -> CandidType {
         .function(CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay))
     }
+
+    static func service(_ name: String?, _ initialisationArguments: [CandidFunctionSignature.Parameter]?, _ methods: [CandidServiceSignature.Method] = []) -> CandidType {
+        .service(CandidServiceSignature(initialisationArguments: initialisationArguments, name: name, methods: methods))
+    }
     
-    static func service(_ name: String? = nil, _ methods: [CandidServiceSignature.Method] = []) -> CandidType {
-        .service(CandidServiceSignature(initialisationArguments: nil, name: name, methods: methods))
+    static func service(_ name: String?, _ methods: [CandidServiceSignature.Method] = []) -> CandidType {
+        .service(name, nil, methods)
+    }
+    
+    static func service(_ methods: [CandidServiceSignature.Method] = []) -> CandidType {
+        .service(nil, methods)
     }
 }
 
