@@ -19,8 +19,10 @@ extension CandidType {
 
 }
 """
-        case .function(let signature):
+        case .function(_):
             return "\(CandidPrimitiveType.function.syntax) () -> ()"
+        case .service(_):
+            return "\(CandidPrimitiveType.service.syntax): {}"
         }
     }
 }
@@ -51,7 +53,7 @@ extension CandidPrimitiveType {
         case .variant: return "variant"
         case .function: return "func"
         case .principal: return "principal"
-            //case .service: return "service:"
+        case .service: return "service"
         }
     }
 }

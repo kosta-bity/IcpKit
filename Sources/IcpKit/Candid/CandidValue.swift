@@ -34,7 +34,7 @@ public indirect enum CandidValue: Equatable {
     case variant(CandidVariant)
     case function(CandidFunction)
     case principal(CandidPrincipal?)
-    //case service(CandidService)
+    case service(CandidService)
 }
 
 // MARK: CandidType
@@ -65,7 +65,7 @@ public extension CandidValue {
         case .variant(let variant): return .variant(variant.candidTypes)
         case .function(let function): return .function(function.signature)
         case .principal: return .principal
-        //case .service(let service): return .service(service.methods)
+        case .service(let service): return .service(service.methods)
         }
     }
 }

@@ -113,9 +113,9 @@ private extension CandidSerialiser {
             }
             return .function(typeRef: typeReference, method)
             
-//        case .service(let service):
-//            let typeReference = typeTable.getReference(for: value.candidType)
-//            return .service(typeRef: typeReference, service.principalId)
+        case .service(let service):
+            let typeReference = typeTable.getReference(for: value.candidType)
+            return .service(typeRef: typeReference, service.principal?.bytes)
         }
     }
 }
@@ -190,22 +190,19 @@ private class CandidTypeTable {
             typeData.append(contentsOf: annotations)
             return addOrFind(CandidTypeData(types: typeData))
             
-//        case .service(let methods):
-//            let typeData = CandidTypeData(
-//                types:
-//                    [
-//                        .signed(CandidPrimitiveType.service.rawValue),
-//                        .unsigned(UInt(methods.count))
-//                    ]
-//                + methods.flatMap {
-//                    [
-//                        .unsigned(UInt($0.name.count)),
-//                        .data(Data($0.name.utf8)),
-//                        .signed(getReference(for: .function($0.functionSignature)))
-//                    ]
-//                }
-//            )
-//            return addOrFind(typeData)
+        case .service(let methods):
+            let typeData = CandidTypeData(
+                types: [
+                    .signed(CandidPrimitiveType.service.rawValue),
+                    .unsigned(UInt(methods.count))
+                    
+                ] + methods.flatMap {[
+                    .unsigned(UInt($0.name.count)),
+                    .data(Data($0.name.utf8)),
+                    .signed(getReference(for: .function($0.functionSignature)))
+                ]}
+            )
+            return addOrFind(typeData)
         }
     }
     

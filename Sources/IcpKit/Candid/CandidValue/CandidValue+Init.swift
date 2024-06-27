@@ -46,4 +46,12 @@ extension CandidValue {
     static func function(_ inputs: [CandidType] = [], _ outputs: [CandidType] = [], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false, _ principal: String, _ methodName: String) throws -> CandidValue {
         .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: .init(name: methodName, principal: try CandidPrincipal(principal))))
     }
+    
+    static func service(_ methods: [CandidService.Method] , _ principal: String) throws -> CandidValue {
+        .service(CandidService(methods: methods, principal: try CandidPrincipal(principal)))
+    }
+    
+    static func service(_ methods: [CandidService.Method]) -> CandidValue {
+        .service(CandidService(methods: methods, principal: nil))
+    }
 }

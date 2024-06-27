@@ -34,7 +34,7 @@ extension CandidValue: CustomStringConvertible {
         case .variant(let variant): return "variant(\(variant))"
         case .function(let function): return "function(\(function))"
         case .principal(let principal): return "principal \(principal?.string ?? "")"
-        //case .service: return "service()"
+        case .service: return "service()"
         }
     }
 }
@@ -109,9 +109,9 @@ extension CandidType: CustomStringConvertible {
                 signature.oneWay ? "OW" : "",
             ].joined(separator: "|")
             return "function( \(annotations) (\(inputs)) -> (\(outputs)))"
-//        case .service(let methods):
-//            let methodsString = methods.map { "\($0.name): \($0.functionSignature)" }.joined(separator: ",\n")
-//            return "service(methods: [\(methodsString)])"
+        case .service(let methods):
+            let methodsString = methods.map { "\($0.name): \($0.functionSignature)" }.joined(separator: ",\n")
+            return "service(methods: [\(methodsString)])"
         }
     }
 }
@@ -142,7 +142,7 @@ extension CandidPrimitiveType: CustomStringConvertible {
         case .variant: return "variant"
         case .function: return "function"
         case .principal: return "principal"
-        //case .service: return "service"
+        case .service: return "service"
         }
     }
 }

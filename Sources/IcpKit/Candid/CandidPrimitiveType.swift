@@ -30,6 +30,6 @@ public enum CandidPrimitiveType: Int, Equatable {
     case record     = -20
     case variant    = -21
     case function   = -22
-    //case service    = -23
+    case service    = -23
     case principal  = -24
 }

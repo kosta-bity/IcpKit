@@ -78,16 +78,16 @@ private class CandidDecodableTypeTable {
                 compositeQuery: annotations.contains(0x03)
             ))
             
-//        case .service(let methods):
-//            return .service(try methods.map {
-//                guard let signature = try candidType(for: $0.functionType, with: rawTypeData).functionSignature else {
-//                    throw CandidDeserialisationError.invalidTypeReference
-//                }
-//                return CandidService.Method(
-//                    name: $0.name,
-//                    functionSignature: signature
-//                )
-//            })
+        case .service(let methods):
+            return .service(try methods.map {
+                guard let signature = try candidType(for: $0.functionType, with: rawTypeData).functionSignature else {
+                    throw CandidDeserialisationError.invalidTypeReference
+                }
+                return CandidService.Method(
+                    name: $0.name,
+                    functionSignature: signature
+                )
+            })
         }
     }
     
@@ -126,7 +126,7 @@ private enum CandidTypeTableData {
     case container(containerType: CandidPrimitiveType, containedType: Int)
     case keyedContainer(containerType: CandidPrimitiveType, rows: [KeyedContainerRowData])
     case functionSignature(inputTypes: [Int], outputTypes: [Int], annotations: [UInt])
-    //case service(methods: [ServiceMethod])
+    case service(methods: [ServiceMethod])
     
     static func decode(_ stream: ByteInputStream) throws -> CandidTypeTableData {
         let candidType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
@@ -163,18 +163,18 @@ private enum CandidTypeTableData {
                 annotations: annotations
             )
             
-//        case .service:
-//            let nMethods: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
-//            let methods: [ServiceMethod] = try (0..<nMethods).map { _ in
-//                let nameLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
-//                let nameData = try stream.readNextBytes(nameLength)
-//                guard let name = String(data: nameData, encoding: .utf8) else {
-//                    throw CandidDeserialisationError.invalidUtf8String
-//                }
-//                let functionReference: Int = try ICPCryptography.Leb128.decodeSigned(stream)
-//                return ServiceMethod(name: name, functionType: functionReference)
-//            }
-//            return .service(methods: methods)
+        case .service:
+            let nMethods: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let methods: [ServiceMethod] = try (0..<nMethods).map { _ in
+                let nameLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                let nameData = try stream.readNextBytes(nameLength)
+                guard let name = String(data: nameData, encoding: .utf8) else {
+                    throw CandidDeserialisationError.invalidUtf8String
+                }
+                let functionReference: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+                return ServiceMethod(name: name, functionType: functionReference)
+            }
+            return .service(methods: methods)
             
         default:
             // all other types have a single contained type, either primitive or ref
@@ -287,19 +287,19 @@ private extension CandidValue {
                 return .principal(nil)
             }
             
-//        case .service:
-//            let isPresent = try stream.readNextByte() == 1
-//            let principalId: Data?
-//            if isPresent {
-//                let principalIdLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
-//                principalId = try stream.readNextBytes(principalIdLength)
-//            } else {
-//                principalId = nil
-//            }
-//            return .service(CandidService(
-//                methods: type.serviceMethods!,
-//                principalId: principalId
-//            ))
+        case .service:
+            let isPresent = try stream.readNextByte() == 1
+            let principal: CandidPrincipal?
+            if isPresent {
+                let principalIdLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                principal = CandidPrincipal(try stream.readNextBytes(principalIdLength))
+            } else {
+                principal = nil
+            }
+            return .service(CandidService(
+                methods: type.serviceMethods!,
+                principal: principal
+            ))
         }
         
     }
@@ -312,7 +312,7 @@ private extension CandidType {
              .container(let primitive, _),
              .keyedContainer(let primitive, _): return primitive
         case .function: return .function
-        //case .service: return .service
+        case .service: return .service
         }
     }
     
@@ -331,8 +331,8 @@ private extension CandidType {
         return candidFunctionSignature
     }
     
-//    var serviceMethods: [CandidService.Method]? {
-//        guard case .service(let methods) = self else { return nil }
-//        return methods
-//    }
+    var serviceMethods: [CandidService.Method]? {
+        guard case .service(let methods) = self else { return nil }
+        return methods
+    }
 }
