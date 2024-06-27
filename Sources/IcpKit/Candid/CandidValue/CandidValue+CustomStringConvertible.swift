@@ -80,8 +80,8 @@ extension CandidFunction: CustomStringConvertible {
         let inputs = signature.arguments.map { "\($0)" }.joined(separator: ", ")
         let outputs = signature.results.map { "\($0)" }.joined(separator: ", ")
         let annotations = [
-            signature.query ? "Q" : "",
-            signature.oneWay ? "OW" : "",
+            signature.annotations.query ? "Q" : "",
+            signature.annotations.oneWay ? "OW" : "",
         ].joined(separator: "|")
         let methodString: String
         if let method = method {
@@ -105,12 +105,12 @@ extension CandidType: CustomStringConvertible {
             let inputs = signature.arguments.map { "\($0)" }.joined(separator: ", ")
             let outputs = signature.results.map { "\($0)" }.joined(separator: ", ")
             let annotations = [
-                signature.query ? "Q" : "",
-                signature.oneWay ? "OW" : "",
+                signature.annotations.query ? "Q" : "",
+                signature.annotations.oneWay ? "OW" : "",
             ].joined(separator: "|")
             return "function( \(annotations) (\(inputs)) -> (\(outputs)))"
-        case .service(let methods):
-            let methodsString = methods.map { "\($0.name): \($0.functionSignature)" }.joined(separator: ",\n")
+        case .service(let signature):
+            let methodsString = signature.methods.map { "\($0.name): \($0.functionSignature)" }.joined(separator: ",\n")
             return "service(methods: [\(methodsString)])"
         }
     }

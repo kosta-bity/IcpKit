@@ -8,9 +8,11 @@
 import Foundation
 
 public struct CandidService: Equatable {
-    public let methods: [Method]
     public let principal: CandidPrincipal?
-    
+    public let signature: CandidServiceSignature
+}
+
+public struct CandidServiceSignature: Equatable {
     public struct Method: Equatable {
         public let name: String
         public let functionSignature: CandidFunctionSignature
@@ -25,4 +27,8 @@ public struct CandidService: Equatable {
             self.functionSignature = CandidFunctionSignature(arguments, results, query: query, oneWay: oneway, compositeQuery: compositeQuery)
         }
     }
+    
+    public let initialisationArguments: [CandidFunctionSignature.Parameter]?
+    public let name: String?
+    public let methods: [Method]
 }

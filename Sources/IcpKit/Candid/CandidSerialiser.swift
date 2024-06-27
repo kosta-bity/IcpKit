@@ -183,20 +183,20 @@ private class CandidTypeTable {
             typeData.append(.unsigned(UInt(functionSignature.results.count)))
             typeData.append(contentsOf: functionSignature.results.map { .signed(getReference(for: $0.type)) })
             var annotations: [CandidTypeData.EncodableType] = []
-            if functionSignature.query { annotations.append(.unsigned(0x01)) }
-            if functionSignature.oneWay { annotations.append(.unsigned(0x02)) }
-            if functionSignature.compositeQuery { annotations.append(.unsigned(0x03)) }
+            if functionSignature.annotations.query { annotations.append(.unsigned(0x01)) }
+            if functionSignature.annotations.oneWay { annotations.append(.unsigned(0x02)) }
+            if functionSignature.annotations.compositeQuery { annotations.append(.unsigned(0x03)) }
             typeData.append(.unsigned(UInt(annotations.count)))
             typeData.append(contentsOf: annotations)
             return addOrFind(CandidTypeData(types: typeData))
             
-        case .service(let methods):
+        case .service(let signature):
             let typeData = CandidTypeData(
                 types: [
                     .signed(CandidPrimitiveType.service.rawValue),
-                    .unsigned(UInt(methods.count))
+                    .unsigned(UInt(signature.methods.count))
                     
-                ] + methods.flatMap {[
+                ] + signature.methods.flatMap {[
                     .unsigned(UInt($0.name.count)),
                     .data(Data($0.name.utf8)),
                     .signed(getReference(for: .function($0.functionSignature)))

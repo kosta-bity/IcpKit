@@ -65,7 +65,7 @@ public extension CandidValue {
         case .variant(let variant): return .variant(variant.candidTypes)
         case .function(let function): return .function(function.signature)
         case .principal: return .principal
-        case .service(let service): return .service(service.methods)
+        case .service(let service): return .service(service.signature)
         }
     }
 }

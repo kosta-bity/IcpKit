@@ -56,6 +56,7 @@ private extension CandidParser {
         case CandidPrimitiveType.variant.syntax: return .variant(try parseVariantKeyedTypes(stream))
         case CandidPrimitiveType.function.syntax: return .function(try parseFunctionSignature(stream))
         case CandidPrimitiveType.principal.syntax: return .principal
+        case CandidPrimitiveType.service.syntax: return .service(try parseServiceSignature(stream))
         default:
             throw CandidParserError.unrecognisedType(token.syntax)
         }
@@ -112,6 +113,57 @@ private extension CandidParser {
         let oneway = try stream.takeIfNext(is: .text("oneway"))
         let compositeQuery = try stream.takeIfNext(is: .text("composite_query"))
         return CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneway, compositeQuery: compositeQuery)
+    }
+    
+    // service address_book : {
+    //     set_address: (name : text, addr : address) -> ();
+    //     get_address: (name : text) -> (opt address) query;
+    // }
+    // service : {
+    //    reverse : (text) -> (text);
+    //    divMod : (dividend : nat, divisor : nat) -> (div : nat, mod : nat);
+    // }
+    // service : (InitArgs) -> {
+    //    authorize : (principal, Auth) -> (success : bool);
+    // };
+    // type A = service { f : () -> () };
+    private func parseServiceSignature(_ stream: CandidStringStream) throws -> CandidServiceSignature {
+        let serviceName: String?
+        if try stream.peekNext().textValue != nil {
+            serviceName = try stream.takeNext().textValue!
+        } else {
+            serviceName = nil
+        }
+        try stream.expectNext(.colon)
+        
+        let initialisationParameters: [CandidFunctionSignature.Parameter]?
+        if (try stream.peekNext() == .openParenthesis) {
+            // ignore any service initialisation parameters. We can't use them from a mobile device
+            initialisationParameters  = try parseFunctionParameters(stream)
+            try stream.expectNext(.rightArrow)
+        } else {
+            initialisationParameters = nil
+        }
+        
+        let methods = try parseServiceMethods(stream)
+        return CandidServiceSignature(initialisationArguments: initialisationParameters, name: serviceName, methods: methods)
+    }
+    
+    private func parseServiceMethods(_ stream: CandidStringStream) throws -> [CandidServiceSignature.Method] {
+        try stream.expectNext(.openBracket)
+        var token = try stream.takeNext()
+        var methods: [CandidServiceSignature.Method] = []
+        while token != .closeBracket {
+            guard let methodName = token.textValue else {
+                throw CandidParserError.expecting("anyString", butGot: token.syntax)
+            }
+            try stream.expectNext(.colon)
+            let methodSignature = try parseFunctionSignature(stream)
+            try stream.expectNext(.semicolon)
+            token = try stream.takeNext()
+            methods.append(.init(name: methodName, functionSignature: methodSignature))
+        }
+        return methods
     }
     
     private struct Parameter {

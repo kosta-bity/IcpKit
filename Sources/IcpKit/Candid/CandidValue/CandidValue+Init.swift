@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension CandidValue {
+public extension CandidValue {
     static func option(_ value: CandidValue) -> CandidValue {
         return .option(.some(value))
     }
@@ -47,11 +47,21 @@ extension CandidValue {
         .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: .init(name: methodName, principal: try CandidPrincipal(principal))))
     }
     
-    static func service(_ methods: [CandidService.Method] , _ principal: String) throws -> CandidValue {
-        .service(CandidService(methods: methods, principal: try CandidPrincipal(principal)))
+    static func service(_ name: String?, _ methods: [CandidServiceSignature.Method] , _ principal: String) throws -> CandidValue {
+        .service(CandidService(
+            principal: try CandidPrincipal(principal),
+            signature: CandidServiceSignature(initialisationArguments: nil, name: name, methods: methods)
+        ))
     }
     
-    static func service(_ methods: [CandidService.Method]) -> CandidValue {
-        .service(CandidService(methods: methods, principal: nil))
+    static func service(_ methods: [CandidServiceSignature.Method] = [], _ principal: String) throws -> CandidValue {
+        try .service(nil, methods, principal)
+    }
+    
+    static func service(_ methods: [CandidServiceSignature.Method]) -> CandidValue {
+        .service(CandidService(
+            principal: nil,
+            signature: CandidServiceSignature(initialisationArguments: nil, name: nil, methods: methods)
+        ))
     }
 }

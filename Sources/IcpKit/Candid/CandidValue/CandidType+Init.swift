@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension CandidType {
+public extension CandidType {
     static let null: CandidType = .primitive(.null)
     static let bool: CandidType = .primitive(.bool)
     static let natural: CandidType = .primitive(.natural)
@@ -58,6 +58,10 @@ extension CandidType {
     
     static func function(_ inputs: [CandidType], _ outputs: [CandidType], query: Bool = false, oneWay: Bool = false) -> CandidType {
         .function(CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay))
+    }
+    
+    static func service(_ name: String? = nil, _ methods: [CandidServiceSignature.Method] = []) -> CandidType {
+        .service(CandidServiceSignature(initialisationArguments: nil, name: name, methods: methods))
     }
 }
 

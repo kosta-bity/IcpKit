@@ -79,15 +79,16 @@ private class CandidDecodableTypeTable {
             ))
             
         case .service(let methods):
-            return .service(try methods.map {
+            let serviceMethods = try methods.map {
                 guard let signature = try candidType(for: $0.functionType, with: rawTypeData).functionSignature else {
                     throw CandidDeserialisationError.invalidTypeReference
                 }
-                return CandidService.Method(
+                return CandidServiceSignature.Method(
                     name: $0.name,
                     functionSignature: signature
                 )
-            })
+            }
+            return .service(CandidServiceSignature(initialisationArguments: nil, name: nil, methods: serviceMethods))
         }
     }
     
@@ -297,8 +298,8 @@ private extension CandidValue {
                 principal = nil
             }
             return .service(CandidService(
-                methods: type.serviceMethods!,
-                principal: principal
+                principal: principal,
+                signature: .init(initialisationArguments: nil, name: nil, methods: type.serviceSignature!.methods)
             ))
         }
         
@@ -331,8 +332,8 @@ private extension CandidType {
         return candidFunctionSignature
     }
     
-    var serviceMethods: [CandidService.Method]? {
-        guard case .service(let methods) = self else { return nil }
-        return methods
+    var serviceSignature: CandidServiceSignature? {
+        guard case .service(let signature) = self else { return nil }
+        return signature
     }
 }
