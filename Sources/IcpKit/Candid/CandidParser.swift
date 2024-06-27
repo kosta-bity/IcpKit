@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CandidParser.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 24.06.24.

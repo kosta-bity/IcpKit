@@ -30,6 +30,12 @@ public struct CandidFunctionSignature: Equatable {
         public static func ==(lhs: Parameter, rhs: Parameter) -> Bool {
             return lhs.index == rhs.index && lhs.type == rhs.type
         }
+        
+        public init(index: Int, name: String?, type: CandidType) {
+            self.index = index
+            self.name = name
+            self.type = type
+        }
     }
     
     public struct Annotations: Equatable {

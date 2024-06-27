@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CandidPrincipal.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 26.06.24.

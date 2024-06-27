@@ -8,7 +8,7 @@
 import Foundation
 import BigInt
 
-extension CandidValue {
+public extension CandidValue {
     var boolValue: Bool? {
         guard case .bool(let bool) = self else { return nil }
         return bool
@@ -114,8 +114,8 @@ extension CandidValue {
         return candidPrincipal
     }
     
-//    var serviceValue: CandidService? {
-//        guard case .service(let candidService) = self else { return nil }
-//        return candidService
-//    }
+    var serviceValue: CandidService? {
+        guard case .service(let candidService) = self else { return nil }
+        return candidService
+    }
 }

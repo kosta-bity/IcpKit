@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum CandidVariantError: Error {
+public enum CandidVariantError: Error {
     case valueNotPartOfTypes
 }
 

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CandidType+Init.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 26.06.24.

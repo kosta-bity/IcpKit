@@ -31,4 +31,10 @@ public struct CandidServiceSignature: Equatable {
     public let initialisationArguments: [CandidFunctionSignature.Parameter]?
     public let name: String?
     public let methods: [Method]
+    
+    public init(initialisationArguments: [CandidFunctionSignature.Parameter]?, name: String?, methods: [Method]) {
+        self.initialisationArguments = initialisationArguments
+        self.name = name
+        self.methods = methods
+    }
 }
