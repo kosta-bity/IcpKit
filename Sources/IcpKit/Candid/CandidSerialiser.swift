@@ -195,17 +195,23 @@ private class CandidTypeTable {
                 types: [
                     .signed(CandidPrimitiveType.service.rawValue),
                     .unsigned(UInt(signature.methods.count))
-                    
-                ] + signature.methods.flatMap {[
-                    .unsigned(UInt($0.name.count)),
-                    .data(Data($0.name.utf8)),
-                    .signed(getReference(for: .function($0.functionSignature)))
-                ]}
+                ] + signature.methods.flatMap(encodeMethod)
             )
             return addOrFind(typeData)
             
         case .named: fatalError()
         }
+    }
+    
+    private func encodeMethod(_ method: CandidServiceSignature.Method) -> [CandidTypeData.EncodableType] {
+        guard case .concrete(let functionSignature) = method.functionSignature else {
+            fatalError("Referenced function signatures are not allowed during serialisation")
+        }
+        return [
+            .unsigned(UInt(method.name.count)),
+            .data(Data(method.name.utf8)),
+            .signed(getReference(for: .function(functionSignature)))
+        ]
     }
     
     func encode() -> Data {

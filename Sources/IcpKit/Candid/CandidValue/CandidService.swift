@@ -14,22 +14,36 @@ public struct CandidService: Equatable {
 
 public struct CandidServiceSignature: Equatable {
     public struct Method: Equatable {
+        public enum FunctionSignatureType: Equatable {
+            case concrete(CandidFunctionSignature)
+            case reference(String)
+        }
         public let name: String
-        public let functionSignature: CandidFunctionSignature
+        public let functionSignature: FunctionSignatureType
+
+        public init(name: String, signatureType: FunctionSignatureType) {
+            self.name = name
+            self.functionSignature = signatureType
+        }
         
         public init(name: String, functionSignature: CandidFunctionSignature) {
             self.name = name
-            self.functionSignature = functionSignature
+            self.functionSignature = .concrete(functionSignature)
+        }
+        
+        public init(name: String, signatureReference: String) {
+            self.name = name
+            self.functionSignature = .reference(signatureReference)
         }
         
         public init(_ name: String, _ arguments: [CandidType] = [], _ results: [CandidType] = [], query: Bool = false, oneway: Bool = false, compositeQuery: Bool = false) {
             self.name = name
-            self.functionSignature = CandidFunctionSignature(arguments, results, query: query, oneWay: oneway, compositeQuery: compositeQuery)
+            self.functionSignature = .concrete(CandidFunctionSignature(arguments, results, query: query, oneWay: oneway, compositeQuery: compositeQuery))
         }
         
         public init(_ name: String, _ arguments: [(String?, CandidType)], _ results: [(String?, CandidType)], query: Bool = false, oneway: Bool = false, compositeQuery: Bool = false) {
             self.name = name
-            self.functionSignature = CandidFunctionSignature(arguments, results, query: query, oneWay: oneway, compositeQuery: compositeQuery)
+            self.functionSignature = .concrete(CandidFunctionSignature(arguments, results, query: query, oneWay: oneway, compositeQuery: compositeQuery))
         }
     }
     public let methods: [Method]

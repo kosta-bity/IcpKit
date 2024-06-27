@@ -68,7 +68,20 @@ private extension CandidFunctionSignature {
 
 private extension CandidServiceSignature {
     func isResolved(_ storage: [String: CandidType]) -> Bool {
-        methods.allSatisfy { $0.functionSignature.isResolved(storage) }
+        methods.allSatisfy { $0.isResolved(storage) }
+    }
+}
+
+private extension CandidServiceSignature.Method {
+    func isResolved(_ storage: [String: CandidType]) -> Bool {
+        switch functionSignature {
+        case .concrete(let signature): return signature.isResolved(storage)
+        case .reference(let name):
+            guard let stored = storage[name], case .function = stored else {
+            return false
+            }
+            return true
+        }
     }
 }
 
@@ -84,8 +97,7 @@ private extension CandidInterfaceDefinition.ServiceDefinition.SignatureType {
         switch self {
         case .concrete(let candidServiceSignature): return candidServiceSignature.isResolved(storage)
         case .reference(let name):
-            guard let stored = storage[name],
-                  case .service = stored else {
+            guard let stored = storage[name], case .service = stored else {
                 return false
             }
             return true

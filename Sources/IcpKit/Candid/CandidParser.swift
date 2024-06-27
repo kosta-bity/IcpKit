@@ -252,7 +252,9 @@ private extension CandidParser {
     /// service {
     ///    authorize : (principal, Auth) -> (success : bool);
     /// };
-    /// type A = service { f : () -> () };
+    /// type A = service { f : () -> (); };
+    /// type F = function () -> ();
+    /// type S = service { foo: F; };
     ///
     /// <actortype> ::= { <methtype>;* }
     /// <methtype>  ::= <name> : (<functype> | <id>)
@@ -265,10 +267,20 @@ private extension CandidParser {
                 throw CandidParserError.expecting("anyString", butGot: token.syntax)
             }
             try stream.expectNext(.colon)
-            let methodSignature = try parseFunctionSignature(stream)
+            let signatureType: CandidServiceSignature.Method.FunctionSignatureType
+            if try stream.peekNext() == .openParenthesis {
+                let methodSignature = try parseFunctionSignature(stream)
+                signatureType = .concrete(methodSignature)
+            } else {
+                let nameToken = try stream.takeNext()
+                guard case .text(let name) = nameToken else {
+                    throw CandidParserError.expecting("method reference id", butGot: nameToken.syntax)
+                }
+                signatureType = .reference(name)
+            }
             try stream.expectNext(.semicolon)
             token = try stream.takeNext()
-            methods.append(.init(name: methodName, functionSignature: methodSignature))
+            methods.append(.init(name: methodName, signatureType: signatureType))
         }
         return CandidServiceSignature(methods)
     }

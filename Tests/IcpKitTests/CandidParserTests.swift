@@ -11,14 +11,14 @@ import XCTest
 final class CandidParserTests: XCTestCase {
     let parser = CandidParser()
     
-    func testParseType() throws {
-        for (input, candidType) in CandidParserTestVectors.vectors {
+    func testParseSingleTypes() throws {
+        for (input, candidType) in CandidParserTestVectors.passingSingleTypes {
             XCTAssertEqual(try parser.parseSingleType(input), candidType, "Failed \(input)\nNot equal to \(candidType.syntax)")
         }
     }
     
-    func testParseTypeFunctionNames() throws {
-        for (input, candidType, argNames, resNames) in CandidParserTestVectors.functionNames {
+    func testParseFunctionArgumentNames() throws {
+        for (input, candidType, argNames, resNames) in CandidParserTestVectors.functionArgumentNames {
             let parsed = try parser.parseSingleType(input)
             XCTAssertEqual(parsed, candidType, "\(input)\nNot equal to \(candidType.syntax)")
             guard case .function(let signature) = parsed else {
@@ -30,8 +30,8 @@ final class CandidParserTests: XCTestCase {
         }
     }
     
-    func testParseTypeFailing() throws {
-        for input in CandidParserTestVectors.failing {
+    func testParseFailingSingleType() throws {
+        for input in CandidParserTestVectors.failingSingleTypes {
             XCTAssertThrowsError(try parser.parseSingleType(input), "\(input)")
         }
     }

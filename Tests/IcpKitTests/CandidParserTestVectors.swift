@@ -9,7 +9,7 @@ import Foundation
 @testable import IcpKit
 
 enum CandidParserTestVectors {
-    static let vectors: [(String, CandidType)] = [
+    static let passingSingleTypes: [(String, CandidType)] = [
         ("null", .null),
         ("bool", .bool),
         ("nat", .natural),
@@ -74,12 +74,12 @@ enum CandidParserTestVectors {
             ])),
     ]
     
-    static let functionNames: [(String, CandidType, [String], [String])] = [
+    static let functionArgumentNames: [(String, CandidType, [String], [String])] = [
         ("func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);", .function([.natural, .natural], [.natural, .natural]), ["dividend", "divisor"], ["div", "mod"]),
         (#"func ("dividend with space" : nat, "divisor" : nat) -> ("🐂" : nat, mod : nat);"#, .function([.natural, .natural], [.natural, .natural]), ["dividend with space", "divisor"], ["🐂", "mod"]),
     ]
     
-    static let failing: [String] = [
+    static let failingSingleTypes: [String] = [
         "",
         "\t",
         " ",
@@ -110,6 +110,7 @@ enum CandidParserTestVectors {
         ("service add:(nat)-> {foo: ()->()query;};", [:], .init(name: "add", initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signature: .init([.init("foo", query: true)]))),
         ("type s = service{};service: s;", ["s":.service()], .init(name: nil, initialisationArguments: nil, signatureReference: "s")),
         ("type s = service{};service foo: (nat)-> s;", ["s":.service()], .init(name: "foo", initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signatureReference: "s")),
+        ("type f=func ()->();type s=service{foo:f;};", ["f":.function(), "s":.service([.init(name: "foo", signatureReference: "f")])], nil)
     ]
     
     static let unresolvedDidFiles: [String] = [
