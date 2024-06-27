@@ -14,6 +14,12 @@ public enum CandidParserError: Error {
     case unexpectedToken(String)
     case typeAlreadyDefined(String)
     case referencedTypeNotDefined(String)
+    case unresolvedImport(String)
+}
+
+public protocol CandidInterfaceDefinitionProvider {
+    func readMain() async throws -> String
+    func read(contentsOf file: String) async throws -> String
 }
 
 /// https://internetcomputer.org/docs/current/references/candid-ref#supported-types
@@ -69,8 +75,9 @@ public class CandidParser {
         return try parseCandidType(stream)
     }
     
-    public func parseInterfaceDescription(_ input: String) throws -> CandidInterfaceDefinition {
-        let stream = try CandidStringStream(string: input)
+    public func parseInterfaceDescription(_ provider: CandidInterfaceDefinitionProvider) async throws -> CandidInterfaceDefinition {
+        let mainContent = try await provider.readMain()
+        let stream = try CandidStringStream(string: mainContent)
         let storage = NamedTypeStorage()
         while try !stream.tokens.isEmpty && stream.peekNext() != .text(CandidPrimitiveType.service.syntax) {
             if try stream.takeIfNext(is: .text("type")) {
@@ -78,7 +85,7 @@ public class CandidParser {
                 try storage.add(name, type)
                 
             } else if try stream.takeIfNext(is: .text("import")) {
-                throw CandidParserError.unexpectedToken("import")
+                try await parseImportStatement(stream, provider)
                 
             } else {
                 throw CandidParserError.expecting("'type', 'import' or 'service'", butGot: try stream.takeNext().syntax)
@@ -93,12 +100,59 @@ public class CandidParser {
         return CandidInterfaceDefinition(namedTypes: storage.namedTypes, service: service)
     }
     
+    public func parseInterfaceDescription(_ input: String) async throws -> CandidInterfaceDefinition {
+        return try await parseInterfaceDescription(StringProvider(string: input))
+    }
+    
 //    func parseValue(_ input: String) throws -> CandidValue {
 //        throw CandidParserError.notImplemented
 //    }
 }
 
+private class StringProvider: CandidInterfaceDefinitionProvider {
+    let string: String
+    init(string: String) {
+        self.string = string
+    }
+    
+    func readMain() async throws -> String { string }
+    func read(contentsOf file: String) async throws -> String {
+        throw CandidParserError.unresolvedImport(file)
+    }
+}
+
 private extension CandidParser {
+    /// import service? <text>
+    func parseImportStatement(_ stream: CandidStringStream, _ provider: CandidInterfaceDefinitionProvider) async throws {
+        let importService = try stream.takeIfNext(is: .text("service"))
+        let nameToken = try stream.takeNext()
+        guard let fileName = nameToken.textValue else {
+            throw CandidParserError.expecting("a filename", butGot: nameToken.syntax)
+        }
+        try stream.expectNext(.semicolon)
+        let fileContents = try await provider.read(contentsOf: fileName)
+        let tokens = try CandidStringStream.splitTokens(fileContents)
+        if importService {
+            stream.prepend(tokens)
+            
+        } else {
+            guard tokens.count >= 2 else { throw CandidParserError.unexpectedEnd }
+            for i in 0..<(tokens.count - 2) {
+                let first = tokens[i]
+                let second = tokens[i+1]
+                let third = tokens[i+2]
+                if first == .text(CandidPrimitiveType.service.syntax) && (second == .colon || third == .colon) {
+                    // found 'service:' or 'service <name>:' definition. truncate here
+                    let truncated = Array(tokens.prefix(i))
+                    stream.prepend(truncated)
+                    return
+                }
+            }
+            // no service defined, import everything
+            stream.prepend(tokens)
+        }
+    }
+    
     /// <def>   ::= type <id> = <datatype> | import service? <text>
     func parseNamedType(_ stream: CandidStringStream) throws -> (String, CandidType) {
         let nameToken = try stream.takeNext()
@@ -423,7 +477,11 @@ private class CandidStringStream {
         return true
     }
     
-    private static func splitTokens(_ string: String) throws -> [CandidParserToken] {
+    func prepend(_ newTokens: [CandidParserToken]) {
+        tokens.insert(contentsOf: newTokens, at: 0)
+    }
+    
+    static func splitTokens(_ string: String) throws -> [CandidParserToken] {
         var string = string
         var tokens: [CandidParserToken] = []
         while !string.isEmpty {
