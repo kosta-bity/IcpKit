@@ -53,8 +53,8 @@ enum CandidTypeParserTestVectors {
         ("record {}", .record()),
         ("record { first_name : text; text : text }", .record(["first_name": .text, "text": .text])),
         (#"record { "name with spaces" : nat; "unicode, too: ☃" : bool }"#, .record(["name with spaces": .natural, "unicode, too: ☃": .bool])),
-        ("record { text; text; opt bool }", .record(["0": .text, "1": .text, "2": .option(.bool)])),
-        (#"record{record{opt bool};"key":text;}"#, .record(["0": .record(["0": .option(.bool)]), "key": .text])),
+        ("record { text; text; opt bool }", .record([CandidKeyedItemType(hashedKey: 0, type: .text),CandidKeyedItemType(hashedKey: 1, type: .text),CandidKeyedItemType(hashedKey: 2, type: .option(.bool))])),
+        (#"record{record{opt bool};"key":text}"#, .record([CandidKeyedItemType(hashedKey: 0, type:  .record([CandidKeyedItemType(hashedKey: 0, type: .option(.bool))])), CandidKeyedItemType("key", .text)])),
         
         ("func () -> ()", .function()),
         ("func () -> () oneway", .function(oneWay: true)),
@@ -85,11 +85,14 @@ enum CandidTypeParserTestVectors {
         " ",
         "opt",
         "opt vec",
+        "opt 0",
     ]
     
     static let didFiles: [(String, [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
         ("", [:], nil),
         ("type A = nat;", ["A": .natural], nil),
+        ("type _ = nat;", ["_": .natural], nil),
+        ("type _0 = nat;", ["_0": .natural], nil),
         ("type A = nat;type B = vec A;", ["A": .natural, "B": .vector(.named("A"))], nil),
         ("type stream = opt record {head : nat; next : func () -> (stream)};", ["stream": .option(.record([
             .init("head", .natural), .init("next", .function([], [.named("stream")]))
@@ -124,11 +127,17 @@ enum CandidTypeParserTestVectors {
         "type A = nat; service: A;",
         "service: (B) -> {};",
         "service: { foo: (B) -> (); };",
+        "service: { foo: () -> (A); };",
     ]
     
     static let failingDidFiles: [String] = [
-        "type B = nat; type B = opt nat;",
+        "type B = nat; type B = opt nat;",  // redeclaration of B
         "type A = nat", // no ending semi-colon
+        "type 0abc = nat", // invalid id
+        "type -abc = nat", // invalid id
+        "type abc#v = nat", // invalid id
+        "type 🐂 = nat", // invalid id
+        "type ☃ = nat", // invalid id
     ]
     
     static let importedFiles: [(mainDid: String, files: [String: String], types: [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [

@@ -45,31 +45,21 @@ class CandidParserStream {
     }
     
     func expectCurrentId() throws -> String {
-        guard case .id(let id) = current else {
-            throw CandidParserError.expecting("<id>", butGot: current.syntax)
-        }
-        return id
+        return try current.validId()
     }
     
     func expectCurrentTextOrId() throws -> String {
-        if case .id(let id) = current { return id }
-        if case .text(let text) = current { return text }
-        throw CandidParserError.expecting("<text>", butGot: current.syntax)
+        return try current.textOrId()
     }
     
     func expectNextId() throws -> String {
         let token = try takeNext()
-        guard case .id(let id) = token else {
-            throw CandidParserError.expecting("<id>", butGot: token.syntax)
-        }
-        return id
+        return try token.validId()
     }
     
     func expectNextTextOrId() throws -> String {
         let token = try takeNext()
-        if case .id(let id) = token { return id }
-        if case .text(let text) = token { return text }
-        throw CandidParserError.expecting("<text>", butGot: token.syntax)
+        return try token.textOrId()
     }
     
     func takeIfNext(is token: CandidParserToken) throws -> Bool {
@@ -78,10 +68,6 @@ class CandidParserStream {
         }
         try expectNext(token)
         return true
-    }
-    
-    func prepend(_ newTokens: [CandidParserToken]) {
-        tokens.insert(contentsOf: newTokens, at: 0)
     }
     
     static func splitTokens(_ string: String) throws -> [CandidParserToken] {
@@ -102,5 +88,23 @@ class CandidParserStream {
         return try CandidParserToken(String(token))
     }
     
-    private static let firstToken = try! Regex(#"\s*(?'token'"[^"]*"|->|[={}\(\):;,]|[^\s:=;,\(\)}{]+)\s*(?'rest'[\s\S]*)"#)
+    private static let firstToken = try! Regex(#"\s*(?'token'"[^"]*"|->|[={}\(\):;,]|[^\s={}\(\):;,]+)\s*(?'rest'[\s\S]*)"#)
+}
+
+private extension CandidParserToken {
+    func textOrId() throws -> String {
+        if case .id(let id) = self { return id }
+        if case .text(let text) = self { return text }
+        throw CandidParserError.expecting("<text|id>", butGot: syntax)
+    }
+    
+    func validId() throws -> String {
+        guard case .id(let id) = self,
+              try Self.validIdRegex.firstMatch(in: id) != nil else {
+            throw CandidParserError.expecting("<id>", butGot: syntax)
+        }
+        return id
+    }
+    
+    private static let validIdRegex = try! Regex(#"[A-Za-z_][A-Za-z0-9]*"#)
 }

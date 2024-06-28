@@ -72,6 +72,16 @@ import Foundation
 /// | '\f4' '\80'..'\8f' <utf8cont> <utf8cont>
 /// | '\f1'..'\f3' <utf8cont> <utf8cont> <utf8cont>
 /// <utf8cont> ::= '\80'..'\bf'
-class CandidValueParser {
-    
+class CandidValueParser: CandidParserBase {
+    func parseValue(_ input: String) throws -> CandidValue {
+        let stream = try CandidParserStream(string: input)
+        return try parseValue(stream)
+    }
+}
+
+private extension CandidValueParser {
+    func parseValue(_ stream: CandidParserStream) throws -> CandidValue {
+        
+        return .null
+    }
 }

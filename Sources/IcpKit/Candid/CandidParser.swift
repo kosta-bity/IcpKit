@@ -20,9 +20,9 @@ class CandidParser {
         try CandidTypeParser().parseSingleType(input)
     }
     
-    //    func parseValue(_ input: String) throws -> CandidValue {
-    //        throw CandidParserError.notImplemented
-    //    }
+    public func parseValue(_ input: String) throws -> CandidValue {
+        try CandidValueParser().parseValue(input)
+    }
 }
 
 public enum CandidParserError: Error {

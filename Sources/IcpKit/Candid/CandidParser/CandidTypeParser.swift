@@ -51,16 +51,43 @@ import Foundation
 /// | func <functype>
 /// | service <actortype>
 ///
+/// <letter> ::= A..Z | a..z
+/// <digit>  ::= 0..9
+/// <id>     ::= (<letter> | _)(<letter> | <digit> | _)*
+///
+/// <hex>    ::= <digit> | A..F | a..f
+/// <num>    ::= <digit>(_? <digit>)*
+/// <hexnum> ::= <hex>(_? <hex>)*
+/// <nat>    ::= <num> | 0x<hexnum>
+///
+/// <text>   ::= " <char>* "
+/// <char>   ::=
+/// | <utf8>
+/// | \ <hex> <hex>
+/// | \ <escape>
+/// | \u{ <hexnum> }
+/// <escape>  ::= n | r | t | \ | " | '
+/// <utf8>    ::= <ascii> | <utf8enc>
+/// <ascii>   ::= '\20'..'\7e' except " or \
+/// <utf8enc> ::=
+/// | '\c2'..'\df' <utf8cont>
+/// | '\e0' '\a0'..'\bf' <utf8cont>
+/// | '\ed' '\80'..'\9f' <utf8cont>
+/// | '\e1'..'\ec' <utf8cont> <utf8cont>
+/// | '\ee'..'\xef' <utf8cont> <utf8cont>
+/// | '\f0' '\90'..'\bf' <utf8cont> <utf8cont>
+/// | '\f4' '\80'..'\8f' <utf8cont> <utf8cont>
+/// | '\f1'..'\f3' <utf8cont> <utf8cont> <utf8cont>
+/// <utf8cont> ::= '\80'..'\bf'
+///
 /// <name> ::= <id> | <text>
-public class CandidTypeParser {
-    public init() {}
-    
-    public func parseSingleType(_ input: String) throws -> CandidType {
+class CandidTypeParser: CandidParserBase {
+    func parseSingleType(_ input: String) throws -> CandidType {
         let stream = try CandidParserStream(string: input)
         return try parseCandidType(stream)
     }
     
-    public func parseInterfaceDescription(_ provider: CandidInterfaceDefinitionProvider) async throws -> CandidInterfaceDefinition {
+    func parseInterfaceDescription(_ provider: CandidInterfaceDefinitionProvider) async throws -> CandidInterfaceDefinition {
         let mainContent = try await provider.readMain()
         let stream = try CandidParserStream(string: mainContent)
         return try await parseInterfaceDescription(provider, stream)
@@ -150,10 +177,28 @@ private extension CandidTypeParser {
     // record { "name with spaces" : nat; "unicode, too: ☃" : bool }
     // record { text; text; opt bool }
     private func parseRecordKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedItemType] {
-        try stream.expectNext(.openBracket)
-        let items = try parseOptionalNamedTypes(stream, .semicolon, .closeBracket)
-            .map { CandidKeyedItemType($0.name ?? String($0.index), $0.type)}
+        let items = try parseEnclosedItems(.brackets, .semicolon, stream, parseOptionalNamedType)
+            .enumerated()
+            .map {
+                guard let name = $0.element.0 else {
+                    return CandidKeyedItemType(hashedKey: $0.offset, type: $0.element.1)
+                }
+                return CandidKeyedItemType(name, $0.element.1)
+            }
         return items
+    }
+    
+    /// (<name> :)? <type>
+    private func parseOptionalNamedType(_ stream: CandidParserStream) throws -> (String?, CandidType) {
+        let name: String?
+        if try stream.peekSecondNext() == .colon {
+            name = try stream.expectNextTextOrId()
+            try stream.expectNext(.colon)
+        } else {
+            name = nil
+        }
+        let type = try parseCandidType(stream)
+        return (name, type)
     }
     
     // variant {}
@@ -161,24 +206,19 @@ private extension CandidTypeParser {
     // variant { "name with spaces" : nat; "unicode, too: ☃" : bool }
     // variant { spring; summer; fall; winter }
     private func parseVariantKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedItemType] {
-        try stream.expectNext(.openBracket)
-        var cases: [CandidKeyedItemType] = []
-        var nextToken = try stream.takeNext()
-        while nextToken != .closeBracket {
-            let key = try stream.expectCurrentTextOrId()
-            nextToken = try stream.takeNext()
-            if nextToken == .colon {
-                let keyType = try parseCandidType(stream)
-                cases.append(CandidKeyedItemType(key, keyType))
-                nextToken = try stream.takeNext()
-            } else {
-                cases.append(CandidKeyedItemType(key, .primitive(.null)))
-            }
-            if (nextToken == .semicolon) {
-                nextToken = try stream.takeNext()
-            }
+        return try parseEnclosedItems(.brackets, .semicolon, stream, parseVariantKeyedType)
+    }
+    
+    /// <name> (: <type>)?
+    private func parseVariantKeyedType(_ stream: CandidParserStream) throws -> CandidKeyedItemType {
+        let key = try stream.expectNextTextOrId()
+        let nextToken = try stream.peekNext()
+        if nextToken == .colon {
+            try stream.expectNext(.colon)
+            let keyType = try parseCandidType(stream)
+            return CandidKeyedItemType(key, keyType)
         }
-        return cases
+        return CandidKeyedItemType(key, .null)
     }
     
     /// func () -> ()
@@ -199,6 +239,13 @@ private extension CandidTypeParser {
         let oneway = try stream.takeIfNext(is: .id("oneway"))
         let compositeQuery = try stream.takeIfNext(is: .id("composite_query"))
         return CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneway, compositeQuery: compositeQuery)
+    }
+    
+    private func parseFunctionParameters(_ stream: CandidParserStream) throws -> [CandidFunctionSignature.Parameter] {
+        let parameters = try parseEnclosedItems(.parenthesis, .comma, stream, parseOptionalNamedType)
+            .enumerated()
+            .map { CandidFunctionSignature.Parameter(index: $0.offset, name: $0.element.0, type: $0.element.1) }
+        return parameters
     }
     
     /// <actor> ::= service <id>? : (<tuptype> ->)? (<actortype> | <id>) ;?
@@ -273,35 +320,6 @@ private extension CandidTypeParser {
             methods.append(.init(name: methodName, signatureType: signatureType))
         }
         return CandidServiceSignature(methods)
-    }
-    
-    private func parseOptionalNamedTypes(_ stream: CandidParserStream, _ separatorToken: CandidParserToken, _ closingToken: CandidParserToken) throws -> [CandidFunctionSignature.Parameter] {
-        var parameters: [CandidFunctionSignature.Parameter] = []
-        while try stream.peekNext() != closingToken {
-            let name: String?
-            if try stream.peekSecondNext() == .colon {
-                // key : type
-                name = try stream.expectNextTextOrId()
-                try stream.expectNext(.colon)
-            } else {
-                // type only, use sequentially-increasing labels
-                name = nil
-            }
-            
-            let keyType = try parseCandidType(stream)
-            parameters.append(CandidFunctionSignature.Parameter(index: parameters.count, name: name, type: keyType))
-            if (try stream.peekNext() == separatorToken) {
-                try stream.expectNext(separatorToken)
-            }
-        }
-        try stream.expectNext(closingToken)
-        return parameters
-    }
-    
-    private func parseFunctionParameters(_ stream: CandidParserStream) throws -> [CandidFunctionSignature.Parameter] {
-        try stream.expectNext(.openParenthesis)
-        let parameters = try parseOptionalNamedTypes(stream, .comma, .closeParenthesis)
-        return parameters
     }
 }
 
