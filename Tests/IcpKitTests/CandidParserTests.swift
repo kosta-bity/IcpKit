@@ -72,6 +72,18 @@ final class CandidParserTests: XCTestCase {
             XCTAssertTrue(interface.isResolved())
         }
     }
+    
+    func testFailingImports() async throws {
+        for (main, files) in CandidParserTestVectors.failingImportedFiles {
+            let provider = MockProvider(main, files)
+            do {
+                _ = try await parser.parseInterfaceDescription(provider)
+                XCTFail()
+            } catch {
+                // pass
+            }
+        }
+    }
 }
 
 private class MockProvider: CandidInterfaceDefinitionProvider {

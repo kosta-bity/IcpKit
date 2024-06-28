@@ -44,6 +44,10 @@ public struct CandidInterfaceDefinition: Equatable {
         namedTypes.values.allSatisfy { $0.isResolved(namedTypes) } &&
         service?.isResolved(namedTypes) ?? true
     }
+    
+    internal func removeService() -> CandidInterfaceDefinition {
+        return CandidInterfaceDefinition(namedTypes: namedTypes, service: nil)
+    }
 }
 
 private extension CandidType {

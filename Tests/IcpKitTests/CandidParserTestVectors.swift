@@ -131,7 +131,7 @@ enum CandidParserTestVectors {
         "type A = nat", // no ending semi-colon
     ]
     
-    static let importedFiles: [(String, [String: String], [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
+    static let importedFiles: [(mainDid: String, files: [String: String], types: [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
         ("import file1.did;", ["file1.did": "type A=nat;"], ["A":.natural], nil),
         ("import file1.did;type B = opt A;", ["file1.did": "type A=nat;"], ["A":.natural, "B": .option(.named("A"))], nil),
         ("type B = opt A;import file1.did;", ["file1.did": "type A=nat;"], ["A":.natural, "B": .option(.named("A"))], nil),
@@ -140,5 +140,11 @@ enum CandidParserTestVectors {
         ("import service file1.did;", ["file1.did": "type A=nat;service: {};"], ["A":.natural], .init(name: nil, initialisationArguments: nil, signature: .init([]))),
         ("import service file1.did;", ["file1.did": "type A=nat;service add: {};"], ["A":.natural], .init(name: "add", initialisationArguments: nil, signature: .init([]))),
         ("import file1.did;service sub: S;", ["file1.did": "type A=nat;type S=service{};service add: {};"], ["A":.natural, "S":.service()], .init(name: "sub", initialisationArguments: nil, signatureReference: "S")),
+        ("import service file1.did;type B=nat;", ["file1.did": "type A=nat;service add: {};"], ["A":.natural, "B":.natural], .init(name: "add", initialisationArguments: nil, signature: .init([]))),
+    ]
+    
+    static let failingImportedFiles: [(mainDid: String, files: [String:String])] = [
+        ("import file1", [:]),  // file not found
+        ("import service file1;service: {}", ["file1":"service: {}"]) // 2 services
     ]
 }

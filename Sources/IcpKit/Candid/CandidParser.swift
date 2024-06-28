@@ -15,6 +15,7 @@ public enum CandidParserError: Error {
     case typeAlreadyDefined(String)
     case referencedTypeNotDefined(String)
     case unresolvedImport(String)
+    case redundantService(String)
 }
 
 public protocol CandidInterfaceDefinitionProvider {
@@ -78,26 +79,24 @@ public class CandidParser {
     public func parseInterfaceDescription(_ provider: CandidInterfaceDefinitionProvider) async throws -> CandidInterfaceDefinition {
         let mainContent = try await provider.readMain()
         let stream = try CandidStringStream(string: mainContent)
-        let storage = NamedTypeStorage()
+        let context = ParsingContext()
         while try !stream.tokens.isEmpty && stream.peekNext() != .text(CandidPrimitiveType.service.syntax) {
             if try stream.takeIfNext(is: .text("type")) {
                 let (name, type) = try parseNamedType(stream)
-                try storage.add(name, type)
+                try context.defineType(name, type)
                 
             } else if try stream.takeIfNext(is: .text("import")) {
-                try await parseImportStatement(stream, provider)
+                try await parseImportStatement(stream, context, provider)
                 
             } else {
                 throw CandidParserError.expecting("'type', 'import' or 'service'", butGot: try stream.takeNext().syntax)
             }
         }
-        let service: CandidInterfaceDefinition.ServiceDefinition?
         if try stream.takeIfNext(is: .text(CandidPrimitiveType.service.syntax)) {
-            service = try parseServiceDefinition(stream, storage)
-        } else {
-            service = nil
+            let service = try parseServiceDefinition(stream)
+            try context.setService(service)
         }
-        return CandidInterfaceDefinition(namedTypes: storage.namedTypes, service: service)
+        return CandidInterfaceDefinition(namedTypes: context.namedTypes, service: context.service)
     }
     
     public func parseInterfaceDescription(_ input: String) async throws -> CandidInterfaceDefinition {
@@ -123,42 +122,23 @@ private class StringProvider: CandidInterfaceDefinitionProvider {
 
 private extension CandidParser {
     /// import service? <text>
-    func parseImportStatement(_ stream: CandidStringStream, _ provider: CandidInterfaceDefinitionProvider) async throws {
+    func parseImportStatement(_ stream: CandidStringStream, _ context: ParsingContext, _ provider: CandidInterfaceDefinitionProvider) async throws {
         let importService = try stream.takeIfNext(is: .text("service"))
-        let nameToken = try stream.takeNext()
-        guard let fileName = nameToken.textValue else {
-            throw CandidParserError.expecting("a filename", butGot: nameToken.syntax)
-        }
+        let fileName = try stream.expectText()
         try stream.expectNext(.semicolon)
         let fileContents = try await provider.read(contentsOf: fileName)
-        let tokens = try CandidStringStream.splitTokens(fileContents)
-        if importService {
-            stream.prepend(tokens)
-            
-        } else {
-            guard tokens.count >= 2 else { throw CandidParserError.unexpectedEnd }
-            for i in 0..<(tokens.count - 2) {
-                let first = tokens[i]
-                let second = tokens[i+1]
-                let third = tokens[i+2]
-                if first == .text(CandidPrimitiveType.service.syntax) && (second == .colon || third == .colon) {
-                    // found 'service:' or 'service <name>:' definition. truncate here
-                    let truncated = Array(tokens.prefix(i))
-                    stream.prepend(truncated)
-                    return
-                }
-            }
-            // no service defined, import everything
-            stream.prepend(tokens)
+        let interface = try await parseInterfaceDescription(fileContents)
+        for type in interface.namedTypes {
+            try context.defineType(type.key, type.value)
+        }
+        if importService, let service = interface.service {
+            try context.setService(service)
         }
     }
     
     /// <def>   ::= type <id> = <datatype> | import service? <text>
     func parseNamedType(_ stream: CandidStringStream) throws -> (String, CandidType) {
-        let nameToken = try stream.takeNext()
-        guard let name = nameToken.textValue else {
-            throw CandidParserError.expecting("type name", butGot: nameToken.syntax)
-        }
+        let name = try stream.expectId()
         try stream.expectNext(.equals)
         let type = try parseCandidType(stream)
         try stream.expectNext(.semicolon)
@@ -166,10 +146,7 @@ private extension CandidParser {
     }
     
     func parseCandidType(_ stream: CandidStringStream) throws -> CandidType {
-        let token = try stream.takeNext()
-        guard case .text(let type) = token else {
-            throw CandidParserError.unrecognisedType(token.syntax)
-        }
+        let type = try stream.expectId()
         switch type {
         case CandidPrimitiveType.null.syntax: return .null
         case CandidPrimitiveType.bool.syntax: return .bool
@@ -220,7 +197,7 @@ private extension CandidParser {
         var nextToken = try stream.takeNext()
         while nextToken != .closeBracket {
             guard let key = nextToken.textValue else {
-                throw CandidParserError.expecting("anyString", butGot: nextToken.syntax)
+                throw CandidParserError.expecting("<string>", butGot: nextToken.syntax)
             }
             nextToken = try stream.takeNext()
             if nextToken == .colon {
@@ -259,7 +236,7 @@ private extension CandidParser {
     
     /// <actor> ::= service <id>? : (<tuptype> ->)? (<actortype> | <id>) ;?
     /// <actortype> ::= { <methtype>;* }
-    private func parseServiceDefinition(_ stream: CandidStringStream, _ storage: NamedTypeStorage) throws -> CandidInterfaceDefinition.ServiceDefinition {
+    private func parseServiceDefinition(_ stream: CandidStringStream) throws -> CandidInterfaceDefinition.ServiceDefinition {
         let serviceName: String?
         if try stream.peekNext().textValue != nil {
             serviceName = try stream.takeNext().textValue!
@@ -281,10 +258,7 @@ private extension CandidParser {
         if try stream.peekNext() == .openBracket {
             serviceSignature = .concrete(try parseServiceSignature(stream))
         } else {
-            let typeNameToken = try stream.takeNext()
-            guard case .text(let typeName) = typeNameToken else {
-                throw CandidParserError.expecting("service reference name", butGot: typeNameToken.syntax)
-            }
+            let typeName = try stream.expectId()
             serviceSignature = .reference(typeName)
         }
         try stream.expectNext(.semicolon)
@@ -318,7 +292,7 @@ private extension CandidParser {
         var methods: [CandidServiceSignature.Method] = []
         while token != .closeBracket {
             guard let methodName = token.textValue else {
-                throw CandidParserError.expecting("anyString", butGot: token.syntax)
+                throw CandidParserError.expecting("<string>", butGot: token.syntax)
             }
             try stream.expectNext(.colon)
             let signatureType: CandidServiceSignature.Method.FunctionSignatureType
@@ -326,10 +300,7 @@ private extension CandidParser {
                 let methodSignature = try parseFunctionSignature(stream)
                 signatureType = .concrete(methodSignature)
             } else {
-                let nameToken = try stream.takeNext()
-                guard case .text(let name) = nameToken else {
-                    throw CandidParserError.expecting("method reference id", butGot: nameToken.syntax)
-                }
+                let name = try stream.expectId()
                 signatureType = .reference(name)
             }
             try stream.expectNext(.semicolon)
@@ -345,11 +316,7 @@ private extension CandidParser {
             let name: String?
             if try stream.peekSecondNext() == .colon {
                 // key : type
-                let keyToken = try stream.takeNext()
-                guard let stringKey = keyToken.textValue else {
-                    throw CandidParserError.expecting("anyString", butGot: keyToken.syntax)
-                }
-                name = stringKey
+                name = try stream.expectText()
                 try stream.expectNext(.colon)
             } else {
                 // type only, use sequentially-increasing labels
@@ -468,6 +435,22 @@ private class CandidStringStream {
         }
         return tokens[1]
     }
+
+    func expectId() throws -> String {
+        let token = try takeNext()
+        guard case .text(let id) = token else {
+            throw CandidParserError.expecting("<id>", butGot: token.syntax)
+        }
+        return id
+    }
+    
+    func expectText() throws -> String {
+        let token = try takeNext()
+        guard let text = token.textValue else {
+            throw CandidParserError.expecting("<text>", butGot: token.syntax)
+        }
+        return text
+    }
     
     func takeIfNext(is token: CandidParserToken) throws -> Bool {
         guard tokens.first == token else {
@@ -502,26 +485,27 @@ private class CandidStringStream {
     private static let firstToken = try! Regex(#"\s*(?'token'"[^"]*"|->|[={}\(\):;,]|[^\s:=;,\(\)}{]+)\s*(?'rest'[\s\S]*)"#)
 }
 
-class NamedTypeStorage {
+private class ParsingContext {
     private (set) var namedTypes: [String: CandidType] = [:]
+    private (set) var service: CandidInterfaceDefinition.ServiceDefinition?
     
     subscript (_ name: String) -> CandidType? {
         return namedTypes[name]
     }
     
-    func add(_ name: String, _ type: CandidType) throws {
+    func defineType(_ name: String, _ type: CandidType) throws {
         guard !contains(name) else {
             throw CandidParserError.typeAlreadyDefined(name)
         }
         namedTypes[name] = type
     }
     
-    func get(_ name: String) throws -> CandidType {
-        guard let type = self[name] else {
-            throw CandidParserError.referencedTypeNotDefined(name)
+    func setService(_ service: CandidInterfaceDefinition.ServiceDefinition) throws {
+        guard self.service == nil else {
+            throw CandidParserError.redundantService(service.name ?? "(unnamed)")
         }
-        return type
+        self.service = service
     }
-    
+        
     func contains(_ name: String) -> Bool { namedTypes.keys.contains(name) }
 }
