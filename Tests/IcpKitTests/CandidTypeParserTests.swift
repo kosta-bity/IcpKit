@@ -8,17 +8,17 @@
 import XCTest
 @testable import IcpKit
 
-final class CandidParserTests: XCTestCase {
+final class CandidTypeParserTests: XCTestCase {
     let parser = CandidParser()
     
     func testParseSingleTypes() throws {
-        for (input, candidType) in CandidParserTestVectors.passingSingleTypes {
+        for (input, candidType) in CandidTypeParserTestVectors.passingSingleTypes {
             XCTAssertEqual(try parser.parseSingleType(input), candidType, "Failed \(input)\nNot equal to \(candidType.syntax)")
         }
     }
     
     func testParseFunctionArgumentNames() throws {
-        for (input, candidType, argNames, resNames) in CandidParserTestVectors.functionArgumentNames {
+        for (input, candidType, argNames, resNames) in CandidTypeParserTestVectors.functionArgumentNames {
             let parsed = try parser.parseSingleType(input)
             XCTAssertEqual(parsed, candidType, "\(input)\nNot equal to \(candidType.syntax)")
             guard case .function(let signature) = parsed else {
@@ -31,13 +31,13 @@ final class CandidParserTests: XCTestCase {
     }
     
     func testParseFailingSingleType() throws {
-        for input in CandidParserTestVectors.failingSingleTypes {
+        for input in CandidTypeParserTestVectors.failingSingleTypes {
             XCTAssertThrowsError(try parser.parseSingleType(input), "\(input)")
         }
     }
     
     func testDidFiles() async throws {
-        for (did, namedTypes, service) in CandidParserTestVectors.didFiles {
+        for (did, namedTypes, service) in CandidTypeParserTestVectors.didFiles {
             let interface = try await parser.parseInterfaceDescription(did)
             XCTAssertEqual(interface.namedTypes, namedTypes)
             XCTAssertEqual(interface.service, service)
@@ -46,14 +46,14 @@ final class CandidParserTests: XCTestCase {
     }
     
     func testUnresolvedDidFiles() async throws {
-        for did in CandidParserTestVectors.unresolvedDidFiles {
+        for did in CandidTypeParserTestVectors.unresolvedDidFiles {
             let interface = try await parser.parseInterfaceDescription(did)
             XCTAssertFalse(interface.isResolved(), did)
         }
     }
     
     func testFailingDidFiles() async throws {
-        for did in CandidParserTestVectors.failingDidFiles {
+        for did in CandidTypeParserTestVectors.failingDidFiles {
             do {
                 _ = try await parser.parseInterfaceDescription(did)
                 XCTFail()
@@ -64,7 +64,7 @@ final class CandidParserTests: XCTestCase {
     }
     
     func testImports() async throws {
-        for (main, files, types, service) in CandidParserTestVectors.importedFiles {
+        for (main, files, types, service) in CandidTypeParserTestVectors.importedFiles {
             let provider = MockProvider(main, files)
             let interface = try await parser.parseInterfaceDescription(provider)
             XCTAssertEqual(interface.namedTypes, types)
@@ -74,7 +74,7 @@ final class CandidParserTests: XCTestCase {
     }
     
     func testFailingImports() async throws {
-        for (main, files) in CandidParserTestVectors.failingImportedFiles {
+        for (main, files) in CandidTypeParserTestVectors.failingImportedFiles {
             let provider = MockProvider(main, files)
             do {
                 _ = try await parser.parseInterfaceDescription(provider)

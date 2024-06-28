@@ -1,5 +1,5 @@
 //
-//  CandidParserTestVectors.swift
+//  CandidTypeParserTestVectors.swift
 //
 //
 //  Created by Konstantinos Gaitanis on 27.06.24.
@@ -8,7 +8,7 @@
 import Foundation
 @testable import IcpKit
 
-enum CandidParserTestVectors {
+enum CandidTypeParserTestVectors {
     static let passingSingleTypes: [(String, CandidType)] = [
         ("null", .null),
         ("bool", .bool),
