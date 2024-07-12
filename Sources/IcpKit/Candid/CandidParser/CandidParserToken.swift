@@ -55,8 +55,8 @@ enum CandidParserToken: Equatable {
         case Self.comma.syntax: self = .comma
         case Self.rightArrow.syntax:  self = .rightArrow
         default:
-            let match = try Self.quotedString.firstMatch(in: string)
-            if let quoted = match?["string"]?.substring {
+            if let quotedStringMatch = try Self.quotedString.firstMatch(in: string),
+               let quoted = quotedStringMatch["string"]?.substring {
                 self = .text(String(quoted))
             } else {
                 self = .id(string)

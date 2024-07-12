@@ -80,15 +80,16 @@ class CandidParserStream {
     }
     
     private static func parseFirstToken( _ string: inout String) throws -> CandidParserToken {
-        let match = try Self.firstToken.firstMatch(in: string)
-        guard let token = match?["token"]?.substring else {
-            throw CandidParserError.unexpectedEnd
+        guard let match = try firstTokenRegex.firstMatch(in: string),
+              let tokenGroup = match["token"],
+              let token = tokenGroup.substring else {
+            throw CandidParserError.unexpectedToken(string)
         }
-        string = String(match?["rest"]?.substring ?? Substring())
+        string = String(string[match.range.upperBound..<string.endIndex])
         return try CandidParserToken(String(token))
     }
     
-    private static let firstToken = try! Regex(#"\s*(?'token'"[^"]*"|->|[={}\(\):;,]|[^\s={}\(\):;,]+)\s*(?'rest'[\s\S]*)"#)
+    
 }
 
 private extension CandidParserToken {
@@ -106,5 +107,12 @@ private extension CandidParserToken {
         return id
     }
     
-    private static let validIdRegex = try! Regex(#"[A-Za-z_][A-Za-z0-9]*"#)
+    private static let validIdRegex = try! Regex(#"[A-Za-z_][A-Za-z0-9_]*"#)
 }
+
+private let whiteSpace = #"\s*"#
+private let quotedString = #""[^"]*""#
+private let arrow = "->"
+private let singleCharToken = #"[={}\(\):;,]"#
+private let anyString = #"[^={}\(\):;,\s]*"#
+private let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(anyString))\(whiteSpace)")
