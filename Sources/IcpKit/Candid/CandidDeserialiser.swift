@@ -270,9 +270,10 @@ private extension CandidValue {
             
         case .variant(let rowTypes):
             let valueIndex: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let valueType = rowTypes.items[valueIndex].type
             return .variant(CandidVariant(
-                candidTypes: rowTypes,
-                value: try decodeValue(rowTypes[valueIndex].type, stream),
+                candidTypes: .init(rowTypes),
+                value: try decodeValue(valueType, stream),
                 valueIndex: UInt(valueIndex)
             ))
             

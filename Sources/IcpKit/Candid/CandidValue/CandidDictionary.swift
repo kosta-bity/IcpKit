@@ -21,17 +21,17 @@ public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable {
     public init(_ dictionary: [String: CandidValue]) {
         candidSortedItems = dictionary
             .map(CandidKeyedItem.init)
-            .sorted { $0.key.hash < $1.key.hash }  // sort by ascending keys
+            .sorted()  // sort by ascending keys
     }
     
     public init(_ hashedDictionary: [Int: CandidValue]) {
         candidSortedItems = hashedDictionary
             .map(CandidKeyedItem.init)
-            .sorted { $0.key.hash < $1.key.hash }  // sort by ascending keys
+            .sorted()  // sort by ascending keys
     }
     
     public init(_ keyedItems: any Sequence<CandidKeyedItem>) {
-        candidSortedItems = keyedItems.sorted { $0.key.hash < $1.key.hash }  // sort by ascending keys
+        candidSortedItems = keyedItems.sorted()  // sort by ascending keys
     }
     
     public init(dictionaryLiteral elements: (String, CandidValue)...) {

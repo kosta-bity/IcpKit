@@ -22,13 +22,16 @@ public struct CandidFunctionSignature: Equatable {
     /// Naming the arguments or results for a method is purely for documentation purposes.
     /// The name you use does not change the method’s type or the values being passed.
     /// Instead, arguments and results are identified by their position, independent of the name.
-    public struct Parameter: Equatable {
+    public struct Parameter: Equatable, Comparable {
         public let index: Int
         public let name: String?
         public let type: CandidType
         
         public static func ==(lhs: Parameter, rhs: Parameter) -> Bool {
-            return lhs.index == rhs.index && lhs.type == rhs.type
+            lhs.index == rhs.index && lhs.type == rhs.type
+        }
+        public static func < (lhs: CandidFunctionSignature.Parameter, rhs: CandidFunctionSignature.Parameter) -> Bool {
+            lhs.index < rhs.index
         }
         
         public init(index: Int, name: String?, type: CandidType) {
@@ -61,8 +64,8 @@ public struct CandidFunctionSignature: Equatable {
     
     
     public init(_ inputs: [Parameter], _ outputs: [Parameter], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) {
-        self.arguments = inputs.sorted { $0.index < $1.index }
-        self.results = outputs.sorted { $0.index < $1.index }
+        self.arguments = inputs.sorted()
+        self.results = outputs.sorted()
         annotations = Annotations(query: query, oneWay: oneWay, compositeQuery: compositeQuery)
     }
     

@@ -16,8 +16,7 @@ final class CandidTests: XCTestCase {
         let testVectors = CandidSerialisationTestVectors.singleValueTestVectors
         for (value, expected) in testVectors {
             let encoded = serialiser.encode(value)
-            print("\(value) --expected \(Data(expected).hex) -- got -- \(encoded.hex)")
-            XCTAssertEqual(encoded, CandidSerialiser.magicBytes + Data(expected))
+            XCTAssertEqual(encoded, CandidSerialiser.magicBytes + Data(expected), "\(value) --expected \(Data(expected).hex) -- got -- \(encoded.hex)")
             let decoded = try deserialiser.decode(encoded)
             XCTAssertEqual(value, decoded.first)
         }

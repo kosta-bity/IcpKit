@@ -116,7 +116,7 @@ enum CandidTypeParserTestVectors {
                 .init(hashedKey: 1103114667, type: .text),
                 .init(hashedKey: 220614283, type: .natural),
                 .init(hashedKey: 492419670, type: .text),
-        ].sorted())], nil),
+        ])], nil),
         ("service: {};", [:], .init(name: nil, initialisationArguments: nil, signature: .init([]))),
         ("service:(nat)-> {};", [:], .init(name: nil, initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signature: .init([]))),
         ("service:()-> {};", [:], .init(name: nil, initialisationArguments: [], signature: .init([]))),

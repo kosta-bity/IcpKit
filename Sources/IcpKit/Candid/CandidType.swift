@@ -30,12 +30,37 @@ public indirect enum CandidType: Equatable {
     case empty
     case option(CandidType)
     case vector(CandidType)
-    case record([CandidKeyedItemType])
-    case variant([CandidKeyedItemType])
+    case record(CandidKeyedTypes)
+    case variant(CandidKeyedTypes)
     case function(CandidFunctionSignature)
     case service(CandidServiceSignature)
     case principal
     case named(String)
+}
+
+public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence {
+    public typealias Element = CandidKeyedItemType
+    public typealias Iterator = Array<CandidKeyedItemType>.Iterator
+    public let items: [CandidKeyedItemType]
+    
+    public init(arrayLiteral elements: CandidKeyedItemType...) {
+        items = elements.sorted()
+    }
+    
+    public init(_ items: any Sequence<CandidKeyedItemType>) {
+        self.items = items.sorted()
+    }
+    
+    public subscript (_ keyHash: Int) -> CandidKeyedItemType? {
+        return items.first { $0.key.hash == keyHash }
+    }
+    
+    public subscript (_ key: String) -> CandidKeyedItemType? {
+        return items.first { $0.key.string == key }
+    }
+    
+    public func makeIterator() -> Array<CandidKeyedItemType>.Iterator { items.makeIterator() }
+    public var count: Int { items.count }
 }
 
 extension CandidType {
