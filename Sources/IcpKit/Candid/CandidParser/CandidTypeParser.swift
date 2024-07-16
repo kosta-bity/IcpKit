@@ -97,19 +97,19 @@ class CandidTypeParser: CandidParserBase {
 private extension CandidTypeParser {
     func parseInterfaceDescription(_ provider: CandidInterfaceDefinitionProvider, _ stream: CandidParserStream) async throws -> CandidInterfaceDefinition {
         let context = ParsingContext()
-        while try !stream.tokens.isEmpty && stream.peekNext() != .id(CandidPrimitiveType.service.syntax) {
-            if try stream.takeIfNext(is: .id("type")) {
+        while try !stream.tokens.isEmpty && stream.peekNext() != .word(CandidPrimitiveType.service.syntax) {
+            if try stream.takeIfNext(is: .word("type")) {
                 let (name, type) = try parseNamedType(stream)
                 try context.defineType(name, type)
                 
-            } else if try stream.takeIfNext(is: .id("import")) {
+            } else if try stream.takeIfNext(is: .word("import")) {
                 try await parseImportStatement(stream, context, provider)
                 
             } else {
-                throw CandidParserError.expecting("'type', 'import' or 'service'", butGot: try stream.takeNext().syntax)
+                throw CandidParserError.expecting("'type', 'import' or 'service'", butGot: try stream.peekNext().syntax)
             }
         }
-        if try stream.takeIfNext(is: .id(CandidPrimitiveType.service.syntax)) {
+        if try stream.takeIfNext(is: .word(CandidPrimitiveType.service.syntax)) {
             let service = try parseServiceDefinition(stream)
             try context.setService(service)
         }
@@ -118,8 +118,8 @@ private extension CandidTypeParser {
     
     /// import service? <text>
     func parseImportStatement(_ stream: CandidParserStream, _ context: ParsingContext, _ provider: CandidInterfaceDefinitionProvider) async throws {
-        let importService = try stream.takeIfNext(is: .id("service"))
-        let fileName = try stream.expectNextTextOrId()
+        let importService = try stream.takeIfNext(is: .word("service"))
+        let fileName = try stream.expectNextTextOrWord()
         try stream.expectNext(.semicolon)
         let fileContents = try await provider.read(contentsOf: fileName)
         let stream = try CandidParserStream(string: fileContents)
@@ -177,11 +177,14 @@ private extension CandidTypeParser {
     // record { "name with spaces" : nat; "unicode, too: ☃" : bool }
     // record { text; text; opt bool }
     private func parseRecordKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedItemType] {
-        let items = try parseEnclosedItems(.brackets, .semicolon, stream, parseOptionalNamedType)
+        let items = try Self.parseEnclosedItems(.brackets, .semicolon, stream, parseOptionalNamedType)
             .enumerated()
             .map {
                 guard let name = $0.element.0 else {
                     return CandidKeyedItemType(hashedKey: $0.offset, type: $0.element.1)
+                }
+                if let number = Int(name, radix: 10) {
+                    return CandidKeyedItemType(hashedKey: number, type: $0.element.1)
                 }
                 return CandidKeyedItemType(name, $0.element.1)
             }
@@ -192,7 +195,7 @@ private extension CandidTypeParser {
     private func parseOptionalNamedType(_ stream: CandidParserStream) throws -> (String?, CandidType) {
         let name: String?
         if try stream.peekSecondNext() == .colon {
-            name = try stream.expectNextTextOrId()
+            name = try stream.expectNextTextOrWord()
             try stream.expectNext(.colon)
         } else {
             name = nil
@@ -206,12 +209,12 @@ private extension CandidTypeParser {
     // variant { "name with spaces" : nat; "unicode, too: ☃" : bool }
     // variant { spring; summer; fall; winter }
     private func parseVariantKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedItemType] {
-        return try parseEnclosedItems(.brackets, .semicolon, stream, parseVariantKeyedType)
+        return try Self.parseEnclosedItems(.brackets, .semicolon, stream, parseVariantKeyedType)
     }
     
     /// <name> (: <type>)?
     private func parseVariantKeyedType(_ stream: CandidParserStream) throws -> CandidKeyedItemType {
-        let key = try stream.expectNextTextOrId()
+        let key = try stream.expectNextTextOrWord()
         let nextToken = try stream.peekNext()
         if nextToken == .colon {
             try stream.expectNext(.colon)
@@ -235,14 +238,14 @@ private extension CandidTypeParser {
         let inputs = try parseFunctionParameters(stream)
         try stream.expectNext(.rightArrow)
         let outputs = try parseFunctionParameters(stream)
-        let query = try stream.takeIfNext(is: .id("query"))
-        let oneway = try stream.takeIfNext(is: .id("oneway"))
-        let compositeQuery = try stream.takeIfNext(is: .id("composite_query"))
+        let query = try stream.takeIfNext(is: .word("query"))
+        let oneway = try stream.takeIfNext(is: .word("oneway"))
+        let compositeQuery = try stream.takeIfNext(is: .word("composite_query"))
         return CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneway, compositeQuery: compositeQuery)
     }
     
     private func parseFunctionParameters(_ stream: CandidParserStream) throws -> [CandidFunctionSignature.Parameter] {
-        let parameters = try parseEnclosedItems(.parenthesis, .comma, stream, parseOptionalNamedType)
+        let parameters = try Self.parseEnclosedItems(.parenthesis, .comma, stream, parseOptionalNamedType)
             .enumerated()
             .map { CandidFunctionSignature.Parameter(index: $0.offset, name: $0.element.0, type: $0.element.1) }
         return parameters
@@ -253,7 +256,7 @@ private extension CandidTypeParser {
     private func parseServiceDefinition(_ stream: CandidParserStream) throws -> CandidInterfaceDefinition.ServiceDefinition {
         let serviceName: String?
         if try stream.peekNext().isTextOrId {
-            serviceName = try stream.expectNextTextOrId()
+            serviceName = try stream.expectNextTextOrWord()
         } else {
             serviceName = nil
         }
@@ -305,7 +308,7 @@ private extension CandidTypeParser {
         var token = try stream.takeNext()
         var methods: [CandidServiceSignature.Method] = []
         while token != .closeBracket {
-            let methodName = try stream.expectCurrentTextOrId()
+            let methodName = try stream.expectCurrentTextOrWord()
             try stream.expectNext(.colon)
             let signatureType: CandidServiceSignature.Method.FunctionSignatureType
             if try stream.peekNext() == .openParenthesis {

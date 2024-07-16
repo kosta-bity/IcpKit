@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidVector: ExpressibleByArrayLiteral, Equatable {
+public struct CandidVector: Equatable {
     private enum CandidVectorError: Error {
         case noElementsAndNoType
         case wrongCandidType
@@ -15,10 +15,6 @@ public struct CandidVector: ExpressibleByArrayLiteral, Equatable {
     
     public let values: [CandidValue]
     public let containedType: CandidType
-    
-    public init(arrayLiteral elements: CandidValue...) {
-        try! self.init(Array(elements))
-    }
     
     public init(_ containedType: CandidType) {
         self.containedType = containedType

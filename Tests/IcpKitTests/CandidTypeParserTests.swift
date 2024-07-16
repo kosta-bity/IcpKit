@@ -84,6 +84,16 @@ final class CandidTypeParserTests: XCTestCase {
             }
         }
     }
+    
+    func testRealWorldExamples() async throws {
+        let evmService = try await parser.parseInterfaceDescription(CandidTypeParserTestVectors.evmDidFile)
+        XCTAssertEqual(evmService.namedTypes.count, 46)
+        guard case .concrete(let serviceSig) = evmService.service?.signature else {
+            XCTFail()
+            return
+        }
+        XCTAssertEqual(serviceSig.methods.count, 23)
+    }
 }
 
 private class MockProvider: CandidInterfaceDefinitionProvider {

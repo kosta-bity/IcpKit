@@ -44,6 +44,7 @@ enum CandidTypeParserTestVectors {
         
         ("variant {}", .variant()),
         ("variant { ok : nat; error : text }", .variant(["ok": .natural, "error": .text])),
+        ("variant { ok : nat; error : text; }", .variant(["ok": .natural, "error": .text])),
         ("variant { ok : vec nat8 }", .variant(["ok": .vector(.natural8)])),
         (#"variant { "name with spaces" : nat; "unicode, too: ☃" : bool }"#, .variant(["name with spaces": .natural, "unicode, too: ☃": .bool])),
         ("variant { spring; summer; fall; winter }", .variant(["spring": .null, "summer": .null, "fall": .null, "winter": .null])),
@@ -106,6 +107,16 @@ enum CandidTypeParserTestVectors {
             "B": .vector(.named("A")),
             "C": .service([.init("foo", [.named("A")], [.named("B")])])
         ], nil),
+//        "street": .text,
+//        "city": .text,
+//        "zip_code": .natural,
+//        "country": .text
+        ("type A = record { 288167939 : text; 1103114667 : text; 220614283 : nat; 492419670 : text;};", ["A": .record([
+                .init(hashedKey: 288167939, type: .text),
+                .init(hashedKey: 1103114667, type: .text),
+                .init(hashedKey: 220614283, type: .natural),
+                .init(hashedKey: 492419670, type: .text),
+        ])], nil),
         ("service: {};", [:], .init(name: nil, initialisationArguments: nil, signature: .init([]))),
         ("service:(nat)-> {};", [:], .init(name: nil, initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signature: .init([]))),
         ("service:()-> {};", [:], .init(name: nil, initialisationArguments: [], signature: .init([]))),
@@ -156,4 +167,282 @@ enum CandidTypeParserTestVectors {
         ("import file1", [:]),  // file not found
         ("import service file1;service: {}", ["file1":"service: {}"]) // 2 services
     ]
+    
+    static let evmDidFile = """
+type Auth = variant { FreeRpc; PriorityRpc; RegisterProvider; Manage };
+type Block = record {
+  miner : text;
+  totalDifficulty : opt nat;
+  receiptsRoot : text;
+  stateRoot : text;
+  hash : text;
+  difficulty : opt nat;
+  size : nat;
+  uncles : vec text;
+  baseFeePerGas : opt nat;
+  extraData : text;
+  transactionsRoot : opt text;
+  sha3Uncles : text;
+  nonce : nat;
+  number : nat;
+  timestamp : nat;
+  transactions : vec text;
+  gasLimit : nat;
+  logsBloom : text;
+  parentHash : text;
+  gasUsed : nat;
+  mixHash : text;
+};
+type BlockTag = variant {
+  Earliest;
+  Safe;
+  Finalized;
+  Latest;
+  Number : nat;
+  Pending;
+};
+type EthMainnetService = variant {
+  Alchemy;
+  Ankr;
+  BlockPi;
+  Cloudflare;
+  PublicNode;
+  Llama;
+};
+type EthSepoliaService = variant {
+  Alchemy;
+  Ankr;
+  BlockPi;
+  PublicNode;
+};
+type L2MainnetService = variant {
+  Alchemy;
+  Ankr;
+  BlockPi;
+  PublicNode;
+  Llama;
+};
+type FeeHistory = record {
+  reward : vec vec nat;
+  gasUsedRatio : vec float64;
+  oldestBlock : nat;
+  baseFeePerGas : vec nat;
+};
+type FeeHistoryArgs = record {
+  blockCount : nat;
+  newestBlock : BlockTag;
+  rewardPercentiles : opt vec nat8;
+};
+type GetLogsArgs = record {
+  fromBlock : opt BlockTag;
+  toBlock : opt BlockTag;
+  addresses : vec text;
+  topics : opt vec Topic;
+};
+type GetTransactionCountArgs = record { address : text; block : BlockTag };
+type HttpHeader = record { value : text; name : text };
+type HttpOutcallError = variant {
+  IcError : record { code : RejectionCode; message : text };
+  InvalidHttpJsonRpcResponse : record {
+    status : nat16;
+    body : text;
+    parsingError : opt text;
+  };
+};
+type InitArgs = record {
+  nodesInSubnet : nat32;
+};
+type JsonRpcError = record { code : int64; message : text };
+type LogEntry = record {
+  transactionHash : opt text;
+  blockNumber : opt nat;
+  data : text;
+  blockHash : opt text;
+  transactionIndex : opt nat;
+  topics : vec text;
+  address : text;
+  logIndex : opt nat;
+  removed : bool;
+};
+type ManageProviderArgs = record {
+  providerId : nat64;
+  chainId: opt nat64;
+  "service" : opt RpcService;
+  primary : opt bool;
+};
+type Metrics = record {
+  requests : vec record { record { text; text }; nat64 };
+  responses : vec record { record { text; text; text }; nat64 };
+  inconsistentResponses : vec record { record { text; text }; nat64 };
+  cyclesCharged : vec record { record { text; text }; nat };
+  cyclesWithdrawn : nat;
+  errNoPermission : nat64;
+  errHttpOutcall : vec record { record { text; text }; nat64 };
+  errHostNotAllowed : vec record { text; nat64 };
+};
+type MultiFeeHistoryResult = variant {
+  Consistent : FeeHistoryResult;
+  Inconsistent : vec record { RpcService; FeeHistoryResult };
+};
+type MultiGetBlockByNumberResult = variant {
+  Consistent : GetBlockByNumberResult;
+  Inconsistent : vec record { RpcService; GetBlockByNumberResult };
+};
+type MultiGetLogsResult = variant {
+  Consistent : GetLogsResult;
+  Inconsistent : vec record { RpcService; GetLogsResult };
+};
+type MultiGetTransactionCountResult = variant {
+  Consistent : GetTransactionCountResult;
+  Inconsistent : vec record { RpcService; GetTransactionCountResult };
+};
+type MultiGetTransactionReceiptResult = variant {
+  Consistent : GetTransactionReceiptResult;
+  Inconsistent : vec record { RpcService; GetTransactionReceiptResult };
+};
+type MultiSendRawTransactionResult = variant {
+  Consistent : SendRawTransactionResult;
+  Inconsistent : vec record { RpcService; SendRawTransactionResult };
+};
+type ProviderError = variant {
+  TooFewCycles : record { expected : nat; received : nat };
+  MissingRequiredProvider;
+  ProviderNotFound;
+  NoPermission;
+};
+type ProviderId = nat64;
+type ProviderView = record {
+  cyclesPerCall : nat64;
+  owner : principal;
+  hostname : text;
+  primary : bool;
+  chainId : nat64;
+  cyclesPerMessageByte : nat64;
+  providerId : nat64;
+};
+type RegisterProviderArgs = record {
+  cyclesPerCall : nat64;
+  credentialPath : text;
+  hostname : text;
+  credentialHeaders : opt vec HttpHeader;
+  chainId : nat64;
+  cyclesPerMessageByte : nat64;
+};
+type RejectionCode = variant {
+  NoError;
+  CanisterError;
+  SysTransient;
+  DestinationInvalid;
+  Unknown;
+  SysFatal;
+  CanisterReject;
+};
+type FeeHistoryResult = variant { Ok : opt FeeHistory; Err : RpcError };
+type GetBlockByNumberResult = variant { Ok : Block; Err : RpcError };
+type GetLogsResult = variant { Ok : vec LogEntry; Err : RpcError };
+type GetTransactionCountResult = variant { Ok : nat; Err : RpcError };
+type GetTransactionReceiptResult = variant {
+  Ok : opt TransactionReceipt;
+  Err : RpcError;
+};
+type SendRawTransactionResult = variant {
+  Ok : SendRawTransactionStatus;
+  Err : RpcError;
+};
+type RequestResult = variant { Ok : text; Err : RpcError };
+type RequestCostResult = variant { Ok : nat; Err : RpcError };
+type RpcConfig = record { responseSizeEstimate : opt nat64 };
+type RpcError = variant {
+  JsonRpcError : JsonRpcError;
+  ProviderError : ProviderError;
+  ValidationError : ValidationError;
+  HttpOutcallError : HttpOutcallError;
+};
+type RpcApi = record { url : text; headers : opt vec HttpHeader };
+type RpcService = variant {
+  Chain : nat64;
+  Provider : nat64;
+  Custom : RpcApi;
+  EthSepolia : EthSepoliaService;
+  EthMainnet : EthMainnetService;
+  ArbitrumOne : L2MainnetService;
+  BaseMainnet : L2MainnetService;
+  OptimismMainnet : L2MainnetService;
+};
+type RpcServices = variant {
+  Custom : record {
+    chainId : nat64;
+    services : vec RpcApi;
+  };
+  EthSepolia : opt vec EthSepoliaService;
+  EthMainnet : opt vec EthMainnetService;
+  ArbitrumOne : opt vec L2MainnetService;
+  BaseMainnet : opt vec L2MainnetService;
+  OptimismMainnet : opt vec L2MainnetService;
+};
+type SendRawTransactionStatus = variant {
+  Ok : opt text;
+  NonceTooLow;
+  NonceTooHigh;
+  InsufficientFunds;
+};
+type Topic = vec text;
+type TransactionReceipt = record {
+  to : text;
+  status : nat;
+  transactionHash : text;
+  blockNumber : nat;
+  from : text;
+  logs : vec LogEntry;
+  blockHash : text;
+  "type" : text;
+  transactionIndex : nat;
+  effectiveGasPrice : nat;
+  logsBloom : text;
+  contractAddress : opt text;
+  gasUsed : nat;
+};
+type UpdateProviderArgs = record {
+  providerId : nat64;
+  cyclesPerCall : opt nat64;
+  credentialPath : opt text;
+  credentialHeaders : opt vec HttpHeader;
+  cyclesPerMessageByte : opt nat64;
+};
+type ValidationError = variant {
+  Custom : text;
+  HostNotAllowed : text;
+  UrlParseError : text;
+  InvalidHex : text;
+  CredentialPathNotAllowed;
+  CredentialHeaderNotAllowed;
+};
+service : (InitArgs) -> {
+  authorize : (principal, Auth) -> (success : bool);
+  deauthorize : (principal, Auth) -> (success : bool);
+  eth_feeHistory : (RpcServices, opt RpcConfig, FeeHistoryArgs) -> (MultiFeeHistoryResult);
+  eth_getBlockByNumber : (RpcServices, opt RpcConfig, BlockTag) -> (MultiGetBlockByNumberResult);
+  eth_getLogs : (RpcServices, opt RpcConfig, GetLogsArgs) -> (MultiGetLogsResult);
+  eth_getTransactionCount : (RpcServices, opt RpcConfig, GetTransactionCountArgs) -> (
+    MultiGetTransactionCountResult
+  );
+  eth_getTransactionReceipt : (RpcServices, opt RpcConfig, hash : text) -> (MultiGetTransactionReceiptResult);
+  eth_sendRawTransaction : (RpcServices, opt RpcConfig, rawSignedTransactionHex : text) -> (MultiSendRawTransactionResult);
+  getAccumulatedCycleCount : (ProviderId) -> (cycles : nat) query;
+  getAuthorized : (Auth) -> (vec principal) query;
+  getMetrics : () -> (Metrics) query;
+  getNodesInSubnet : () -> (numberOfNodes : nat32) query;
+  getOpenRpcAccess : () -> (active : bool) query;
+  getProviders : () -> (vec ProviderView) query;
+  getServiceProviderMap : () -> (vec record { RpcService; nat64 }) query;
+  manageProvider : (ManageProviderArgs) -> ();
+  registerProvider : (RegisterProviderArgs) -> (nat64);
+  request : (RpcService, json : text, maxResponseBytes : nat64) -> (RequestResult);
+  requestCost : (RpcService, json : text, maxResponseBytes : nat64) -> (RequestCostResult) query;
+  setOpenRpcAccess : (active : bool) -> ();
+  unregisterProvider : (ProviderId) -> (bool);
+  updateProvider : (UpdateProviderArgs) -> ();
+  withdrawAccumulatedCycles : (ProviderId, recipient : principal) -> ();
+};
+"""
 }

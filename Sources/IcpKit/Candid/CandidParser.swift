@@ -34,6 +34,7 @@ public enum CandidParserError: Error {
     case referencedTypeNotDefined(String)
     case unresolvedImport(String)
     case redundantService(String)
+    case nonConformingType(CandidType, CandidValue)
 }
 
 public protocol CandidInterfaceDefinitionProvider {

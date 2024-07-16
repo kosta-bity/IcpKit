@@ -39,7 +39,7 @@ enum CandidSerialisationTestVectors {
         // 1 type in table, vector, bool, 1 candidValue, value of type 0, 0 elements
         (.vector(.bool), [0x01, 0x6D, 0x7E, 0x01, 0x00, 0x00]),
         // 1 type in table, vector, bool, 1 candidValue, value of type 0, 2 elements, true, false
-        (.vector([.bool(true), .bool(false)]), [0x01, 0x6D, 0x7E, 0x01, 0x00, 0x02, 0x01, 0x00]),
+        (try! .vector([.bool(true), .bool(false)]), [0x01, 0x6D, 0x7E, 0x01, 0x00, 0x02, 0x01, 0x00]),
         // 1 type in table, vector, nat8, 1 candidValue, value of type 0, 0 elements
         (.blob(Data()), [0x01, 0x6D, 0x7B, 0x01, 0x00, 0x00]),
         // 1 type in table, vector, nat8, 1 candidValue, value of type 0, 2 elements, 127, 128
@@ -51,13 +51,13 @@ enum CandidSerialisationTestVectors {
         // 1 type in table, record, 2 rows, leb(hash("a")), .natural, leb(hash("b")), .natural8, 1 candidValue, value of type 0, 0x01, 0x02
         (.record(["a":.natural(1),"b":.natural8(2)]), [0x01, 0x6C, 0x02, 97, 0x7D, 98, 0x7B, 0x01, 0x00, 0x01, 0x02]),
         // 2 types in table, (0)vector, bool, (1)option, referencing type 0, 1 candidValue, value of type 1, option present, 2 values, true, false
-        (.option(.vector([.bool(true), .bool(false)])), [0x02, 0x6D, 0x7E, 0x6E, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01, 0x00]),
+        (.option(try! .vector([.bool(true), .bool(false)])), [0x02, 0x6D, 0x7E, 0x6E, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01, 0x00]),
         // 3 types in table, (0)vector, nat8, (1) vector, ref 0, (2)option, ref 1, 1 candidValue, value of type 2, option present, 2 values, length 0, length 2, leb(127), leb(128)
-        (.option(.vector([.blob(Data()), .blob(Data([127, 128]))])), [0x03, 0x6D, 0x7B, 0x6D, 0x00, 0x6E, 0x01, 0x01, 0x02, 0x01, 0x02, 0x00, 0x02, 0x7F, 0x80]),
+        (.option(try! .vector([.blob(Data()), .blob(Data([127, 128]))])), [0x03, 0x6D, 0x7B, 0x6D, 0x00, 0x6E, 0x01, 0x01, 0x02, 0x01, 0x02, 0x00, 0x02, 0x7F, 0x80]),
         // 4 types in table, (0)vector, nat8, (1) vector, ref 0, (2) record, 2 keys, leb(hash("a")), ref 0, leb(hash("b")), ref 1, (3)option, ref 2, 1 candidValue, value of type 3, option present, length 1, 0x44, length 1, length 2, 0x45, 0x47
         (.option(.record([
             "a": .blob(Data([0x44])),
-            "b": .vector([.blob(Data([0x45, 0x47]))] )
+            "b": try! .vector([.blob(Data([0x45, 0x47]))] )
         ])), [4, 0x6D, 0x7B, 0x6D, 0, 0x6C, 2, 97, 0, 98, 1, 0x6E, 2, 0x01, 3, 1, 1, 0x44, 1, 2, 0x45, 0x47]),
         (.variant(try! CandidVariant(
             candidTypes: [
@@ -93,11 +93,11 @@ enum CandidSerialisationTestVectors {
         ([
             .option(.record([
                 "a": .blob(Data([0x44])),
-                "b": .vector([.blob(Data([0x45, 0x47]))] )
+                "b": try! .vector([.blob(Data([0x45, 0x47]))] )
             ])),
             .record([
                 "a": .blob(Data([0x43])),
-                "b": .vector([.blob(Data([0x40, 0x41]))] )
+                "b": try! .vector([.blob(Data([0x40, 0x41]))] )
             ]),
         // 4 types in table, (0)vector, nat8, (1) vector, ref 0, (2) record, 2 keys, leb(hash("a")), ref 0, leb(hash("b")), ref 1, (3)option, ref 2, 2 candidValues, value of type 3, value of type 2, option present, length 1, 0x44, length 1, length 2, 0x45, 0x47,  length 1, 0x43, length 1, length 2, 0x40, 0x41
          ], [4, 0x6D, 0x7B, 0x6D, 0, 0x6C, 2, 97, 0, 98, 1, 0x6E, 2, 0x02, 3, 2, 1, 1, 0x44, 1, 2, 0x45, 0x47, 1, 0x43, 1, 2, 0x40, 0x41]),

@@ -8,7 +8,7 @@
 import Foundation
 
 enum CandidParserToken: Equatable {
-    case id(String)         // text_without_spaces
+    case word(String)         // text_without_spaces
     case text(String)       // "quoted text with spaces and/or unicode"
     case openBracket
     case closeBracket
@@ -22,14 +22,14 @@ enum CandidParserToken: Equatable {
     
     var isTextOrId: Bool {
         switch self {
-        case .id, .text: return true
+        case .word, .text: return true
         default: return false
         }
     }
     
     var syntax: String {
         switch self {
-        case .id(let s): return s
+        case .word(let s): return s
         case .text(let s): return "\"\(s)\""
         case .openBracket: return "{"
         case .closeBracket: return "}"
@@ -59,7 +59,7 @@ enum CandidParserToken: Equatable {
                let quoted = quotedStringMatch["string"]?.substring {
                 self = .text(String(quoted))
             } else {
-                self = .id(string)
+                self = .word(string)
             }
         }
     }

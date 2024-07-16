@@ -30,6 +30,10 @@ public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable {
             .sorted { $0.key.hash < $1.key.hash }  // sort by ascending keys
     }
     
+    public init(_ keyedItems: any Sequence<CandidKeyedItem>) {
+        candidSortedItems = keyedItems.sorted { $0.key.hash < $1.key.hash }  // sort by ascending keys
+    }
+    
     public init(dictionaryLiteral elements: (String, CandidValue)...) {
         let dictionary = Dictionary(uniqueKeysWithValues: elements)
         self.init(dictionary)

@@ -27,6 +27,18 @@ public extension CandidValue {
         return .vector(CandidVector(containedType))
     }
     
+    static func vector(_ items: any Sequence<CandidValue>) throws -> CandidValue {
+        return try .vector(CandidVector(items))
+    }
+    
+    static func variant(_ value: CandidKeyedItem) -> CandidValue {
+        return .variant(CandidVariant(candidTypes: [.init(value)], value: value.value, valueIndex: 0))
+    }
+    
+    static func record(_ items: any Sequence<CandidKeyedItem>) -> CandidValue {
+        return .record(CandidDictionary(items))
+    }
+    
     static func principal(_ string: String) throws -> CandidValue {
         return .principal(try CandidPrincipal(string))
     }
@@ -46,7 +58,6 @@ public extension CandidValue {
     static func function(_ inputs: [CandidType] = [], _ outputs: [CandidType] = [], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false, _ principal: String, _ methodName: String) throws -> CandidValue {
         .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: .init(name: methodName, principal: try CandidPrincipal(principal))))
     }
-    
     
     static func service(_ methods: [CandidServiceSignature.Method] = [], _ principal: String) throws -> CandidValue {
         try .service(CandidService(principal: CandidPrincipal(principal), signature: CandidServiceSignature(methods)))

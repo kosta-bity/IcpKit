@@ -17,7 +17,7 @@ class CandidParserBase {
         case semicolon
     }
     
-    func parseEnclosedItems<T>(_ enclosure: Enclosure, _ separator: Separator, _ stream: CandidParserStream, _ itemParser: (CandidParserStream) throws -> T) throws -> [T] {
+    static func parseEnclosedItems<T>(_ enclosure: Enclosure, _ separator: Separator, _ stream: CandidParserStream, _ itemParser: (CandidParserStream) throws -> T) throws -> [T] {
         try stream.expectNext(enclosure.open)
         guard try stream.peekNext() != enclosure.close else {
             try stream.expectNext(enclosure.close)
@@ -29,6 +29,10 @@ class CandidParserBase {
             items.append(item)
             let token = try stream.takeNext()
             if token == separator.token {
+                if try stream.peekNext() == enclosure.close {
+                    try stream.expectNext(enclosure.close)
+                    break
+                }
                 continue
             } else if token == enclosure.close {
                 break

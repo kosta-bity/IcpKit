@@ -48,8 +48,8 @@ class CandidParserStream {
         return try current.validId()
     }
     
-    func expectCurrentTextOrId() throws -> String {
-        return try current.textOrId()
+    func expectCurrentTextOrWord() throws -> String {
+        return try current.textOrWord()
     }
     
     func expectNextId() throws -> String {
@@ -57,9 +57,14 @@ class CandidParserStream {
         return try token.validId()
     }
     
-    func expectNextTextOrId() throws -> String {
+    func expectNextWord() throws -> String {
         let token = try takeNext()
-        return try token.textOrId()
+        return try token.word()
+    }
+    
+    func expectNextTextOrWord() throws -> String {
+        let token = try takeNext()
+        return try token.textOrWord()
     }
     
     func takeIfNext(is token: CandidParserToken) throws -> Bool {
@@ -69,7 +74,9 @@ class CandidParserStream {
         try expectNext(token)
         return true
     }
-    
+}
+
+private extension CandidParserStream {
     static func splitTokens(_ string: String) throws -> [CandidParserToken] {
         var string = string
         var tokens: [CandidParserToken] = []
@@ -89,18 +96,28 @@ class CandidParserStream {
         return try CandidParserToken(String(token))
     }
     
-    
+    private static let whiteSpace = #"\s*"#
+    private static let quotedString = #""([^"])*""#
+    private static let arrow = "->"
+    private static let singleCharToken = #"[={}\(\):;,]"#
+    private static let anyString = #"[^={}\(\):;,\s]*"#
+    private static let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(anyString))\(whiteSpace)")
 }
 
 private extension CandidParserToken {
-    func textOrId() throws -> String {
-        if case .id(let id) = self { return id }
+    func word() throws -> String {
+        if case .word(let id) = self { return id }
+        throw CandidParserError.expecting("<word>", butGot: syntax)
+    }
+    
+    func textOrWord() throws -> String {
+        if case .word(let id) = self { return id }
         if case .text(let text) = self { return text }
         throw CandidParserError.expecting("<text|id>", butGot: syntax)
     }
     
     func validId() throws -> String {
-        guard case .id(let id) = self,
+        guard case .word(let id) = self,
               try Self.validIdRegex.firstMatch(in: id) != nil else {
             throw CandidParserError.expecting("<id>", butGot: syntax)
         }
@@ -110,9 +127,4 @@ private extension CandidParserToken {
     private static let validIdRegex = try! Regex(#"[A-Za-z_][A-Za-z0-9_]*"#)
 }
 
-private let whiteSpace = #"\s*"#
-private let quotedString = #""[^"]*""#
-private let arrow = "->"
-private let singleCharToken = #"[={}\(\):;,]"#
-private let anyString = #"[^={}\(\):;,\s]*"#
-private let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(anyString))\(whiteSpace)")
+
