@@ -64,5 +64,5 @@ enum CandidParserToken: Equatable {
         }
     }
     
-    private static let quotedString = try! Regex(#""(?'string'[^"]*)""#)
+    private static let quotedString = try! Regex("\"(?'string'\(CandidParserStream.quotedStringContents))\"")
 }

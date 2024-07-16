@@ -74,6 +74,8 @@ class CandidParserStream {
         try expectNext(token)
         return true
     }
+    
+    static let quotedStringContents = #"(?:[^"\\]|\\[nrt\\"']|\\[A-Fa-f0-9]{2}|\\u{[A-Fa-f0-9_]+)*"#
 }
 
 private extension CandidParserStream {
@@ -97,9 +99,9 @@ private extension CandidParserStream {
     }
     
     private static let whiteSpace = #"\s*"#
-    private static let quotedString = #"("[^"]*")"#
     private static let arrow = "->"
     private static let singleCharToken = #"[={}\(\):;,]"#
+    private static let quotedString = "\"\(quotedStringContents)\""
     private static let anyString = #"[^={}\(\):;,\"\s]+"#
     private static let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(anyString))\(whiteSpace)")
 }

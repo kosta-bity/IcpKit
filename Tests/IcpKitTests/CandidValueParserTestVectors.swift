@@ -20,7 +20,7 @@ enum CandidValueParserTestVectors {
         
         // MARK: Text
         (#""""#, .text("")),
-        //(#""Escaped characters: \n \r \t \\ \" \'""#, .text(#"Escaped characters: \n \r \t \\ \" \'"#)),
+        (#""Escaped characters: \n \r \t \\ \" \'""#, .text(#"Escaped characters: \n \r \t \\ \" \'"#)),
         (#""Raw bytes (must be utf8): \E2\98\83 is also ☃""#, .text(#"Raw bytes (must be utf8): \E2\98\83 is also ☃"#)),
         (#""Unicode escapes: \u{2603} is ☃ and \u{221E} is ∞""#, .text(#"Unicode escapes: \u{2603} is ☃ and \u{221E} is ∞"#)),
         (#""some quoted text""#, .text("some quoted text")),
@@ -114,35 +114,36 @@ enum CandidValueParserTestVectors {
         (#"blob "hello""#, .blob(Data("hello".utf8))),
         
         // MARK: Services
-        (#"service: "rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae""#, try! .service([], "rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae")),
-        (#"service: "w7x7r-cok77-xa""#, try! .service([], "w7x7r-cok77-xa")),
+        (#"service: "rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae""#, try! .service("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae")),
+        (#"service: "w7x7r-cok77-xa""#, try! .service("w7x7r-cok77-xa")),
         
         // MARK: Principals
         (#"principal "rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae""#, try! .principal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae")),
         (#"principal "w7x7r-cok77-xa""#, try! .principal("w7x7r-cok77-xa")),
         
         // MARK: Functions
-        (#"func "w7x7r-cok77-xa".hello"#, try! .function([], [], "w7x7r-cok77-xa", "hello")),
-        (#"func "w7x7r-cok77-xa"."☃""#, try! .function([], [], "w7x7r-cok77-xa", "☃")),
-        (#"func "aaaaa-aa".create_canister"#, try! .function([], [], "aaaaa-aa", "create_canister")),
+        (#"func "w7x7r-cok77-xa".hello"#, try! .function("w7x7r-cok77-xa", "hello")),
+        (#"func "w7x7r-cok77-xa"."☃""#, try! .function("w7x7r-cok77-xa", "☃")),
+        (#"func "aaaaa-aa".create_canister"#, try! .function("aaaaa-aa", "create_canister")),
     ]
     
     static let failingSingleValues: [(String, String)] = [
-        ("",""),
-        ("true2",""),
-        ("nul",""),
-        ("123_",""),
-        ("123__2",""),
-        ("0x",""),
-        ("0x123G",""),
-        ("0x123_",""),
+        ("","empty string"),
+        (#"\u"#, "invalid text"),
+        ("true2","unknown token"),
+        ("nul","unknown token"),
+        ("123_","number ending with _"),
+        ("123__2","double _ in number"),
+        ("0x","invalid hex number"),
+        ("0x123G","invalid character in hex"),
+        ("0x123_","hex number ending in _"),
         ("256:nat8", "overflow"),
         ("128:int8",  "overflow"),
         ("-129:int8", "underflow"),
         ("-1:nat8", "underflow"),
         ("+7:nat8", "naturals don't have sign"),
-        ("opt", "no value"),
-        ("opt:true:int8", "wrong type"),
+        ("opt", "no value for optional"),
+        ("opt true:int8", "wrong type"),
         ("vec {8:nat8, 3}", "multiple types in vector"),
         (#"func "aaaaa-aa"create_canister"#, "no dot in function"),
         (#"func "aaaaa-aa",create_canister"#, "no dot in function"),
