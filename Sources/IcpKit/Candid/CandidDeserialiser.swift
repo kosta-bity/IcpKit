@@ -62,7 +62,7 @@ private class CandidDecodableTypeTable {
             let referencedType = try candidType(for: containedType, with: rawTypeData)
             return .vector(referencedType)
             
-        case .optional(let containedType):
+        case .option(let containedType):
             let referencedType = try candidType(for: containedType, with: rawTypeData)
             return .option(referencedType)
             
@@ -80,7 +80,7 @@ private class CandidDecodableTypeTable {
             }
             return .variant(rowTypes)
             
-        case .functionSignature(let inputTypes, let outputTypes, let annotations):
+        case .function(let inputTypes, let outputTypes, let annotations):
             return .function(.init(
                 try inputTypes.map { try candidType(for: $0, with: rawTypeData) },
                 try outputTypes.map { try candidType(for: $0, with: rawTypeData) },
@@ -138,10 +138,10 @@ private enum CandidTypeTableData {
     typealias KeyedContainerRowData = (hashedKey: Int, type: Int)
     typealias ServiceMethod = (name: String, functionType: Int)
     case vector(containedType: Int)
-    case optional(containedType: Int)
+    case option(containedType: Int)
     case record(rows: [KeyedContainerRowData])
     case variant(rows: [KeyedContainerRowData])
-    case functionSignature(inputTypes: [Int], outputTypes: [Int], annotations: [UInt])
+    case function(inputTypes: [Int], outputTypes: [Int], annotations: [UInt])
     case service(methods: [ServiceMethod])
     
     static func decode(_ stream: ByteInputStream) throws -> CandidTypeTableData {
@@ -156,7 +156,7 @@ private enum CandidTypeTableData {
             
         case .option:
             let containedType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
-            return .optional(containedType: containedType)
+            return .option(containedType: containedType)
             
         case .variant:
             let rows = try decodeRows(stream)
@@ -179,7 +179,7 @@ private enum CandidTypeTableData {
             let annotations: [UInt] = try (0..<nAnnotations).map { _ in
                 try ICPCryptography.Leb128.decodeUnsigned(stream)
             }
-            return .functionSignature(
+            return .function(
                 inputTypes: inputTypes,
                 outputTypes: outputTypes,
                 annotations: annotations
