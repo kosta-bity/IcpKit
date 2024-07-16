@@ -96,11 +96,11 @@ extension CandidFunction: CustomStringConvertible {
 extension CandidType: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .primitive(let primitive): return "\(primitive)"
-        case .container(let containerType, let containedType): return "\(containerType)(\(containedType))"
-        case .keyedContainer(let containerType, let types):
-            let typesString = types.map { "\($0)" }.joined(separator: ", ")
-            return "\(containerType)(\(typesString))"
+        case .variant(let containedTypes), .record(let containedTypes):
+            let types = containedTypes.map { "\($0.key.string ?? String($0.key.hash)): \($0.type.description)" }
+            return "\(primitiveType.description) { \(types) }"
+        case .option(let containedType): return "opt \(containedType.description)"
+     case .vector(let containedType): return "vec \(containedType.description)"
         case .function(let signature):
             let inputs = signature.arguments.map { "\($0)" }.joined(separator: ", ")
             let outputs = signature.results.map { "\($0)" }.joined(separator: ", ")
@@ -113,6 +113,7 @@ extension CandidType: CustomStringConvertible {
             let methodsString = signature.methods.map { "\($0.name): \($0.functionSignature)" }.joined(separator: ",\n")
             return "service(methods: [\(methodsString)])"
         case .named(let name): return name
+        default: return primitiveType.description
         }
     }
 }
@@ -122,23 +123,23 @@ extension CandidPrimitiveType: CustomStringConvertible {
         switch self {
         case .null: return "null"
         case .bool: return "bool"
-        case .natural: return "natural"
-        case .integer: return "integer"
-        case .natural8: return "natural8"
-        case .natural16: return "natural16"
-        case .natural32: return "natural32"
-        case .natural64: return "natural64"
-        case .integer8: return "integer8"
-        case .integer16: return "integer16"
-        case .integer32: return "integer32"
-        case .integer64: return "integer64"
+        case .natural: return "nat"
+        case .integer: return "int"
+        case .natural8: return "nat8"
+        case .natural16: return "nat16"
+        case .natural32: return "nat32"
+        case .natural64: return "nat64"
+        case .integer8: return "int8"
+        case .integer16: return "int16"
+        case .integer32: return "int32"
+        case .integer64: return "int64"
         case .float32: return "float32"
         case .float64: return "float64"
         case .text: return "text"
         case .reserved: return "reserved"
         case .empty: return "empty"
-        case .option: return "option"
-        case .vector: return "vector"
+        case .option: return "opt"
+        case .vector: return "vec"
         case .record: return "record"
         case .variant: return "variant"
         case .function: return "function"

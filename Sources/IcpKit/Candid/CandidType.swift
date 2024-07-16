@@ -11,10 +11,61 @@ import OrderedCollections
 /// Contains the necessary data to fully describe the Candid Value
 /// and its contained child values
 public indirect enum CandidType: Equatable {
-    case primitive(CandidPrimitiveType)
-    case container(CandidPrimitiveType, CandidType)
-    case keyedContainer(CandidPrimitiveType, [CandidKeyedItemType])
+    case null
+    case bool
+    case natural
+    case integer
+    case natural8
+    case natural16
+    case natural32
+    case natural64
+    case integer8
+    case integer16
+    case integer32
+    case integer64
+    case float32
+    case float64
+    case text
+    case reserved
+    case empty
+    case option(CandidType)
+    case vector(CandidType)
+    case record([CandidKeyedItemType])
+    case variant([CandidKeyedItemType])
     case function(CandidFunctionSignature)
     case service(CandidServiceSignature)
+    case principal
     case named(String)
+}
+
+extension CandidType {
+    var primitiveType: CandidPrimitiveType {
+        switch self {
+        case .null: return .null
+        case .bool: return .bool
+        case .natural: return .natural
+        case .integer: return .integer
+        case .natural8: return .natural8
+        case .natural16: return .natural16
+        case .natural32: return .natural32
+        case .natural64: return .natural64
+        case .integer8: return .integer8
+        case .integer16: return .integer16
+        case .integer32: return .integer32
+        case .integer64: return .integer64
+        case .float32: return .float32
+        case .float64: return .float64
+        case .text: return .text
+        case .reserved: return .reserved
+        case .empty: return .empty
+        case .option: return .option
+        case .vector: return .vector
+        case .record: return .record
+        case .variant: return .variant
+        case .function: return .function
+        case .service: return .service
+        case .principal: return .principal
+        case .named: fatalError("should never be called")
+        }
+    }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidKeyedItem: Equatable {
+public struct CandidKeyedItem: Equatable, Comparable {
     public let key: CandidContainerKey
     public let value: CandidValue
     
@@ -20,9 +20,13 @@ public struct CandidKeyedItem: Equatable {
         self.key = CandidContainerKey(key)
         self.value = value
     }
+    
+    public static func < (lhs: CandidKeyedItem, rhs: CandidKeyedItem) -> Bool {
+        lhs.key < rhs.key
+    }
 }
 
-public struct CandidKeyedItemType: Equatable {
+public struct CandidKeyedItemType: Equatable, Comparable {
     public let key: CandidContainerKey
     public let type: CandidType
     
@@ -40,9 +44,13 @@ public struct CandidKeyedItemType: Equatable {
         self.key = CandidContainerKey(key)
         self.type = type
     }
+    
+    public static func < (lhs: CandidKeyedItemType, rhs: CandidKeyedItemType) -> Bool {
+        lhs.key < rhs.key
+    }
 }
 
-public struct CandidContainerKey: Equatable, Hashable {
+public struct CandidContainerKey: Equatable, Hashable, Comparable {
     public let hash: Int
     public let string: String?
     
@@ -64,8 +72,12 @@ public struct CandidContainerKey: Equatable, Hashable {
         lhs.hash == rhs.hash
     }
     
+    public static func < (lhs: CandidContainerKey, rhs: CandidContainerKey) -> Bool {
+        lhs.hash < rhs.hash
+    }
+    
     /// https://github.com/dfinity/candid/blob/master/spec/Candid.md
-    /// hash(id) = ( Sum(i=0..k) utf8(id)[i] * 223^(k-i) ) mod 2^32 where k = |utf8(id)|-1
+    /// hash(id) = ( Sum(i=0..k) utf8(id)[i] * 223^(k-i) ) mod 2^32 where k = |utf8(id)| -1
     public static func hash(_ key: String) -> Int {
         let data = Data(key.utf8)
         return data.reduce(0) { ($0 * 223 + Int($1)) & 0x00000000ffffffff }

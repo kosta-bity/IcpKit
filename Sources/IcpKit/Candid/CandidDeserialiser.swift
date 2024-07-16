@@ -58,16 +58,27 @@ private class CandidDecodableTypeTable {
     
     private static func buildType(_ type: CandidTypeTableData, from rawTypeData: [CandidTypeTableData]) throws -> CandidType {
         switch type {
-        case .container(let containerType, let containedType):
+        case .vector(let containedType):
             let referencedType = try candidType(for: containedType, with: rawTypeData)
-            return .container(containerType, referencedType)
+            return .vector(referencedType)
             
-        case .keyedContainer(let containerType, let rows):
+        case .optional(let containedType):
+            let referencedType = try candidType(for: containedType, with: rawTypeData)
+            return .option(referencedType)
+            
+        case .record(let rows):
             let rowTypes = try rows.map {
                 let rowType = try candidType(for: $0.type, with: rawTypeData)
                 return CandidKeyedItemType(hashedKey: $0.hashedKey, type: rowType)
             }
-            return .keyedContainer(containerType, rowTypes)
+            return .record(rowTypes)
+            
+        case .variant(let rows):
+            let rowTypes = try rows.map {
+                let rowType = try candidType(for: $0.type, with: rawTypeData)
+                return CandidKeyedItemType(hashedKey: $0.hashedKey, type: rowType)
+            }
+            return .variant(rowTypes)
             
         case .functionSignature(let inputTypes, let outputTypes, let annotations):
             return .function(.init(
@@ -100,19 +111,21 @@ private class CandidDecodableTypeTable {
             return try buildType(rawTypeData[type], from: rawTypeData)
             
         } else {
-            guard let primitiveContainedType = CandidPrimitiveType(rawValue: type) else {
+            guard let primitive = CandidPrimitiveType(rawValue: type),
+                  let candidType = CandidType(primitive) else {
                 throw CandidDeserialisationError.invalidPrimitive
             }
-            return .primitive(primitiveContainedType)
+            return candidType
         }
     }
     
     func getTypeForReference(_ reference: Int) throws -> CandidType {
         if reference < 0 {
-            guard let primitive = CandidPrimitiveType(rawValue: reference) else {
+            guard let primitive = CandidPrimitiveType(rawValue: reference),
+                  let candidType = CandidType(primitive) else {
                 throw CandidDeserialisationError.invalidPrimitive
             }
-            return .primitive(primitive)
+            return candidType
         }
         guard types.count > reference else {
             throw CandidDeserialisationError.invalidTypeReference
@@ -124,8 +137,10 @@ private class CandidDecodableTypeTable {
 private enum CandidTypeTableData {
     typealias KeyedContainerRowData = (hashedKey: Int, type: Int)
     typealias ServiceMethod = (name: String, functionType: Int)
-    case container(containerType: CandidPrimitiveType, containedType: Int)
-    case keyedContainer(containerType: CandidPrimitiveType, rows: [KeyedContainerRowData])
+    case vector(containedType: Int)
+    case optional(containedType: Int)
+    case record(rows: [KeyedContainerRowData])
+    case variant(rows: [KeyedContainerRowData])
     case functionSignature(inputTypes: [Int], outputTypes: [Int], annotations: [UInt])
     case service(methods: [ServiceMethod])
     
@@ -135,15 +150,21 @@ private enum CandidTypeTableData {
             throw CandidDeserialisationError.invalidPrimitive
         }
         switch primitive {
-        case .record, .variant:
-            let nRows: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
-            let rows: [KeyedContainerRowData] = try (0..<nRows).map { _ in
-                (
-                    try ICPCryptography.Leb128.decodeUnsigned(stream), // hashed key
-                    try ICPCryptography.Leb128.decodeSigned(stream)  // type
-                )
-            }
-            return .keyedContainer(containerType: primitive, rows: rows)
+        case .vector:
+            let containedType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+            return .vector(containedType: containedType)
+            
+        case .option:
+            let containedType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+            return .optional(containedType: containedType)
+            
+        case .variant:
+            let rows = try decodeRows(stream)
+            return .variant(rows: rows)
+            
+        case .record:
+            let rows = try decodeRows(stream)
+            return .record(rows: rows)
             
         case .function:
             let nInputs: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
@@ -178,16 +199,25 @@ private enum CandidTypeTableData {
             return .service(methods: methods)
             
         default:
-            // all other types have a single contained type, either primitive or ref
-            let containedType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
-            return .container(containerType: primitive, containedType: containedType)
+            throw CandidDeserialisationError.invalidPrimitive
         }
+    }
+    
+    private static func decodeRows(_ stream: ByteInputStream) throws -> [KeyedContainerRowData] {
+        let nRows: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+        let rows: [KeyedContainerRowData] = try (0..<nRows).map { _ in
+            (
+                try ICPCryptography.Leb128.decodeUnsigned(stream), // hashed key
+                try ICPCryptography.Leb128.decodeSigned(stream)  // type
+            )
+        }
+        return rows
     }
 }
 
 private extension CandidValue {
     static func decodeValue(_ type: CandidType, _ stream: ByteInputStream) throws -> CandidValue {
-        switch type.primitiveType {
+        switch type {
         case .null: return .null
         case .bool: return .bool(try stream.readNextByte() != 0)
         case .natural: return .natural(try ICPCryptography.Leb128.decodeUnsigned(stream))
@@ -211,8 +241,7 @@ private extension CandidValue {
             return .text(string)
         case .reserved: return .reserved
         case .empty: return .empty
-        case .option:
-            let containedType = type.containedType!
+        case .option(let containedType):
             let isPresent = try stream.readNextByte() == 1
             if isPresent {
                 let value = try decodeValue(containedType, stream)
@@ -221,8 +250,7 @@ private extension CandidValue {
                 return .option(containedType)
             }
             
-        case .vector:
-            let containedType = type.containedType!
+        case .vector(let containedType):
             let nItems: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
             let items = try (0..<nItems).map { _ in
                 try decodeValue(containedType, stream)
@@ -233,16 +261,14 @@ private extension CandidValue {
             }
             return .vector(try CandidVector(containedType, items))
             
-        case .record:
-            let rowTypes = type.keyedContainerRowTypes!
+        case .record(let rowTypes):
             var dictionary: [Int: CandidValue] = [:]
             for rowType in rowTypes {
                 dictionary[rowType.key.hash] = try decodeValue(rowType.type, stream)
             }
             return .record(CandidDictionary(dictionary))
             
-        case .variant:
-            let rowTypes = type.keyedContainerRowTypes!
+        case .variant(let rowTypes):
             let valueIndex: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
             return .variant(CandidVariant(
                 candidTypes: rowTypes,
@@ -301,33 +327,40 @@ private extension CandidValue {
                 principal: principal,
                 signature: CandidServiceSignature(type.serviceSignature!.methods)
             ))
+            
+        case .named:
+            throw CandidDeserialisationError.invalidTypeReference
         }
         
     }
 }
 
 private extension CandidType {
-    var primitiveType: CandidPrimitiveType {
-        switch self {
-        case .primitive(let primitive),
-             .container(let primitive, _),
-             .keyedContainer(let primitive, _): return primitive
-        case .function: return .function
-        case .service: return .service
-        case .named: fatalError()
+    init?(_ primitiveType: CandidPrimitiveType) {
+        switch primitiveType {
+        case .null: self = .null
+        case .bool: self = .bool
+        case .natural: self = .natural
+        case .integer: self = .integer
+        case .natural8: self = .natural8
+        case .natural16: self = .natural16
+        case .natural32: self = .natural32
+        case .natural64: self = .natural64
+        case .integer8: self = .integer8
+        case .integer16: self = .integer16
+        case .integer32: self = .integer32
+        case .integer64: self = .integer64
+        case .float32: self = .float32
+        case .float64: self = .float64
+        case .text: self = .text
+        case .reserved: self = .reserved
+        case .empty: self = .empty
+        case .principal: self = .principal
+        case .option, .vector, .record, .variant, .function, .service:
+            // these are composite types, should not be deduced from primitives
+            return nil
         }
     }
-    
-    var containedType: CandidType? {
-        guard case .container(_, let type) = self else { return nil }
-        return type
-    }
-    
-    var keyedContainerRowTypes: [CandidKeyedItemType]? {
-        guard case .keyedContainer(_, let rowTypes) = self else { return nil }
-        return rowTypes
-    }
-    
     var functionSignature: CandidFunctionSignature? {
         guard case .function(let candidFunctionSignature) = self else { return nil }
         return candidFunctionSignature

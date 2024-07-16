@@ -149,21 +149,18 @@ private class CandidTypeTable {
     
     func getReference(for type: CandidType) -> Int {
         switch type {
-        case .primitive(let type):
-            return type.rawValue
-            
-        case .container(let containerType, let valueType):
+        case .vector(let valueType), .option(let valueType):
             let typeData = CandidTypeData(types: [
-                .signed(containerType.rawValue),
+                .signed(type.primitiveType.rawValue),
                 .signed(getReference(for: valueType))
             ])
             return addOrFind(typeData)
             
-        case .keyedContainer(let containerType, let types):
+        case .record(let types), .variant(let types):
             let typeData = CandidTypeData(
                 types:
                     [
-                        .signed(containerType.rawValue),
+                        .signed(type.primitiveType.rawValue),
                         .unsigned(UInt(types.count))
                     ]
                     + types.flatMap {
@@ -200,6 +197,7 @@ private class CandidTypeTable {
             return addOrFind(typeData)
             
         case .named: fatalError()
+        default: return type.primitiveType.rawValue
         }
     }
     

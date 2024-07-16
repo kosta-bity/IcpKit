@@ -188,6 +188,7 @@ private extension CandidTypeParser {
                 }
                 return CandidKeyedItemType(name, $0.element.1)
             }
+            .sorted()
         return items
     }
     
@@ -209,7 +210,7 @@ private extension CandidTypeParser {
     // variant { "name with spaces" : nat; "unicode, too: ☃" : bool }
     // variant { spring; summer; fall; winter }
     private func parseVariantKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedItemType] {
-        return try Self.parseEnclosedItems(.brackets, .semicolon, stream, parseVariantKeyedType)
+        return try Self.parseEnclosedItems(.brackets, .semicolon, stream, parseVariantKeyedType).sorted()
     }
     
     /// <name> (: <type>)?

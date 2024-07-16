@@ -53,12 +53,12 @@ public struct CandidInterfaceDefinition: Equatable {
 private extension CandidType {
     func isResolved(_ storage: [String: CandidType]) -> Bool {
         switch self {
-        case .primitive: return true
-        case .container(_, let containedType): return containedType.isResolved(storage)
-        case .keyedContainer(_, let containedTypes): return containedTypes.allSatisfy { $0.type.isResolved(storage) }
+        case .vector(let containedType), .option(let containedType): return containedType.isResolved(storage)
+        case .record(let items), .variant(let items): return items.allSatisfy { $0.type.isResolved(storage) }
         case .function(let signature): return signature.isResolved(storage)
         case .service(let signature): return signature.isResolved(storage)
         case .named(let name): return storage.keys.contains(name)
+        default: return true
         }
     }
 }

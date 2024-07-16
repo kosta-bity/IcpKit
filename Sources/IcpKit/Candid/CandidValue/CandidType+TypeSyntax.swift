@@ -10,20 +10,21 @@ import Foundation
 public extension CandidType {
     var syntax: String {
         switch self {
-        case .primitive(let type): return type.syntax
-        case .container(let containerType, let containedType): return "\(containerType.syntax) \(containedType.syntax)"
-        case .keyedContainer(let containerType, let keyedItems):
-            if keyedItems.isEmpty { return "\(containerType.syntax) {}" }
-            return """
-\(containerType.syntax) {
-
-}
-"""
+        case .vector(let containedType), .option(let containedType):
+            return "\(primitiveType.syntax) \(containedType.syntax)"
+            
+        case .record(let items), .variant(let items):
+            let itemString = items.map { "\($0.key.string ?? String($0.key.hash)): \($0.type.syntax)" }.joined(separator: "; ")
+            return "\(primitiveType.syntax) { \(itemString)}"
+            
         case .function(_):
             return "\(CandidPrimitiveType.function.syntax) () -> ()"
+            
         case .service(_):
             return "\(CandidPrimitiveType.service.syntax): {}"
+            
         case .named(let name): return name
+        default: return primitiveType.syntax
         }
     }
 }

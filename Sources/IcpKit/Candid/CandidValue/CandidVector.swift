@@ -21,10 +21,6 @@ public struct CandidVector: Equatable {
         self.values = []
     }
     
-    public init(_ containedType: CandidPrimitiveType) {
-        self.init(.primitive(containedType))
-    }
-    
     public init(_ sequence: any Sequence<CandidValue>) throws {
         guard let type = sequence.first(where: { _ in true })?.candidType else {
             throw CandidVectorError.noElementsAndNoType
