@@ -120,25 +120,32 @@ enum CandidValueParserTestVectors {
         // MARK: Principals
         (#"principal "rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae""#, try! .principal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae")),
         (#"principal "w7x7r-cok77-xa""#, try! .principal("w7x7r-cok77-xa")),
+        
+        // MARK: Functions
+        (#"func "w7x7r-cok77-xa".hello"#, try! .function([], [], "w7x7r-cok77-xa", "hello")),
+        (#"func "w7x7r-cok77-xa"."☃""#, try! .function([], [], "w7x7r-cok77-xa", "☃")),
+        (#"func "aaaaa-aa".create_canister"#, try! .function([], [], "aaaaa-aa", "create_canister")),
     ]
     
-    static let failingSingleValues: [String] = [
-        "",
-        "true2",
-        "nul",
-        "123_",
-        "123__2",
-        "0x",
-        "0x123G",
-        "0x123_",
-        "256:nat8",  // overflow
-        "128:int8",  // overflow
-        "-129:int8",  // underflow
-        "-1:nat8",  // underflow
-        "+7:nat8",  // naturals don't have sign
-        "opt",      // no value
-        "opt:true:int8",    // wrong type,
-        "vec {8:nat8, 3}",  // multiple types in vector
+    static let failingSingleValues: [(String, String)] = [
+        ("",""),
+        ("true2",""),
+        ("nul",""),
+        ("123_",""),
+        ("123__2",""),
+        ("0x",""),
+        ("0x123G",""),
+        ("0x123_",""),
+        ("256:nat8", "overflow"),
+        ("128:int8",  "overflow"),
+        ("-129:int8", "underflow"),
+        ("-1:nat8", "underflow"),
+        ("+7:nat8", "naturals don't have sign"),
+        ("opt", "no value"),
+        ("opt:true:int8", "wrong type"),
+        ("vec {8:nat8, 3}", "multiple types in vector"),
+        (#"func "aaaaa-aa"create_canister"#, "no dot in function"),
+        (#"func "aaaaa-aa",create_canister"#, "no dot in function"),
     ]
     
     /// https://raw.githubusercontent.com/internet-computer-protocol/evm-rpc-canister/main/providers.did

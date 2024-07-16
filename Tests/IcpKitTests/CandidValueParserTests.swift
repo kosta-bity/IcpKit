@@ -19,8 +19,8 @@ final class CandidValueParserTests: XCTestCase {
     }
     
     func testFailingPrimValues() {
-        for string in CandidValueParserTestVectors.failingSingleValues {
-            XCTAssertThrowsError(try parser.parseValue(string), "\(string) should fail but instead parsed \(try! parser.parseValue(string).description)")
+        for (string, reason) in CandidValueParserTestVectors.failingSingleValues {
+            XCTAssertThrowsError(try parser.parseValue(string), "'\(string)' should fail because '\(reason)' but instead parsed \(try! parser.parseValue(string).description)")
         }
     }
     

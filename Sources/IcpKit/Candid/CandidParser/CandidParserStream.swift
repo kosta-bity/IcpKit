@@ -97,10 +97,10 @@ private extension CandidParserStream {
     }
     
     private static let whiteSpace = #"\s*"#
-    private static let quotedString = #""([^"])*""#
+    private static let quotedString = #"("[^"]*")"#
     private static let arrow = "->"
     private static let singleCharToken = #"[={}\(\):;,]"#
-    private static let anyString = #"[^={}\(\):;,\s]*"#
+    private static let anyString = #"[^={}\(\):;,\"\s]+"#
     private static let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(anyString))\(whiteSpace)")
 }
 

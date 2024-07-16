@@ -222,7 +222,16 @@ private extension CandidValueParser {
             
         case "func":
             _ = try stream.takeNext()
-            fatalError()
+            let principal = try stream.expectNextTextOrWord()
+            var method = try stream.expectNextTextOrWord()
+            if method == "." {
+                method = try stream.expectNextTextOrWord()
+            } else if method.starts(with: ".") {
+                method = String(method.suffix(from: method.index(after: method.startIndex)))
+            } else {
+                throw CandidParserError.unexpectedToken(method)
+            }
+            return try .function([], [], principal, method)
             
         case "principal":
             _ = try stream.takeNext()
