@@ -59,12 +59,12 @@ public extension CandidValue {
         case .reserved: return .reserved
         case .empty: return .empty
         case .blob: return .blob
+        case .principal: return .principal
         case .option(let option): return .option(option.containedType)
         case .vector(let vector): return .vector(vector.containedType)
         case .record(let dictionary): return .record(dictionary.candidTypes)
         case .variant(let variant): return .variant(variant.candidTypes)
         case .function(let function): return .function(function.signature)
-        case .principal: return .principal
         case .service(let service): return .service(service.signature)
         }
     }

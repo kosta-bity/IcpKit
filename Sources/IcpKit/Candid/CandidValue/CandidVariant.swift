@@ -23,12 +23,23 @@ public struct CandidVariant: Equatable {
         self.valueIndex = valueIndex
     }
     
+    public init(candidTypes: [CandidKeyedItemType], value: CandidValue, valueKey: Int) throws {
+        let sortedTypes = candidTypes.sorted()
+        self.candidTypes = sortedTypes
+        self.value = value
+        guard let index = sortedTypes.firstIndex(where: { $0.key.hash == valueKey }) else {
+            throw CandidVariantError.valueNotPartOfTypes
+        }
+        valueIndex = UInt(index)
+    }
+    
     public init(candidTypes: [(String, CandidType)], value: (String, CandidValue)) throws {
-        guard let index = candidTypes.firstIndex(where: { $0.0 == value.0 }) else {
+        let sortedTypes = candidTypes.map(CandidKeyedItemType.init).sorted()
+        guard let index = sortedTypes.firstIndex(where: { $0.key.string == value.0 }) else {
             throw CandidVariantError.valueNotPartOfTypes
         }
         self.valueIndex = UInt(index)
-        self.candidTypes = candidTypes.map(CandidKeyedItemType.init).sorted()
+        self.candidTypes = sortedTypes
         self.value = value.1
     }
     

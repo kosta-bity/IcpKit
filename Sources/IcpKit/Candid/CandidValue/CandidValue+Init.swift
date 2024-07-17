@@ -38,6 +38,14 @@ public extension CandidValue {
         ))
     }
     
+    static func variant(_ items: [Int: CandidType], _ value: CandidValue, _ valueKey: Int) throws -> CandidValue {
+        return .variant(try CandidVariant(
+            candidTypes: items.map { CandidKeyedItemType(hashedKey: $0.key, type: $0.value) },
+            value: value,
+            valueKey: valueKey
+        ))
+    }
+    
     static func variant(_ value: CandidKeyedItem) -> CandidValue {
         return .variant(CandidVariant(candidTypes: [.init(value)], value: value.value, valueIndex: 0))
     }

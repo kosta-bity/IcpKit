@@ -42,7 +42,7 @@ extension CandidValue: CustomStringConvertible {
 extension CandidOption: CustomStringConvertible {
     public var description: String {
         switch self {
-        case .none(let type): return "none : \(type)"
+        case .none(let type): return "null: \(type)"
         case .some(let value): return "\(value)"
         }
     }
@@ -50,8 +50,9 @@ extension CandidOption: CustomStringConvertible {
 
 extension CandidVector: CustomStringConvertible {
     public var description: String {
+        
         let itemsString = values.map { $0.description }.joined(separator: "; ")
-        return itemsString
+        return "\(containedType) {\(itemsString)}"
     }
 }
 

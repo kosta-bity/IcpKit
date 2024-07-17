@@ -50,6 +50,10 @@ enum CandidSerialisationTestVectors {
         (.record(["a":.empty]),[0x01, 0x6C, 0x01, 97, 0x6F, 0x01, 0x00]),
         // 1 type in table, record, 2 rows, leb(hash("a")), .natural, leb(hash("b")), .natural8, 1 candidValue, value of type 0, 0x01, 0x02
         (.record(["a":.natural(1),"b":.natural8(2)]), [0x01, 0x6C, 0x02, 97, 0x7D, 98, 0x7B, 0x01, 0x00, 0x01, 0x02]),
+        (.record([
+            "a": .option(.bool(true)),
+            "b": .option(.bool(false)),
+        ]), [0x02, 0x6e, 0x7e, 0x6c, 0x02, 97, 0x00, 98, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00]),
         // 2 types in table, (0)vector, bool, (1)option, referencing type 0, 1 candidValue, value of type 1, option present, 2 values, true, false
         (.option(try! .vector([.bool(true), .bool(false)])), [0x02, 0x6D, 0x7E, 0x6E, 0x00, 0x01, 0x01, 0x01, 0x02, 0x01, 0x00]),
         // 3 types in table, (0)vector, nat8, (1) vector, ref 0, (2)option, ref 1, 1 candidValue, value of type 2, option present, 2 values, length 0, length 2, leb(127), leb(128)
@@ -101,6 +105,33 @@ enum CandidSerialisationTestVectors {
             ]),
         // 4 types in table, (0)vector, nat8, (1) vector, ref 0, (2) record, 2 keys, leb(hash("a")), ref 0, leb(hash("b")), ref 1, (3)option, ref 2, 2 candidValues, value of type 3, value of type 2, option present, length 1, 0x44, length 1, length 2, 0x45, 0x47,  length 1, 0x43, length 1, length 2, 0x40, 0x41
          ], [4, 0x6D, 0x7B, 0x6D, 0, 0x6C, 2, 97, 0, 98, 1, 0x6E, 2, 0x02, 3, 2, 1, 1, 0x44, 1, 2, 0x45, 0x47, 1, 0x43, 1, 2, 0x40, 0x41]),
+    ]
+    
+    static let recursiveExamples: [(CandidValue, String)] = [
+        (.option(.named("0")), "016e00010000"),
+        (.option(CandidValue.option(.named("0"))), "016e0001000100"),
+        (.option(CandidValue.option(CandidValue.option(.named("0")))), "016e000100010100"),
+        (.vector(.named("0")), "016d00010000"),
+        (try! .vector([.vector(.named("0"))]), "016d0001000100"),
+        (try! .vector([.vector([.vector(.named("0"))])]), "016d000100010100"),
+        (.option(.named("1")), "026e016d00010000"),
+        (.option(CandidValue.vector(.named("0"))), "026e016d0001000100"),
+        (.option(try! CandidValue.vector([.option(.named("1"))])), "026e016d000100010100"),
+        (.option(CandidType.vector(.bool)), "026e016d7e010000"),
+        (.record([
+            "a": .option(.named("1")),
+        ]), "026c0161016e01010000"),
+        (.record([
+            "a": .option(CandidValue.option(.named("1"))),
+        ]), "026c0161016e0101000100"),
+        (.record([
+            "a": .option(CandidValue.option(CandidValue.option(.named("1")))),
+        ]), "026c0161016e010100010100"),
+        (try! .variant([0: .named("0"), 1: .bool], .bool(false), 1), "016b020000017e01000100"),
+        (try! .variant([0: .named("0"), 1: .bool], .variant([0: .named("0"),1: .bool], .bool(false), 1), 0), "016b020000017e0100000100"),
+        (try! .variant([0: .named("0"), 1: .bool],
+            .variant([0: .named("0"), 1: .bool],
+                .variant([0: .named("0"),1: .bool], .bool(false), 1), 0), 0), "016b020000017e010000000100"),
     ]
     
     static let realWorldExamples: [String] = [

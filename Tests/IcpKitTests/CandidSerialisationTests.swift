@@ -1,5 +1,5 @@
 //
-//  CandidTests.swift
+//  CandidSerialisationTests.swift
 //  UnitTests
 //
 //  Created by Konstantinos Gaitanis on 28.04.23.
@@ -8,7 +8,7 @@
 import XCTest
 @testable import IcpKit
 
-final class CandidTests: XCTestCase {
+final class CandidSerialisationTests: XCTestCase {
     let serialiser = CandidSerialiser()
     let deserialiser = CandidDeserialiser()
     
@@ -26,8 +26,7 @@ final class CandidTests: XCTestCase {
         let testVectors = CandidSerialisationTestVectors.multipleValuesTestVectors
         for (value, expected) in testVectors {
             let encoded = serialiser.encode(value)
-            //print("\(value) --expected \(Data(expected).hex) -- got -- \(encoded.hex)")
-            XCTAssertEqual(encoded, CandidSerialiser.magicBytes + Data(expected))
+            XCTAssertEqual(encoded, CandidSerialiser.magicBytes + Data(expected), "\(value) --expected \(Data(expected).hex) -- got -- \(encoded.hex)")
             let decoded = try deserialiser.decode(encoded)
             XCTAssertEqual(value, decoded)
         }
@@ -36,7 +35,20 @@ final class CandidTests: XCTestCase {
     func testRealWorldExamples() throws {
         for input in CandidSerialisationTestVectors.realWorldExamples {
             let data = Data.fromHex(input)!
-            XCTAssertNoThrow(try deserialiser.decode(data))
+            do {
+                let decoded = try self.deserialiser.decode(data)
+                print(decoded)
+            } catch (let error) {
+                XCTFail("failed to deserialise with error \(error)")
+            }
+        }
+    }
+    
+    func testRecursive() throws {
+        for (expected, hex) in CandidSerialisationTestVectors.recursiveExamples {
+            let data = CandidSerialiser.magicBytes + Data.fromHex(hex)!
+            let deserialised = try deserialiser.decode(data).first!
+            XCTAssertEqual(deserialised, expected)
         }
     }
     
