@@ -16,6 +16,11 @@ public struct CandidKeyedItem: Equatable, Comparable {
         self.value = value
     }
     
+    public init(_ key: String) {
+        self.key = CandidContainerKey(key)
+        self.value = .null
+    }
+    
     public init(_ key: String, _ value: CandidValue) {
         self.key = CandidContainerKey(key)
         self.value = value

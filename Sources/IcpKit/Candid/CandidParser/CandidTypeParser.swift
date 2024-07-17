@@ -278,7 +278,9 @@ private extension CandidTypeParser {
             let typeName = try stream.expectNextId()
             serviceSignature = .reference(typeName)
         }
-        try stream.expectNext(.semicolon)
+        if !stream.tokens.isEmpty {
+            try stream.expectNext(.semicolon)
+        }
         
         return CandidInterfaceDefinition.ServiceDefinition(
             name: serviceName,

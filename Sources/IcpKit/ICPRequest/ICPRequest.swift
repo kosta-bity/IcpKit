@@ -12,9 +12,15 @@ import PotentCBOR
 private let canisterBaseUrl: URL = "https://icp-api.io/api/v2/canister"
 
 public struct ICPMethod {
-    let canister: ICPPrincipal
-    let methodName: String
-    let args: CandidValue?
+    public let canister: ICPPrincipal
+    public let methodName: String
+    public let args: CandidValue?
+    
+    public init(canister: ICPPrincipal, methodName: String, args: CandidValue?) {
+        self.canister = canister
+        self.methodName = methodName
+        self.args = args
+    }
 }
 
 public enum ICPRequestType {

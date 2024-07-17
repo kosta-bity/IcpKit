@@ -118,6 +118,7 @@ enum CandidTypeParserTestVectors {
                 .init(hashedKey: 492419670, type: .text),
         ])], nil),
         ("service: {};", [:], .init(name: nil, initialisationArguments: nil, signature: .init([]))),
+        ("service: {}", [:], .init(name: nil, initialisationArguments: nil, signature: .init([]))),
         ("service:(nat)-> {};", [:], .init(name: nil, initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signature: .init([]))),
         ("service:()-> {};", [:], .init(name: nil, initialisationArguments: [], signature: .init([]))),
         ("service:(nat:nat)-> {};", [:], .init(name: nil, initialisationArguments: [.init(index: 0, name: "nat", type: .natural)], signature: .init([]))),
@@ -168,6 +169,12 @@ enum CandidTypeParserTestVectors {
         ("import service file1;service: {}", ["file1":"service: {}"]) // 2 services
     ]
     
+    static let realWorldExamples: [(source: String, typeCount: Int, methodCount: Int)] = [
+        (evmDidFile, 46, 23),
+        (icrc7DidFile, 6, 21),
+    ]
+    
+    /// https://github.com/internet-computer-protocol/evm-rpc-canister/blob/main/candid/evm_rpc.did#L253
     static let evmDidFile = """
 type Auth = variant { FreeRpc; PriorityRpc; RegisterProvider; Manage };
 type Block = record {
@@ -444,5 +451,73 @@ service : (InitArgs) -> {
   updateProvider : (UpdateProviderArgs) -> ();
   withdrawAccumulatedCycles : (ProviderId, recipient : principal) -> ();
 };
+"""
+    
+    /// https://github.com/dfinity/ICRC/blob/main/ICRCs/ICRC-7/ICRC-7.did
+    static let icrc7DidFile = """
+type Subaccount = blob;
+
+type Account = record { owner : principal; subaccount : opt Subaccount };
+
+type Value = variant {
+    Blob : blob;
+    Text : text;
+    Nat : nat;
+    Int : int;
+    Array : vec Value;
+    Map : vec record { text; Value };
+};
+
+type TransferArg = record {
+    from_subaccount: opt blob;
+    to : Account;
+    token_id : nat;
+    memo : opt blob;
+    created_at_time : opt nat64;
+};
+
+type TransferResult = variant {
+    Ok : nat; 
+    Err : TransferError;
+};
+
+type TransferError = variant {
+    NonExistingTokenId;
+    InvalidRecipient;
+    Unauthorized;
+    TooOld;
+    CreatedInFuture : record { ledger_time: nat64 };
+    Duplicate : record { duplicate_of : nat };
+    GenericError : record { error_code : nat; message : text };
+    GenericBatchError : record { error_code : nat; message : text };
+};
+
+service : {
+  icrc7_collection_metadata : () -> (vec record { text; Value } ) query;
+  icrc7_symbol : () -> (text) query;
+  icrc7_name : () -> (text) query;
+  icrc7_description : () -> (opt text) query;
+  icrc7_logo : () -> (opt text) query;
+  icrc7_total_supply : () -> (nat) query;
+  icrc7_supply_cap : () -> (opt nat) query;
+  icrc7_max_query_batch_size : () -> (opt nat) query;
+  icrc7_max_update_batch_size : () -> (opt nat) query;
+  icrc7_default_take_value : () -> (opt nat) query;
+  icrc7_max_take_value : () -> (opt nat) query;
+  icrc7_max_memo_size : () -> (opt nat) query;
+  icrc7_atomic_batch_transfers : () -> (opt bool) query;
+  icrc7_tx_window : () -> (opt nat) query;
+  icrc7_permitted_drift : () -> (opt nat) query;
+  icrc7_token_metadata : (token_ids : vec nat)
+      -> (vec opt vec record { text; Value }) query;
+  icrc7_owner_of : (token_ids : vec nat)
+      -> (vec opt Account) query;
+  icrc7_balance_of : (vec Account) -> (vec nat) query;
+  icrc7_tokens : (prev : opt nat, take : opt nat)
+      -> (vec nat) query;
+  icrc7_tokens_of : (account : Account, prev : opt nat, take : opt nat)
+      -> (vec nat) query;
+  icrc7_transfer : (vec TransferArg) -> (vec opt TransferResult);
+}
 """
 }

@@ -33,12 +33,11 @@ final class CandidTests: XCTestCase {
         }
     }
     
-    func testRealWorldExample() throws {
-        // this example has a type table with forward references
-        // eg. type 0 references type 1 which is defined later in the type table
-        let data = Data.fromHex("4449444c076b02bc8a0178c5fed201016b05b79eb35d02a1c3ebfd0703c7c6b5f60a05cce5b6900f7feb9cdbd50f066c01a7a5f3cc0e786c01bf9bb7f00d046c01e0a9b302786c018bbdf29b01786c019cbab69c0204010001040000000000000000")!
-        
-        XCTAssertNoThrow(try deserialiser.decode(data))
+    func testRealWorldExamples() throws {
+        for input in CandidSerialisationTestVectors.realWorldExamples {
+            let data = Data.fromHex(input)!
+            XCTAssertNoThrow(try deserialiser.decode(data))
+        }
     }
     
     func testDictionaryKeyHash() {

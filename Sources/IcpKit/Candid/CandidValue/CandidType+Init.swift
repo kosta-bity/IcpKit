@@ -8,6 +8,9 @@
 import Foundation
 
 public extension CandidType {
+    static var blob: CandidType {
+        return .vector(.natural8)
+    }
     static func variant(_ containedTypes: [CandidKeyedItemType]) -> CandidType {
         return .variant(CandidKeyedTypes(containedTypes))
     }

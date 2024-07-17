@@ -102,4 +102,12 @@ enum CandidSerialisationTestVectors {
         // 4 types in table, (0)vector, nat8, (1) vector, ref 0, (2) record, 2 keys, leb(hash("a")), ref 0, leb(hash("b")), ref 1, (3)option, ref 2, 2 candidValues, value of type 3, value of type 2, option present, length 1, 0x44, length 1, length 2, 0x45, 0x47,  length 1, 0x43, length 1, length 2, 0x40, 0x41
          ], [4, 0x6D, 0x7B, 0x6D, 0, 0x6C, 2, 97, 0, 98, 1, 0x6E, 2, 0x02, 3, 2, 1, 1, 0x44, 1, 2, 0x45, 0x47, 1, 0x43, 1, 2, 0x40, 0x41]),
     ]
+    
+    static let realWorldExamples: [String] = [
+        // this example has a type table with forward references
+        // eg. type 0 references type 1 which is defined later in the type table
+        "4449444c076b02bc8a0178c5fed201016b05b79eb35d02a1c3ebfd0703c7c6b5f60a05cce5b6900f7feb9cdbd50f066c01a7a5f3cc0e786c01bf9bb7f00d046c01e0a9b302786c018bbdf29b01786c019cbab69c0204010001040000000000000000",
+        // this example includes recursive definition
+        "4449444c056d016c02007101026b06cf89df017cfc84eb0100c189ee017dfdd2c9df0204cdf1cbbe0371f9baf3c50b036d026d7b0100051169637263373a6465736372697074696f6e04034e2f410a69637263373a6e616d65041b78796f326f2d67796161612d616161616c2d71623535612d6361690c69637263373a73796d626f6c041b78796f326f2d67796161612d616161616c2d71623535612d6361691269637263373a746f74616c5f737570706c79023d0a69637263373a6c6f676f0400",
+    ]
 }

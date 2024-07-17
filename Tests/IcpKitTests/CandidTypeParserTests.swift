@@ -86,13 +86,15 @@ final class CandidTypeParserTests: XCTestCase {
     }
     
     func testRealWorldExamples() async throws {
-        let evmService = try await parser.parseInterfaceDescription(CandidTypeParserTestVectors.evmDidFile)
-        XCTAssertEqual(evmService.namedTypes.count, 46)
-        guard case .concrete(let serviceSig) = evmService.service?.signature else {
-            XCTFail()
-            return
+        for (source, nTypes, nMethods) in CandidTypeParserTestVectors.realWorldExamples {
+            let service = try await parser.parseInterfaceDescription(source)
+            XCTAssertEqual(service.namedTypes.count, nTypes)
+            guard case .concrete(let serviceSig) = service.service?.signature else {
+                XCTFail("no concrete service")
+                return
+            }
+            XCTAssertEqual(serviceSig.methods.count, nMethods)
         }
-        XCTAssertEqual(serviceSig.methods.count, 23)
     }
 }
 

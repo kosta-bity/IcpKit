@@ -31,6 +31,13 @@ public extension CandidValue {
         return try .vector(CandidVector(items))
     }
     
+    static func variant(_ items: [String: CandidType], _ value: (String, CandidValue)) throws -> CandidValue {
+        return .variant(try CandidVariant(
+            candidTypes: items.map { ($0.key, $0.value) },
+            value: value
+        ))
+    }
+    
     static func variant(_ value: CandidKeyedItem) -> CandidValue {
         return .variant(CandidVariant(candidTypes: [.init(value)], value: value.value, valueIndex: 0))
     }

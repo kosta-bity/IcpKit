@@ -18,7 +18,7 @@ public struct CandidVariant: Equatable {
     public var key: CandidContainerKey { candidTypes[Int(valueIndex)].key }
     
     public init(candidTypes: [CandidKeyedItemType], value: CandidValue, valueIndex: UInt) {
-        self.candidTypes = candidTypes
+        self.candidTypes = candidTypes.sorted()
         self.value = value
         self.valueIndex = valueIndex
     }
@@ -28,7 +28,7 @@ public struct CandidVariant: Equatable {
             throw CandidVariantError.valueNotPartOfTypes
         }
         self.valueIndex = UInt(index)
-        self.candidTypes = candidTypes.map(CandidKeyedItemType.init)
+        self.candidTypes = candidTypes.map(CandidKeyedItemType.init).sorted()
         self.value = value.1
     }
     

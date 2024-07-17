@@ -58,7 +58,7 @@ public extension CandidValue {
         case .text: return .text
         case .reserved: return .reserved
         case .empty: return .empty
-        case .blob: return .vector(.natural8)
+        case .blob: return .blob
         case .option(let option): return .option(option.containedType)
         case .vector(let vector): return .vector(vector.containedType)
         case .record(let dictionary): return .record(dictionary.candidTypes)
