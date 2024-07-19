@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidPrincipal: Equatable {
+public struct CandidPrincipal: Equatable, Encodable {
     public let bytes: Data
     public let string: String
     

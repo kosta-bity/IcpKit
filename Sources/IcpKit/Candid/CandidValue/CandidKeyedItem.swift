@@ -7,22 +7,20 @@
 
 import Foundation
 
-public struct CandidKeyedItem: Equatable, Comparable {
+public struct CandidKeyedItem: Equatable, Comparable, Encodable {
     public let key: CandidContainerKey
     public let value: CandidValue
     
-    public init(_ hashedKey: Int, _ value: CandidValue) {
-        key = CandidContainerKey(hashedKey)
-        self.value = value
+    public init(_ hashedKey: Int, _ value: CandidValue = .null) {
+        self.init(CandidContainerKey(hashedKey), value)
     }
     
-    public init(_ key: String) {
-        self.key = CandidContainerKey(key)
-        self.value = .null
+    public init(_ key: String, _ value: CandidValue = .null) {
+        self.init(CandidContainerKey(key), value)
     }
     
-    public init(_ key: String, _ value: CandidValue) {
-        self.key = CandidContainerKey(key)
+    public init(_ key: CandidContainerKey, _ value: CandidValue = .null) {
+        self.key = key
         self.value = value
     }
     
@@ -31,7 +29,7 @@ public struct CandidKeyedItem: Equatable, Comparable {
     }
 }
 
-public struct CandidKeyedItemType: Equatable, Comparable {
+public struct CandidKeyedItemType: Equatable, Comparable, Encodable {
     public let key: CandidContainerKey
     public let type: CandidType
     
@@ -55,7 +53,7 @@ public struct CandidKeyedItemType: Equatable, Comparable {
     }
 }
 
-public struct CandidContainerKey: Equatable, Hashable, Comparable {
+public struct CandidContainerKey: Equatable, Hashable, Comparable, Encodable {
     public let hash: Int
     public let string: String?
     

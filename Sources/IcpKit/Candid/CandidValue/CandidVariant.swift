@@ -11,7 +11,7 @@ public enum CandidVariantError: Error {
     case valueNotPartOfTypes
 }
 
-public struct CandidVariant: Equatable {
+public struct CandidVariant: Equatable, Encodable {
     public let candidTypes: [CandidKeyedItemType]
     public let value: CandidValue
     public let valueIndex: UInt

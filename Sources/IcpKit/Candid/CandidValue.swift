@@ -9,7 +9,7 @@ import Foundation
 import BigInt
 
 /// https://github.com/dfinity/candid/blob/master/spec/Candid.md
-public indirect enum CandidValue: Equatable {
+public indirect enum CandidValue: Equatable, Encodable {
     case null
     case bool(Bool)
     case natural(BigUInt)

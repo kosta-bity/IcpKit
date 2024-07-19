@@ -10,7 +10,7 @@ import OrderedCollections
 
 /// Contains the necessary data to fully describe the Candid Value
 /// and its contained child values
-public indirect enum CandidType: Equatable {
+public indirect enum CandidType: Equatable, Encodable {
     case null
     case bool
     case natural
@@ -38,7 +38,7 @@ public indirect enum CandidType: Equatable {
     case named(String)
 }
 
-public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence {
+public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence, Encodable {
     public typealias Element = CandidKeyedItemType
     public typealias Iterator = Array<CandidKeyedItemType>.Iterator
     public let items: [CandidKeyedItemType]
