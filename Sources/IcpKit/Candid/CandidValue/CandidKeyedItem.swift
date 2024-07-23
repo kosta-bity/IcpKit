@@ -53,7 +53,12 @@ public struct CandidKeyedItemType: Equatable, Comparable, Encodable {
     }
 }
 
-public struct CandidContainerKey: Equatable, Hashable, Comparable, Encodable {
+public protocol CandidContainerKeyProtocol: Equatable, Hashable, Comparable, Encodable {
+    var hash: Int { get }
+    var string: String? { get }
+}
+
+public struct CandidContainerKey: CandidContainerKeyProtocol {
     public let hash: Int
     public let string: String?
     

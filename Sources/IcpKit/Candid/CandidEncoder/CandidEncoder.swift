@@ -91,7 +91,10 @@ private class CandidValueEncoder: Encoder {
                let associatedValue = associatedValues.candidSortedItems.first {
             return .variant(CandidKeyedItem(variantValueKey, associatedValue.value))
         } else {
-            throw CandidEncoderError.enumeratorCanNotBeEncoded
+            let variantValues = try associatedValues.candidSortedItems.map {
+                return CandidKeyedItem(try $0.key.toVariantKey(), $0.value)
+            }
+            return .variant(CandidKeyedItem(value.key, .record(variantValues)))
         }
     }
     
@@ -359,4 +362,17 @@ extension Optional: CandidOptionalMarker where Wrapped: Encodable {
 
 private extension Collection {
     var wrappedType: Element.Type { Element.self }
+}
+
+private extension CandidContainerKey {
+    func toVariantKey() throws -> CandidContainerKey {
+        guard let stringKey = string,
+            let numberString = try Self.unnamedEnumRegex.wholeMatch(in: stringKey)?["number"]?.substring,
+              let intKey = Int(numberString) else {
+            return self
+        }
+        return CandidContainerKey(intKey)
+    }
+    
+    static let unnamedEnumRegex = try! Regex(#"_(?'number'\d+)"#)
 }

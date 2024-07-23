@@ -54,6 +54,10 @@ public extension CandidValue {
         return .record(CandidDictionary(items))
     }
     
+    static func record(_ items: [Int: CandidValue]) -> CandidValue {
+        return .record(CandidDictionary(items))
+    }
+    
     static func principal(_ string: String) throws -> CandidValue {
         return .principal(try CandidPrincipal(string))
     }
