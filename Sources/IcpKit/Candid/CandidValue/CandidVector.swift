@@ -31,14 +31,10 @@ public struct CandidVector: Equatable, Encodable {
     }
     
     public init(_ type: CandidType, _ sequence: any Sequence<CandidValue>) throws {
-//        guard sequence.allSatisfy({ $0.candidType == type }) else {
-//            throw CandidVectorError.wrongCandidType
-//        }
+        guard sequence.allSatisfy({ $0.candidType.isSubType(of: type) }) else {
+            throw CandidVectorError.wrongCandidType
+        }
         values = Array(sequence)
         self.containedType = type
     }
-    
-//    public func makeIterator() -> [CandidValue].Iterator {
-//        return values.makeIterator()
-//    }
 }

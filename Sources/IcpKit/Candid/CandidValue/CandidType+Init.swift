@@ -48,4 +48,8 @@ public extension CandidType {
     static func service(_ methods: [CandidServiceSignature.Method] = []) -> CandidType {
         .service(CandidServiceSignature(methods))
     }
+    
+    static func service(_ methods: [String: CandidFunctionSignature]) -> CandidType {
+        .service(CandidServiceSignature(methods.map { .init(name: $0.key, signatureType: .concrete($0.value)) } ))
+    }
 }

@@ -97,7 +97,7 @@ private class CandidValueEncoder: Encoder {
             return .variant(CandidKeyedItem(value.key, .record(variantValues)))
         }
     }
-    
+        
     private func candidType(_ type: Any.Type) -> CandidType {
         switch type {
         case is Bool.Type: return .bool
@@ -117,8 +117,12 @@ private class CandidValueEncoder: Encoder {
         case is BigInt.Type: return .integer
         case is Float.Type: return .float32
         case is Double.Type: return .float64
-        // TODO: Recursive records should be named
-        default: return .null
+        case is any CandidOptionalMarker.Type:
+            // TODO: How can we unwrap the contained type?
+            // eg. Bool??.none can not be identified
+            return .option(.empty)
+        default:
+            return .empty
         }
     }
     

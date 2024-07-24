@@ -70,7 +70,7 @@ private class CandidValueDecoder: Decoder {
     }
     
     func singleValueContainer() throws -> SingleValueDecodingContainer {
-        return try CandidSingleValueDecodingContainer(input, codingPath)
+        return CandidSingleValueDecodingContainer(input, codingPath)
     }
 }
 
@@ -84,56 +84,53 @@ private struct IntCodingKey: CodingKey {
 // MARK: DecodingContainers
 private class CandidSingleValueDecodingContainer: SingleValueDecodingContainer {
     let codingPath: [CodingKey]
-    let decodingValue: CandidSingleDecodingValue
     let input: CandidValue
     
-    init(_ input: CandidValue, _ codingPath: [CodingKey]) throws {
-        guard let decodingValue = CandidSingleDecodingValue(input) else {
-            throw CandidDecoderError.invalidContainer
-        }
-        self.decodingValue = decodingValue
+    init(_ input: CandidValue, _ codingPath: [CodingKey]) {
         self.input = input
         self.codingPath = codingPath
     }
     
     func decode<T>(_ type: T.Type) throws -> T where T: Decodable {
-        let childValue = try decodingValue.childCandidValue()
+        guard let childValue = input.optionValue?.value else {
+            throw DecodingError.typeMismatch(T.self, .init(codingPath: codingPath, debugDescription: "not an optional"))
+        }
         let decoder = CandidValueDecoder(childValue, codingPath + [IntCodingKey(intValue: 0)])
         return try decoder.candidDecode()
     }
 }
 
 private class CandidUnkeyedDecodingContainer: UnkeyedDecodingContainer {
-    var codingPath: [CodingKey]
+    var codingPath: [CodingKey] { rootCodingPath + [IntCodingKey(intValue: currentIndex)] }
     var count: Int? { inputVector.count }
     var isAtEnd: Bool { currentIndex == count }
     private let inputVector: [CandidValue]
     private (set) var currentIndex: Int = 0
-    private var currentCodingPath: [CodingKey] { codingPath + [IntCodingKey(intValue: currentIndex)] }
+    private let rootCodingPath: [CodingKey]
     
     init(_ input: CandidValue, _ codingPath: [CodingKey]) throws {
         guard let vector = input.vectorValue else {
-            throw DecodingError.dataCorrupted(.init(codingPath: codingPath, debugDescription: "not a vector"))
+            throw DecodingError.typeMismatch([Any].self, .init(codingPath: codingPath, debugDescription: "not a vector"))
         }
-        self.codingPath = codingPath
         self.inputVector = vector.values
+        self.rootCodingPath = codingPath
     }
     
     func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
         let childValue = getNextValue()
-        return KeyedDecodingContainer(try CandidKeyedDecodingContainer<NestedKey>(childValue, currentCodingPath))
+        return KeyedDecodingContainer(try CandidKeyedDecodingContainer<NestedKey>(childValue, codingPath))
     }
     
     func nestedUnkeyedContainer() throws -> UnkeyedDecodingContainer {
         let childValue = getNextValue()
-        return try CandidUnkeyedDecodingContainer(childValue, currentCodingPath)
+        return try CandidUnkeyedDecodingContainer(childValue, codingPath)
     }
     
     func superDecoder() throws -> Decoder { fatalError("superDecoder not supported") }
     
     func decode<T>(_ type: T.Type) throws -> T where T : Decodable {
         let childValue = getNextValue()
-        let decoder = CandidValueDecoder(childValue, currentCodingPath)
+        let decoder = CandidValueDecoder(childValue, codingPath)
         return try decoder.candidDecode()
     }
     
@@ -226,160 +223,141 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
 
 // MARK: Primitive Decoding
 extension CandidSingleValueDecodingContainer {
-    func decodeNil() -> Bool { decodingValue.isNil }
-    func decode(_ type: Bool.Type) throws -> Bool { try decodingValue.bool() }
-    func decode(_ type: String.Type) throws -> String { try decodingValue.text() }
+    func decodeNil() -> Bool { input.isNil }
+    func decode(_ type: Bool.Type) throws -> Bool { try input.bool() }
+    func decode(_ type: String.Type) throws -> String { try input.text() }
     
     // TODO: convert from compatible types where possible
-    func decode(_ type: Double.Type) throws -> Double { try decodingValue.float64() }
-    func decode(_ type: Float.Type) throws -> Float { try decodingValue.float32() }
-    func decode(_ type: Int.Type) throws -> Int { try decodingValue.integer() }
-    func decode(_ type: Int8.Type) throws -> Int8 { try decodingValue.integer() }
-    func decode(_ type: Int16.Type) throws -> Int16 { try decodingValue.integer() }
-    func decode(_ type: Int32.Type) throws -> Int32 { try decodingValue.integer() }
-    func decode(_ type: Int64.Type) throws -> Int64 { try decodingValue.integer() }
-    func decode(_ type: UInt.Type) throws -> UInt { try decodingValue.natural() }
-    func decode(_ type: UInt8.Type) throws -> UInt8 { try decodingValue.natural() }
-    func decode(_ type: UInt16.Type) throws -> UInt16 { try decodingValue.natural() }
-    func decode(_ type: UInt32.Type) throws -> UInt32 { try decodingValue.natural() }
-    func decode(_ type: UInt64.Type) throws -> UInt64 { try decodingValue.natural() }
+    func decode(_ type: Double.Type) throws -> Double { try input.float64() }
+    func decode(_ type: Float.Type) throws -> Float { try input.float32() }
+    func decode(_ type: Int.Type) throws -> Int { Int(try input.integer64()) }
+    func decode(_ type: Int8.Type) throws -> Int8 { try input.integer8() }
+    func decode(_ type: Int16.Type) throws -> Int16 { try input.integer16() }
+    func decode(_ type: Int32.Type) throws -> Int32 { try input.integer32() }
+    func decode(_ type: Int64.Type) throws -> Int64 { try input.integer64() }
+    func decode(_ type: UInt.Type) throws -> UInt { UInt(try input.natural64()) }
+    func decode(_ type: UInt8.Type) throws -> UInt8 { try input.natural8() }
+    func decode(_ type: UInt16.Type) throws -> UInt16 { try input.natural16() }
+    func decode(_ type: UInt32.Type) throws -> UInt32 { try input.natural32() }
+    func decode(_ type: UInt64.Type) throws -> UInt64 { try input.natural64() }
 }
 
 extension CandidUnkeyedDecodingContainer {
-    func decodeNil() throws -> Bool { fatalError() }
-    func decode(_ type: Bool.Type) throws -> Bool { fatalError() }
-    func decode(_ type: String.Type) throws -> String { fatalError() }
-    func decode(_ type: Double.Type) throws -> Double { fatalError() }
-    func decode(_ type: Float.Type) throws -> Float { fatalError() }
-    func decode(_ type: Int.Type) throws -> Int { fatalError() }
-    func decode(_ type: Int8.Type) throws -> Int8 { fatalError() }
-    func decode(_ type: Int16.Type) throws -> Int16 { fatalError() }
-    func decode(_ type: Int32.Type) throws -> Int32 { fatalError() }
-    func decode(_ type: Int64.Type) throws -> Int64 { fatalError() }
-    func decode(_ type: UInt.Type) throws -> UInt { fatalError() }
-    func decode(_ type: UInt8.Type) throws -> UInt8 { fatalError() }
-    func decode(_ type: UInt16.Type) throws -> UInt16 { fatalError() }
-    func decode(_ type: UInt32.Type) throws -> UInt32 { fatalError() }
-    func decode(_ type: UInt64.Type) throws -> UInt64 { fatalError() }
+    func decodeNil() throws -> Bool { throw DecodingError.typeMismatch(Any?.self, .init(codingPath: codingPath, debugDescription: "not an optional")) }
+    func decode(_ type: Bool.Type) throws -> Bool { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not a Bool")) }
+    func decode(_ type: String.Type) throws -> String { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not a String")) }
+    func decode(_ type: Double.Type) throws -> Double { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not a Double")) }
+    func decode(_ type: Float.Type) throws -> Float { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not a Float")) }
+    func decode(_ type: Int.Type) throws -> Int { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int")) }
+    func decode(_ type: Int8.Type) throws -> Int8 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int8")) }
+    func decode(_ type: Int16.Type) throws -> Int16 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int16")) }
+    func decode(_ type: Int32.Type) throws -> Int32 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int32")) }
+    func decode(_ type: Int64.Type) throws -> Int64 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int64")) }
+    func decode(_ type: UInt.Type) throws -> UInt { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt")) }
+    func decode(_ type: UInt8.Type) throws -> UInt8 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt8")) }
+    func decode(_ type: UInt16.Type) throws -> UInt16 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt16")) }
+    func decode(_ type: UInt32.Type) throws -> UInt32 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt32")) }
+    func decode(_ type: UInt64.Type) throws -> UInt64 { throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt64")) }
 }
 
 extension CandidKeyedDecodingContainer {
     func decodeNil(forKey key: Key) throws -> Bool {
-        if let optionValue = try value(key).optionValue {
-            return optionValue.value == nil
-        }
-        return false
+        return try value(key).isNil
     }
-    func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool { try value(key).bool() }
-    func decode(_ type: String.Type, forKey key: Key) throws -> String { try value(key).text() }
-    func decode(_ type: Double.Type, forKey key: Key) throws -> Double { try value(key).float64() }
-    func decode(_ type: Float.Type, forKey key: Key) throws -> Float { try value(key).float32() }
-    func decode(_ type: Int.Type, forKey key: Key) throws -> Int { Int(try value(key).integer64()) }
-    func decode(_ type: Int8.Type, forKey key: Key) throws -> Int8 { try value(key).integer8() }
-    func decode(_ type: Int16.Type, forKey key: Key) throws -> Int16 { try value(key).integer16() }
-    func decode(_ type: Int32.Type, forKey key: Key) throws -> Int32 { try value(key).integer32() }
-    func decode(_ type: Int64.Type, forKey key: Key) throws -> Int64 { try value(key).integer64() }
-    func decode(_ type: UInt.Type, forKey key: Key) throws -> UInt { UInt(try value(key).natural64()) }
-    func decode(_ type: UInt8.Type, forKey key: Key) throws -> UInt8 { try value(key).natural8() }
-    func decode(_ type: UInt16.Type, forKey key: Key) throws -> UInt16 { try value(key).natural16() }
-    func decode(_ type: UInt32.Type, forKey key: Key) throws -> UInt32 { try value(key).natural32() }
-    func decode(_ type: UInt64.Type, forKey key: Key) throws -> UInt64 { try value(key).natural64() }
+    
+    func decode(_ type: Bool.Type, forKey key: Key) throws -> Bool {
+        guard let value = try value(key).boolValue else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not a Bool"))
+        }
+        return value
+    }
+    func decode(_ type: String.Type, forKey key: Key) throws -> String {
+        guard let value = try value(key).textValue else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not a String"))
+        }
+        return value
+    }
+    func decode(_ type: Double.Type, forKey key: Key) throws -> Double {
+        guard let value = try value(key).float64Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Double"))
+        }
+        return value
+    }
+    func decode(_ type: Float.Type, forKey key: Key) throws -> Float {
+        guard let value = try value(key).float32Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Float"))
+        }
+        return value
+    }
+    func decode(_ type: Int.Type, forKey key: Key) throws -> Int {
+        guard let value = try value(key).integer64Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int"))
+        }
+        return Int(value)
+    }
+    func decode(_ type: Int8.Type, forKey key: Key) throws -> Int8 {
+        guard let value = try value(key).integer8Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int8"))
+        }
+        return value
+    }
+    func decode(_ type: Int16.Type, forKey key: Key) throws -> Int16 {
+        guard let value = try value(key).integer16Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int16"))
+        }
+        return value
+    }
+    func decode(_ type: Int32.Type, forKey key: Key) throws -> Int32 {
+        guard let value = try value(key).integer32Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int32"))
+        }
+        return value
+    }
+    func decode(_ type: Int64.Type, forKey key: Key) throws -> Int64 {
+        guard let value = try value(key).integer64Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an Int64"))
+        }
+        return value
+    }
+    func decode(_ type: UInt.Type, forKey key: Key) throws -> UInt {
+        guard let value = try value(key).natural64Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt"))
+        }
+        return UInt(value)
+    }
+    func decode(_ type: UInt8.Type, forKey key: Key) throws -> UInt8 {
+        guard let value = try value(key).natural8Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt8"))
+        }
+        return value
+    }
+    func decode(_ type: UInt16.Type, forKey key: Key) throws -> UInt16 {
+        guard let value = try value(key).natural16Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt16"))
+        }
+        return value
+    }
+    func decode(_ type: UInt32.Type, forKey key: Key) throws -> UInt32 {
+        guard let value = try value(key).natural32Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt32"))
+        }
+        return value
+    }
+    func decode(_ type: UInt64.Type, forKey key: Key) throws -> UInt64 {
+        guard let value = try value(key).natural64Value else {
+            throw DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not an UInt64"))
+        }
+        return value
+    }
 }
 
 private extension CandidValue {
-    var isSingleValue: Bool {
-        switch self {
-        case .null, .bool, .natural, .integer, .natural8, .natural16, .natural32, .natural64, .integer8, .integer16, .integer32, .integer64, .float32, .float64, .text, .option:
-            return true
-            
-        case .reserved, .empty, .blob, .vector, .record, .variant, .function, .service, .principal:
-            return false
-        }
-    }
-}
-
-enum CandidSingleDecodingValue {
-    case empty
-    case bool(Bool)
-    case null(CandidType)
-    case anyInteger(any BinaryInteger)
-    case anyNatural(any UnsignedInteger)
-    case anyFloat(Double)
-    case text(String)
-    case candidValue(CandidValue)
-    
-    func childCandidValue() throws -> CandidValue {
-        guard case .candidValue(let candidValue) = self else {
-            throw CandidDecoderError.invalidContainer
-        }
-        return candidValue
-    }
-    
-    init?(_ value: CandidValue) {
-        switch value {
-        case .null: self = .empty
-        case .bool(let bool): self = .bool(bool)
-        case .natural(let bigUInt): self = .anyNatural(bigUInt)
-        case .integer(let bigInt): self = .anyInteger(bigInt)
-        case .natural8(let uInt8): self = .anyNatural(uInt8)
-        case .natural16(let uInt16): self = .anyNatural(uInt16)
-        case .natural32(let uInt32): self = .anyNatural(uInt32)
-        case .natural64(let uInt64): self = .anyNatural(uInt64)
-        case .integer8(let int8): self = .anyInteger(int8)
-        case .integer16(let int16): self = .anyInteger(int16)
-        case .integer32(let int32): self = .anyInteger(int32)
-        case .integer64(let int64): self = .anyInteger(int64)
-        case .float32(let float): self = .anyFloat(Double(float))
-        case .float64(let double): self = .anyFloat(double)
-        case .text(let string): self = .text(string)
-        case .option(let candidOption):
-            if let wrappedValue = candidOption.value {
-                self = .candidValue(wrappedValue)
-            } else {
-                self = .null(candidOption.containedType)
-            }
-        default:
-            return nil
-        }
-    }
-    
     var isNil: Bool {
         switch self {
         case .empty, .null: return true
+        case .option(let option): return option.value == nil
         default: return false
         }
-    }
-    
-    func bool() throws -> Bool {
-        guard case .bool(let bool) = self else { throw CandidDecoderError.invalidContainer }
-        return bool
-    }
-    
-    func natural<T>() throws -> T where T: UnsignedInteger {
-        guard case .anyNatural(let unsignedInt) = self,
-              let uint = T(exactly: unsignedInt) else {  throw CandidDecoderError.invalidContainer }
-        return uint
-    }
-    
-    func integer<T>() throws -> T where T: BinaryInteger {
-        guard case .anyInteger(let binInt) = self,
-              let int = T(exactly: binInt) else {  throw CandidDecoderError.invalidContainer }
-        return int
-    }
-    
-    func float32() throws -> Float {
-        guard case .anyFloat(let float) = self else {  throw CandidDecoderError.invalidContainer }
-        return Float(float)
-    }
-    
-    func float64() throws -> Double {
-        guard case .anyFloat(let double) = self else {  throw CandidDecoderError.invalidContainer }
-        return double
-    }
-    
-    func text() throws -> String {
-        guard case .text(let string) = self else {  throw CandidDecoderError.invalidContainer }
-        return string
     }
 }
 

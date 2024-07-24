@@ -59,6 +59,10 @@ public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence, 
         return items.first { $0.key.string == key }
     }
     
+    public subscript (_ key: CandidContainerKey) -> CandidKeyedItemType? {
+        return items.first { $0.key == key }
+    }
+    
     public func makeIterator() -> Array<CandidKeyedItemType>.Iterator { items.makeIterator() }
     public var count: Int { items.count }
 }
