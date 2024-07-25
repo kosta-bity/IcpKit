@@ -71,7 +71,9 @@ private class CandidValueEncoder: Encoder {
             let mirror = Mirror(reflecting: value)
             if .enum == mirror.displayStyle {
                 // TODO: CaseIterable can define all the variant cases
-                let record = try candidValue.record()
+                guard let record = candidValue.recordValue else {
+                    throw EncodingError.invalidValue(T.self, .init(codingPath: codingPath, debugDescription: "Enums should be encoded to records"))
+                }
                 let variant = try convertRecordToVariant(record)
                 encodingValue = CandidSingleEncodingValue(variant)
             }
@@ -194,16 +196,24 @@ private class CandidSingleEncodingValue: CandidEncodingValue {
 
 private class CandidUnkeyedEncodingValue: CandidEncodingValue {
     var candidValue: CandidValue! { try! .vector(items.map { $0.candidValue } ) }
-    private (set) var items: [CandidEncodingValue] = []
+    private var items: [CandidEncodingValue] = []
+    var count: Int { items.count }
     func append(_ value: CandidEncodingValue) { items.append(value) }
     func append(_ value: CandidValue) { append(CandidSingleEncodingValue(value)) }
 }
 
 private class CandidKeyedEncodingValue<Key>: CandidEncodingValue where Key: CodingKey {
     var candidValue: CandidValue! { .record(items.map { CandidKeyedItem($0.key, $0.value.candidValue) }) }
-    private (set) var items: [String: CandidEncodingValue] = [:]
-    func set(_ value: CandidEncodingValue, for key: Key) { items[key.stringValue] = value }
+    private var items: [CandidContainerKey: CandidEncodingValue] = [:]
+    func set(_ value: CandidEncodingValue, for key: Key) { items[candidKey(for: key)] = value }
     func set(_ value: CandidValue, for key: Key) { set(CandidSingleEncodingValue(value), for: key) }
+    
+    private func candidKey(for key: Key) -> CandidContainerKey {
+        if let int = key.intValue {
+            return CandidContainerKey(int)
+        }
+        return CandidContainerKey(key.stringValue)
+    }
 }
 
 // MARK: EncodingContainers
@@ -229,10 +239,10 @@ private class CandidSingleValueEncodingContainer: SingleValueEncodingContainer, 
 }
 
 private class CandidUnkeyedEncodingContainer: UnkeyedEncodingContainer, CandidEncodingContainer {
-    var codingPath: [CodingKey] { rootCodingPath + [IntCodingKey(intValue: count)!] }
+    var codingPath: [CodingKey] { rootCodingPath + [IntCodingKey(intValue: count)] }
     let encodingValue = CandidUnkeyedEncodingValue()
     private let rootCodingPath: [CodingKey]
-    var count: Int { encodingValue.items.count }
+    var count: Int { encodingValue.count }
     
     init(_ codingPath: [CodingKey]) {
         rootCodingPath = codingPath
@@ -288,13 +298,6 @@ private class CandidKeyedEncodingContainer<Key: CodingKey>: KeyedEncodingContain
     
     func superEncoder() -> Encoder { fatalError("not supported") }
     func superEncoder(forKey key: Key) -> Encoder { fatalError("not supported") }
-}
-
-private struct IntCodingKey: CodingKey {
-    var stringValue: String { return String(intValue!) }
-    init?(stringValue: String) { fatalError() }
-    let intValue: Int?
-    init?(intValue: Int) { self.intValue = intValue }
 }
 
 // MARK: Encoding primitives

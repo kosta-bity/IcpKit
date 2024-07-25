@@ -62,7 +62,7 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
     ([Int](), .vector(.integer), [Int].self),
     ([0,1], try! .vector([.integer64(0), .integer64(1)]), [Int].self),
     ([0,nil,2], try! .vector([.option(.integer64(0)), .option(.integer64), .option(.integer64(2))]), [Int?].self),
-    ([[0,nil], []], try! .vector([.vector([.option(.integer64(0)), .option(.integer64)]), .vector(.integer64)]), [[Int?]].self),
+    ([[0,nil], []], try! .vector([.vector([.option(.integer64(0)), .option(.integer64)]), .vector(.option(.integer64))]), [[Int?]].self),
     
     (TestRecord(a: 1, b: 2), .record(["a": .natural8(1), "b": .integer64(2)]), TestRecord.self),
     (TestRecord2(a: [1, nil]), .record(["a": try! .vector([.option(.natural8(1)), .option(.natural8)])]), TestRecord2.self),
@@ -70,6 +70,7 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
         "record":  .record(["a": .natural8(1), "b": .integer64(2)]),
         "records2": try! .vector([.record(["a": try! .vector([.option(.natural8(1)), .option(.natural8)])])]),
     ]), TestRecord3.self),
+    (TestUnnamedRecord(anyName: "text", _1: 2), .record([.text("text"), .natural8(2)]), TestUnnamedRecord.self),
     (TestRecursiveRecord(a: []), .record(["a": .vector(.record([]))]), TestRecursiveRecord.self),
     (TestRecursiveRecord(a: [TestRecursiveRecord(a: [])]), .record(["a": try! .vector([.record(["a": .vector(.record([]))])])]), TestRecursiveRecord.self),
     
@@ -145,6 +146,7 @@ private let encodingTestVectors: [(any Encodable, CandidValue)] = [
         "record":  .record(["a": .natural8(1), "b": .integer64(2)]),
         "records2": try! .vector([.record(["a": try! .vector([.option(.natural8(1)), .option(.natural8)])])]),
     ])),
+    (TestUnnamedRecord(anyName: "text", _1: 2), .record([.text("text"), .natural8(2)])),
     (TestRecord?.none, .option(.record(["a": .natural8, "b":.integer64]))),
     (TestRecursiveRecord(a: []), .record(["a": .vector(.record([]))])),
     
@@ -172,6 +174,16 @@ private struct TestRecord2: Codable {
 private struct TestRecord3: Codable {
     let record: TestRecord
     let records2: [TestRecord2]
+}
+
+struct TestUnnamedRecord: Codable {
+    let anyName: String
+    let _1: UInt8
+    
+    enum CodingKeys: Int, CodingKey {
+        case anyName = 0
+        case _1 = 1
+    }
 }
 
 private struct TestRecursiveRecord: Codable {

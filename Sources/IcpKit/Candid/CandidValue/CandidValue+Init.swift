@@ -50,7 +50,11 @@ public extension CandidValue {
         return .variant(CandidVariant(candidTypes: [.init(value)], value: value.value, valueIndex: 0))
     }
     
-    static func record(_ items: any Sequence<CandidKeyedItem>) -> CandidValue {
+    static func record(_ items: any Sequence<CandidKeyedItem> = []) -> CandidValue {
+        return .record(CandidDictionary(items))
+    }
+
+    static func record(_ items: any Sequence<CandidValue>) -> CandidValue {
         return .record(CandidDictionary(items))
     }
     

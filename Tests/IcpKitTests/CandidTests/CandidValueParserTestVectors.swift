@@ -84,7 +84,7 @@ enum CandidValueParserTestVectors {
         ("vec {8:nat8;3:nat8}", try! .vector([.natural8(8), .natural8(3)])),
         
         // MARK: Records
-        ("record {}", .record([])),
+        ("record {}", .record()),
         (#"record {first_name = "John"; second_name = "Doe"}"#, .record([
             .init("first_name", .text("John")),
             .init("second_name", .text("Doe")),

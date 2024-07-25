@@ -30,6 +30,17 @@ public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable, Encod
             .sorted()  // sort by ascending keys
     }
     
+    public init(_ unnamedItems: any Sequence<CandidValue>) {
+        var index = 0
+        candidSortedItems = unnamedItems
+            .map {
+                let keyedItem = CandidKeyedItem(index, $0)
+                index += 1
+                return keyedItem
+            }
+            .sorted()
+    }
+    
     public init(_ keyedItems: any Sequence<CandidKeyedItem>) {
         candidSortedItems = keyedItems.sorted()  // sort by ascending keys
     }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol GeneratedCandidType {
+public protocol GeneratedCandidType: Codable {
     func candidValue() throws -> CandidValue
     
 }
