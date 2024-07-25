@@ -16,7 +16,7 @@ public struct ICPMethod {
     public let methodName: String
     public let args: CandidValue?
     
-    public init(canister: ICPPrincipal, methodName: String, args: CandidValue?) {
+    public init(canister: ICPPrincipal, methodName: String, args: CandidValue? = nil) {
         self.canister = canister
         self.methodName = methodName
         self.args = args

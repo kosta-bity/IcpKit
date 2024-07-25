@@ -44,7 +44,7 @@ public struct CandidVariant: Equatable, Encodable {
     }
     
     public subscript (_ key: String) -> CandidValue? {
-        self[CandidContainerKey.hash(key)]
+        self[CandidContainerKey.candidHash(key)]
     }
     
     public subscript (_ key: Int) -> CandidValue? {

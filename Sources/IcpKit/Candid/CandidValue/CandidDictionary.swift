@@ -55,7 +55,7 @@ public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable, Encod
     }
     
     public subscript (_ key: String) -> CandidValue? {
-        let hashedKey = CandidContainerKey.hash(key)
+        let hashedKey = CandidContainerKey.candidHash(key)
         return self[hashedKey]
     }
 }

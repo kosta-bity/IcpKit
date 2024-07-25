@@ -130,9 +130,9 @@ private class CandidUnkeyedDecodingContainer: UnkeyedDecodingContainer {
 private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol where Key: CodingKey {
     let codingPath: [CodingKey]
     var allKeys: [Key] { 
-        keys.compactMap {
-            if let string = $0.string, let stringKey = Key(stringValue: string) { return stringKey }
-            return Key(intValue: $0.hash)
+        values.compactMap {
+            if let string = $0.key.string, let stringKey = Key(stringValue: string) { return stringKey }
+            return Key(intValue: $0.key.hash)
         }
     }
     private let keys: [CandidContainerKey]

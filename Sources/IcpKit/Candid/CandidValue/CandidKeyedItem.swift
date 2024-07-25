@@ -68,7 +68,7 @@ public struct CandidContainerKey: CandidContainerKeyProtocol {
     }
     
     public init(_ key: String) {
-        self.hash = Self.hash(key)
+        self.hash = Self.candidHash(key)
         self.string = key
     }
     
@@ -86,7 +86,7 @@ public struct CandidContainerKey: CandidContainerKeyProtocol {
     
     /// https://github.com/dfinity/candid/blob/master/spec/Candid.md
     /// hash(id) = ( Sum(i=0..k) utf8(id)[i] * 223^(k-i) ) mod 2^32 where k = |utf8(id)| -1
-    public static func hash(_ key: String) -> Int {
+    public static func candidHash(_ key: String) -> Int {
         let data = Data(key.utf8)
         return data.reduce(0) { ($0 * 223 + Int($1)) & 0x00000000ffffffff }
     }
