@@ -42,7 +42,7 @@ enum CandidTypeParserTestVectors {
         ("  vec\tint  ", .vector(.integer)),
         ("\n\tvec\tint  ", .vector(.integer)),
         
-        ("variant {}", .variant()),
+        ("variant {}", .variant([])),
         ("variant { ok : nat; error : text }", .variant(["ok": .natural, "error": .text])),
         ("variant { ok : nat; error : text; }", .variant(["ok": .natural, "error": .text])),
         ("variant { ok : vec nat8 }", .variant(["ok": .vector(.natural8)])),

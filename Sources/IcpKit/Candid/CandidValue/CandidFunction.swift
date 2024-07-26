@@ -72,6 +72,12 @@ public struct CandidFunctionSignature: Equatable, Encodable {
     public let results: [Parameter]
     public let annotations: Annotations
     
+
+    public init(_ inputs: [Parameter], _ outputs: [Parameter], _ annotations: Annotations) {
+        self.arguments = inputs.sorted()
+        self.results = outputs.sorted()
+        self.annotations = annotations
+    }
     
     public init(_ inputs: [Parameter], _ outputs: [Parameter], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false) {
         self.arguments = inputs.sorted()

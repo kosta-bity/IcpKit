@@ -23,7 +23,13 @@ public extension CandidType {
     static func variant(_ containedTypes: [Int: CandidType]) -> CandidType {
         .variant(containedTypes.map { CandidKeyedItemType(hashedKey: $0.0, type: $0.1) })
     }
+    static func variant(_ containedTypes: String...) -> CandidType {
+        .variant(containedTypes.map { CandidKeyedItemType($0, .null) })
+    }
     
+    static func record(_ containedTypes: [CandidType]) -> CandidType {
+        return .record(CandidKeyedTypes(containedTypes))
+    }
     static func record(_ containedTypes: [CandidKeyedItemType]) -> CandidType {
         return .record(CandidKeyedTypes(containedTypes))
     }

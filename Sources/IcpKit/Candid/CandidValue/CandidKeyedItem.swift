@@ -33,6 +33,11 @@ public struct CandidKeyedItemType: Equatable, Comparable, Encodable {
     public let key: CandidContainerKey
     public let type: CandidType
     
+    public init(_ key: CandidContainerKey, _ type: CandidType) {
+        self.key = key
+        self.type = type
+    }
+    
     public init(hashedKey: Int, type: CandidType) {
         key = CandidContainerKey(hashedKey)
         self.type = type

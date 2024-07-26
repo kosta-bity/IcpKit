@@ -47,6 +47,17 @@ public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence, 
         items = elements.sorted()
     }
     
+    public init(_ items: any Sequence<CandidType>) {
+        var index = 0
+        self.items = items
+            .map {
+                let keyedItem = CandidKeyedItemType(hashedKey: index, type: $0)
+                index += 1
+                return keyedItem
+            }
+            .sorted()
+    }
+    
     public init(_ items: any Sequence<CandidKeyedItemType>) {
         self.items = items.sorted()
     }

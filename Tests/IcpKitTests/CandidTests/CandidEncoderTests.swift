@@ -71,8 +71,8 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
         "records2": try! .vector([.record(["a": try! .vector([.option(.natural8(1)), .option(.natural8)])])]),
     ]), TestRecord3.self),
     (TestUnnamedRecord(anyName: "text", _1: 2), .record([.text("text"), .natural8(2)]), TestUnnamedRecord.self),
-    (TestRecursiveRecord(a: []), .record(["a": .vector(.record([]))]), TestRecursiveRecord.self),
-    (TestRecursiveRecord(a: [TestRecursiveRecord(a: [])]), .record(["a": try! .vector([.record(["a": .vector(.record([]))])])]), TestRecursiveRecord.self),
+    (TestRecursiveRecord(a: []), .record(["a": .vector(.record())]), TestRecursiveRecord.self),
+    (TestRecursiveRecord(a: [TestRecursiveRecord(a: [])]), .record(["a": try! .vector([.record(["a": .vector(.record())])])]), TestRecursiveRecord.self),
     
     (TestEnum.a, try! .variant(["a": .null], ("a", .null)), TestEnum.self),
     (TestEnum.b(2), try! .variant([ "b": .natural8], ("b", .natural8(2))), TestEnum.self),
@@ -148,7 +148,7 @@ private let encodingTestVectors: [(any Encodable, CandidValue)] = [
     ])),
     (TestUnnamedRecord(anyName: "text", _1: 2), .record([.text("text"), .natural8(2)])),
     (TestRecord?.none, .option(.record(["a": .natural8, "b":.integer64]))),
-    (TestRecursiveRecord(a: []), .record(["a": .vector(.record([]))])),
+    (TestRecursiveRecord(a: []), .record(["a": .vector(.record())])),
     
     (TestEnum.a, try! .variant(["a": .null], ("a", .null))),
     (TestEnum.b(2), try! .variant([ "b": .natural8], ("b", .natural8(2)))),

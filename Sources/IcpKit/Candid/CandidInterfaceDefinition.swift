@@ -8,6 +8,11 @@
 import Foundation
 
 public struct CandidInterfaceDefinition: Equatable {
+    public init(namedTypes: [String : CandidType], service: ServiceDefinition? = nil) {
+        self.namedTypes = namedTypes
+        self.service = service
+    }
+    
     public struct ServiceDefinition: Equatable {
         public enum SignatureType: Equatable {
             case concrete(CandidServiceSignature)
@@ -18,19 +23,19 @@ public struct CandidInterfaceDefinition: Equatable {
         public let initialisationArguments: [CandidFunctionSignature.Parameter]?
         public let signature: SignatureType
         
-        init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]?, signature: CandidServiceSignature) {
+        public init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]? = nil, signature: CandidServiceSignature) {
             self.name = name
             self.initialisationArguments = initialisationArguments
             self.signature = .concrete(signature)
         }
         
-        init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]?, signatureReference: String) {
+        public init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]? = nil, signatureReference: String) {
             self.name = name
             self.initialisationArguments = initialisationArguments
             self.signature = .reference(signatureReference)
         }
         
-        init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]?, signature: SignatureType) {
+        public init(name: String?, initialisationArguments: [CandidFunctionSignature.Parameter]? = nil, signature: SignatureType) {
             self.name = name
             self.initialisationArguments = initialisationArguments
             self.signature = signature
@@ -46,7 +51,7 @@ public struct CandidInterfaceDefinition: Equatable {
     }
     
     internal func removeService() -> CandidInterfaceDefinition {
-        return CandidInterfaceDefinition(namedTypes: namedTypes, service: nil)
+        return CandidInterfaceDefinition(namedTypes: namedTypes)
     }
 }
 
