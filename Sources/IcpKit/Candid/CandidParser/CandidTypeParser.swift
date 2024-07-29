@@ -97,7 +97,7 @@ class CandidTypeParser: CandidParserBase {
 private extension CandidTypeParser {
     func parseInterfaceDescription(_ provider: CandidInterfaceDefinitionProvider, _ stream: CandidParserStream) async throws -> CandidInterfaceDefinition {
         let context = ParsingContext()
-        while try !stream.tokens.isEmpty && stream.peekNext() != .word(CandidPrimitiveType.service.syntax) {
+        while try stream.hasNext && stream.peekNext() != .word(CandidPrimitiveType.service.syntax) {
             if try stream.takeIfNext(is: .word("type")) {
                 let (name, type) = try parseNamedType(stream)
                 try context.defineType(name, type)
@@ -278,7 +278,7 @@ private extension CandidTypeParser {
             let typeName = try stream.expectNextId()
             serviceSignature = .reference(typeName)
         }
-        if !stream.tokens.isEmpty {
+        if stream.hasNext {
             try stream.expectNext(.semicolon)
         }
         

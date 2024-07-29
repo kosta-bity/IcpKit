@@ -190,7 +190,7 @@ private extension CandidValueParser {
     
     /// <fieldval> ::= <nat> = <annval>
     private static func parseFieldValue(_ stream: CandidParserStream, _ index: Int) throws -> CandidKeyedItem {
-        if stream.tokens.count > 1, try stream.peekSecondNext() == .equals {
+        if stream.hasAtLeastTwo, try stream.peekSecondNext() == .equals {
             let key = try stream.expectNextTextOrWord()
             try stream.expectNext(.equals)
             let value = try parseValue(stream)

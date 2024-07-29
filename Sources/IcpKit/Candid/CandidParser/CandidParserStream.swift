@@ -8,8 +8,10 @@
 import Foundation
 
 class CandidParserStream {
-    private (set) var tokens: [CandidParserToken]
-    private (set) var current: CandidParserToken!
+    private var tokens: [CandidParserToken]
+    private var current: CandidParserToken!
+    var hasNext: Bool { !tokens.isEmpty }
+    var hasAtLeastTwo: Bool { tokens.count > 1 }
     
     init(string: String) throws {
         tokens = try Self.splitTokens(string)
