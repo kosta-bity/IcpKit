@@ -75,6 +75,23 @@ enum CandidTypeParserTestVectors {
             ])),
     ]
     
+    static let comments: [(String, [String])] = [
+//        ("no comment", []),
+//        ("type A = bool // a bool", [" a bool"]),
+//        ("""
+//        type A = bool // a bool
+//        type B = bool // another bool
+//        """, [" a bool", " another bool"]),
+        ("""
+        type A = bool // a bool
+        /* multiline comment */
+        /* another
+        one*/
+        type B = bool // another bool
+        /* a last one */
+        """, [" a bool", " multiline comment ", " another\none", " another bool", " a last one "]),
+    ]
+    
     static let functionArgumentNames: [(String, CandidType, [String], [String])] = [
         ("func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);", .function([.natural, .natural], [.natural, .natural]), ["dividend", "divisor"], ["div", "mod"]),
         (#"func ("dividend with space" : nat, "divisor" : nat) -> ("🐂" : nat, mod : nat);"#, .function([.natural, .natural], [.natural, .natural]), ["dividend with space", "divisor"], ["🐂", "mod"]),

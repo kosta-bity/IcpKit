@@ -114,12 +114,14 @@ private extension CandidParserStream {
         return try CandidParserToken(String(token))
     }
     
+    private static let commentSingleLine = #"\/\/[^\n]*($|\n)"#
+    private static let commentMultiLine = #"\/\*[^*]*\*+(?:[^\/*][^*]*\*+)*\/"#
     private static let whiteSpace = #"\s*"#
     private static let arrow = "->"
     private static let singleCharToken = #"[={}\(\):;,]"#
     private static let quotedString = "\"\(quotedStringContents)\""
     private static let anyString = #"[^={}\(\):;,\"\s]+"#
-    private static let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(anyString))\(whiteSpace)")
+    private static let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(commentSingleLine)|\(commentMultiLine)|\(anyString))\(whiteSpace)")
 }
 
 private extension CandidParserToken {

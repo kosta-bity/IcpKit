@@ -17,6 +17,20 @@ final class CandidTypeParserTests: XCTestCase {
         }
     }
     
+    func testParseComments() throws {
+        for (input, expectedComments) in CandidTypeParserTestVectors.comments {
+            let stream = try CandidParserStream(string: input)
+            var foundComments: [String] = []
+            while stream.hasNext {
+                let token = try stream.takeNext()
+                if case .comment(let comment, _) = token {
+                    foundComments.append(comment)
+                }
+            }
+            XCTAssertEqual(foundComments, expectedComments)
+        }
+    }
+    
     func testParseFunctionArgumentNames() throws {
         for (input, candidType, argNames, resNames) in CandidTypeParserTestVectors.functionArgumentNames {
             let parsed = try parser.parseSingleType(input)
