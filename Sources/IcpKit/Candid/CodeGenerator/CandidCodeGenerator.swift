@@ -32,6 +32,7 @@ public class CandidCodeGenerator {
     
     private func buildServiceBlock(_ service: CodeGeneratorCandidService) -> IndentedString {
         let block = IndentedString()
+        block.addSwiftDocumentation(service.originalDefinition)
         block.addLine("class \(service.name) {")
         block.increaseIndent()
         block.addLine("let canister: ICPPrincipal")
@@ -121,24 +122,28 @@ public class CandidCodeGenerator {
         )
     }
         
-    private func buildType(_ name: String, _ candidType: CandidType) -> GeneratedCode {
-        switch candidType.codeGenerationType {
-        case .typealias(let candidType): return buildTypeAlias(name, candidType)
-        case .struct(let candidKeyedTypes): return buildStruct(name, candidKeyedTypes)
-        case .variant(let candidKeyedTypes): return buildVariant(name, candidKeyedTypes)
+    private func buildType(_ namedType: CandidNamedType) -> GeneratedCode {
+        switch namedType.type.codeGenerationType {
+        case .typealias(let candidType): return buildTypeAlias(namedType.name, candidType, namedType.originalDefinition)
+        case .struct(let candidKeyedTypes): return buildStruct(namedType.name, candidKeyedTypes, namedType.originalDefinition)
+        case .variant(let candidKeyedTypes): return buildVariant(namedType.name, candidKeyedTypes, namedType.originalDefinition)
         }
     }
     
-    private func buildTypeAlias(_ name: String, _ type: CandidType) -> GeneratedCode {
-        GeneratedCode(
+    private func buildTypeAlias(_ name: String, _ type: CandidType, _ originalDefinition: String?) -> GeneratedCode {
+        let output = IndentedString()
+        output.addSwiftDocumentation(originalDefinition)
+        output.addLine("typealias \(name) = \(type.swiftType())")
+        return GeneratedCode(
             name: name,
-            output: IndentedString("typealias \(name) = \(type.swiftType())"),
+            output: output,
             type: .typeAlias
         )
     }
     
-    private func buildStruct(_ name: String, _ keyedTypes: CandidKeyedTypes) -> GeneratedCode {
+    private func buildStruct(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?) -> GeneratedCode {
         let block = IndentedString()
+        block.addSwiftDocumentation(originalDefinition)
         block.addLine("struct \(name): GeneratedCandidType {")
         block.increaseIndent()
         for keyedType in keyedTypes {
@@ -153,8 +158,9 @@ public class CandidCodeGenerator {
         return GeneratedCode(name: name, output: block, type: .namedType)
     }
     
-    private func buildVariant(_ name: String, _ keyedTypes: CandidKeyedTypes) -> GeneratedCode {
+    private func buildVariant(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?) -> GeneratedCode {
         let block = IndentedString()
+        block.addSwiftDocumentation(originalDefinition)
         block.addLine("enum \(name): GeneratedCandidType {")
         block.increaseIndent()
         for keyedType in keyedTypes {
@@ -263,6 +269,15 @@ private extension CandidType {
         case .service: return "CandidServiceSignature"
         case .principal: return "CandidPrincipal"
         case .named(let name): return name
+        }
+    }
+}
+
+private extension IndentedString {
+    func addSwiftDocumentation(_ originalString: String?) {
+        guard let string = originalString else { return }
+        for line in string.split(separator: "\n") {
+            addLine("/// \(line)")
         }
     }
 }

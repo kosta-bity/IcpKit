@@ -99,8 +99,8 @@ private extension CandidTypeParser {
         let context = ParsingContext()
         while try stream.hasNext && stream.peekNext() != .word(CandidPrimitiveType.service.syntax) {
             if try stream.takeIfNext(is: .word("type")) {
-                let (name, type) = try parseNamedType(stream)
-                try context.defineType(name, type)
+                let namedType = try parseNamedType(stream)
+                try context.add(namedType)
                 
             } else if try stream.takeIfNext(is: .word("import")) {
                 try await parseImportStatement(stream, context, provider)
@@ -113,7 +113,7 @@ private extension CandidTypeParser {
             let service = try parseServiceDefinition(stream)
             try context.setService(service)
         }
-        return CandidInterfaceDefinition(namedTypes: context.namedTypes, service: context.service)
+        return CandidInterfaceDefinition(context.namedTypes, service: context.service)
     }
     
     /// import service? <text>
@@ -124,21 +124,23 @@ private extension CandidTypeParser {
         let fileContents = try await provider.read(contentsOf: fileName)
         let stream = try CandidParserStream(string: fileContents)
         let interface = try await parseInterfaceDescription(provider, stream)
-        for type in interface.namedTypes {
-            try context.defineType(type.key, type.value)
+        for namedType in interface.namedTypes {
+            try context.add(namedType)
         }
         if importService, let service = interface.service {
             try context.setService(service)
         }
+        stream.setMarker()
     }
     
     /// <def>   ::= type <id> = <datatype> | import service? <text>
-    func parseNamedType(_ stream: CandidParserStream) throws -> (String, CandidType) {
+    func parseNamedType(_ stream: CandidParserStream) throws -> CandidNamedType {
         let name = try stream.expectNextId()
         try stream.expectNext(.equals)
         let type = try parseCandidType(stream)
         try stream.expectNext(.semicolon)
-        return (name, type)
+        let originalDefinition = stream.originalStringSinceLastMarker()
+        return CandidNamedType(name: name, type: type, originalDefinition: originalDefinition)
     }
     
     func parseCandidType(_ stream: CandidParserStream) throws -> CandidType {
@@ -168,6 +170,7 @@ private extension CandidTypeParser {
         case CandidPrimitiveType.variant.syntax: return .variant(try parseVariantKeyedTypes(stream))
         case CandidPrimitiveType.function.syntax: return .function(try parseFunctionSignature(stream))
         case CandidPrimitiveType.service.syntax: return .service(try parseServiceSignature(stream))
+        case "blob": return .blob
         default: return .named(type)
         }
     }
@@ -281,11 +284,13 @@ private extension CandidTypeParser {
         if stream.hasNext {
             try stream.expectNext(.semicolon)
         }
-        
+        let originalDefinition = stream.originalStringSinceLastMarker()
         return CandidInterfaceDefinition.ServiceDefinition(
             name: serviceName,
             initialisationArguments: initialisationParameters, 
-            signature: serviceSignature)
+            signature: serviceSignature,
+            originalDefinition: originalDefinition
+        )
     }
     
     /// service {
@@ -329,18 +334,25 @@ private extension CandidTypeParser {
 }
 
 private class ParsingContext {
-    private (set) var namedTypes: [String: CandidType] = [:]
+    private (set) var namedTypes: [CandidNamedType] = []
     private (set) var service: CandidInterfaceDefinition.ServiceDefinition?
     
     subscript (_ name: String) -> CandidType? {
         return namedTypes[name]
     }
     
-    func defineType(_ name: String, _ type: CandidType) throws {
+    func defineType(_ name: String, _ type: CandidType, _ originalString: String) throws {
         guard !contains(name) else {
             throw CandidParserError.typeAlreadyDefined(name)
         }
-        namedTypes[name] = type
+        namedTypes.append(.init(name: name, type: type, originalDefinition: originalString))
+    }
+    
+    func add(_ namedType: CandidNamedType) throws {
+        guard !contains(namedType.name) else {
+            throw CandidParserError.typeAlreadyDefined(namedType.name)
+        }
+        namedTypes.append(namedType)
     }
     
     func setService(_ service: CandidInterfaceDefinition.ServiceDefinition) throws {
@@ -350,5 +362,5 @@ private class ParsingContext {
         self.service = service
     }
         
-    func contains(_ name: String) -> Bool { namedTypes.keys.contains(name) }
+    func contains(_ name: String) -> Bool { namedTypes.contains(name) }
 }

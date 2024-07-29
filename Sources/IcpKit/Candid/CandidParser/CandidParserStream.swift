@@ -18,13 +18,29 @@ class CandidParserStream {
         return iteratorCopy.next() != nil && iteratorCopy.next() != nil
     }
     
-    private var tokens: [CandidParserToken]
+    private var tokens: [CandidParsedRange]
     private var current: CandidParserToken!
-    private var iterator: [CandidParserToken].Iterator
+    private var iterator: CommentSkippingIterator
+    private let originalString: String
+    private var lastMarker: String.Index?
     
     init(string: String) throws {
+        originalString = string
         tokens = try Self.splitTokens(string)
-        iterator = tokens.makeIterator()
+        iterator = CommentSkippingIterator(tokens)
+    }
+    
+    func originalStringSinceLastMarker() -> String {
+        let start = lastMarker ?? originalString.startIndex
+        guard let end = iterator.currentStringIndex, end >= start else {
+            return ""
+        }
+        lastMarker = end
+        return String(originalString[start..<end])
+    }
+    
+    func setMarker() {
+        lastMarker = iterator.currentStringIndex
     }
     
     func takeNext() throws -> CandidParserToken {
@@ -95,23 +111,31 @@ class CandidParserStream {
 }
 
 private extension CandidParserStream {
-    static func splitTokens(_ string: String) throws -> [CandidParserToken] {
-        var string = string
-        var tokens: [CandidParserToken] = []
-        while !string.isEmpty {
-            tokens.append(try parseFirstToken(&string))
+    static func splitTokens(_ string: String) throws -> [CandidParsedRange] {
+        var truncatedString = string
+        var tokens: [CandidParsedRange] = []
+        var lastIndex = string.startIndex
+        while !truncatedString.isEmpty {
+            let (token, length) = try parseFirstToken(&truncatedString)
+            let index = string.index(lastIndex, offsetBy: length)
+            let range = lastIndex..<index
+            lastIndex = index
+            tokens.append(CandidParsedRange(range: range, token: token))
+            
         }
         return tokens
     }
     
-    private static func parseFirstToken( _ string: inout String) throws -> CandidParserToken {
+    private static func parseFirstToken( _ string: inout String) throws -> (CandidParserToken, length: Int) {
         guard let match = try firstTokenRegex.firstMatch(in: string),
               let tokenGroup = match["token"],
               let token = tokenGroup.substring else {
             throw CandidParserError.unexpectedToken(string)
         }
+        let length = string[match.range].count
         string = String(string[match.range.upperBound..<string.endIndex])
-        return try CandidParserToken(String(token))
+        let parserToken = try CandidParserToken(String(token))
+        return (parserToken, length)
     }
     
     private static let commentSingleLine = #"\/\/[^\n]*($|\n)"#
@@ -147,4 +171,35 @@ private extension CandidParserToken {
     private static let validIdRegex = try! Regex(#"[A-Za-z_][A-Za-z0-9_]*"#)
 }
 
-
+private struct CommentSkippingIterator: IteratorProtocol {
+    private let array: [CandidParsedRange]
+    private var iterator: [CandidParsedRange].Iterator
+    private (set) var currentStringIndex: String.Index?
+    
+    init(_ array: [CandidParsedRange]) {
+        self.array = array
+        self.iterator = array.makeIterator()
+    }
+    
+    private init(_ array: [CandidParsedRange], _ iterator: [CandidParsedRange].Iterator) {
+        self.array = array
+        self.iterator = iterator
+    }
+    
+    mutating func next() -> CandidParserToken? {
+        var next = originalNext()
+        while case .comment = next?.token {
+            next = originalNext()
+        }
+        currentStringIndex = next?.range.upperBound
+        return next?.token
+    }
+    
+    mutating func originalNext() -> CandidParsedRange? {
+        return iterator.next()
+    }
+    
+    func makeIterator() -> CommentSkippingIterator {
+        CommentSkippingIterator(array, iterator.makeIterator())
+    }
+}

@@ -27,6 +27,7 @@ enum CandidTypeParserTestVectors {
         ("text", .text),
         ("reserved", .reserved),
         ("empty", .empty),
+        ("blob", .blob),
         ("principal", .principal),
         ("null ignored", .null),
         ("  null ignored", .null),
@@ -75,13 +76,13 @@ enum CandidTypeParserTestVectors {
             ])),
     ]
     
-    static let comments: [(String, [String])] = [
-//        ("no comment", []),
-//        ("type A = bool // a bool", [" a bool"]),
-//        ("""
-//        type A = bool // a bool
-//        type B = bool // another bool
-//        """, [" a bool", " another bool"]),
+    static let comments: [(String)] = [
+        ("no comment"),
+        ("type A = bool // a bool"),
+        ("""
+        type A = bool // a bool
+        type B = bool // another bool
+        """),
         ("""
         type A = bool // a bool
         /* multiline comment */
@@ -89,7 +90,7 @@ enum CandidTypeParserTestVectors {
         one*/
         type B = bool // another bool
         /* a last one */
-        """, [" a bool", " multiline comment ", " another\none", " another bool", " a last one "]),
+        """),
     ]
     
     static let functionArgumentNames: [(String, CandidType, [String], [String])] = [
@@ -143,6 +144,11 @@ enum CandidTypeParserTestVectors {
         ("type s = service{};service: s;", ["s":.service()], .init(name: nil, initialisationArguments: nil, signatureReference: "s")),
         ("type s = service{};service foo: (nat)-> s;", ["s":.service()], .init(name: "foo", initialisationArguments: [.init(index: 0, name: nil, type: .natural)], signatureReference: "s")),
         ("type f=func ()->();type s=service{foo:f;};", ["f":.function(), "s":.service([.init(name: "foo", signatureReference: "f")])], nil)
+    ]
+    
+    static let originalStringDid: [(String, [String: String])] = [
+        ("type A = vec nat;", ["A":"type A = vec nat;"]),
+        ("type A = vec nat;type B = A;", ["A":"type A = vec nat;", "B": "type B = A;"]),
     ]
     
     static let unresolvedDidFiles: [String] = [

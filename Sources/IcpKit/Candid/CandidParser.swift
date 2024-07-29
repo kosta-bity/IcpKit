@@ -7,7 +7,9 @@
 
 import Foundation
 
-class CandidParser {
+public class CandidParser {
+    public init() {}
+    
     public func parseInterfaceDescription(_ provider: CandidInterfaceDefinitionProvider) async throws -> CandidInterfaceDefinition {
         try await CandidTypeParser().parseInterfaceDescription(provider)
     }

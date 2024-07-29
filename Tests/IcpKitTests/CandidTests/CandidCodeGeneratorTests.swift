@@ -44,6 +44,14 @@ final class CandidCodeGeneratorTests: XCTestCase {
             print(generated)
         }
     }
+    
+    func testRealDidFiles() async throws {
+        let path = Bundle.module.url(forResource: "ICRC7", withExtension: "did")!
+        let didFile = try String(contentsOf: path)
+        let interface = try await CandidParser().parseInterfaceDescription(didFile)
+        let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, serviceName: "ICRC7Service")
+        print(generated)
+    }
 }
 
 

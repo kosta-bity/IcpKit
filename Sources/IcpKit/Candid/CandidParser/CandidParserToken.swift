@@ -7,6 +7,11 @@
 
 import Foundation
 
+struct CandidParsedRange {
+    let range: Range<String.Index>
+    let token: CandidParserToken
+}
+
 enum CandidParserToken: Equatable {
     case word(String)         // text_without_spaces
     case text(String)         // "quoted text with spaces and/or unicode"

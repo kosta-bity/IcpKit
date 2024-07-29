@@ -8,12 +8,12 @@
 import Foundation
 
 class CodeGenerationContext {
-    private (set) var namedTypes: [String: CandidType] = [:]
+    private (set) var namedTypes: [CandidNamedType] = []
     private (set) var service: CodeGeneratorCandidService?
     
     init(from interface: CandidInterfaceDefinition, serviceName: String?) throws {
-        for (name, type) in interface.namedTypes {
-            addNamedType(name, type)
+        for namedType in interface.namedTypes {
+            addNamedType(namedType)
         }
         if let service = interface.service {
             guard let finalServiceName = service.name ?? serviceName else {
@@ -23,18 +23,19 @@ class CodeGenerationContext {
         }
     }
     
-    private func addNamedType(_ name: String, _ type: CandidType) {
-        let simplifiedType = simplifyType(type, isNamedType: true)
-        if namedTypes.keys.contains(name) {
+    private func addNamedType(_ namedType: CandidNamedType) {
+        let simplifiedType = simplifyType(namedType.type, isNamedType: true)
+        if namedTypes.contains(namedType.name) {
             var index = 0
-            var extendedName = "\(name)_\(index)"
-            while namedTypes.keys.contains(extendedName) {
+            var extendedName = "\(namedType.name)_\(index)"
+            while namedTypes.contains(extendedName) {
                 index += 1
-                extendedName = "\(name)_\(index)"
+                extendedName = "\(namedType.name)_\(index)"
             }
-            namedTypes[extendedName] = simplifiedType
+            let namedType = CandidNamedType(name: extendedName, type: simplifiedType, originalDefinition: namedType.originalDefinition)
+            namedTypes.append(namedType)
         } else {
-            namedTypes[name] = simplifiedType
+            namedTypes.append(.init(name: namedType.name, type: simplifiedType, originalDefinition: namedType.originalDefinition))
         }
     }
     
@@ -43,7 +44,8 @@ class CodeGenerationContext {
         let signature = try getConcreteServiceSignature(service.signature)
         self.service = CodeGeneratorCandidService(
             name: name,
-            methods: try signature.methods.map{ .init(name: $0.name, signature: try simplifyServiceMethod($0.functionSignature)) }
+            methods: try signature.methods.map{ .init(name: $0.name, signature: try simplifyServiceMethod($0.functionSignature)) },
+            originalDefinition: service.originalDefinition
         )
     }
     
@@ -164,23 +166,23 @@ class CodeGenerationContext {
             
         } else {
             let newName = proposedName()
-            namedTypes[newName] = type
+            namedTypes.append(.init(name: newName, type: type))
             return newName
         }
     }
     
     private func hasName(for type: CandidType) -> String? {
-        guard let existing = namedTypes.first(where: { $0.value == type }) else {
+        guard let existing = namedTypes.first(where: { $0.type == type }) else {
             return nil
         }
-        return existing.key
+        return existing.name
     }
     
     private var unnamedItemCount = 0
     private func proposedName() -> String {
         var proposedName = "UnnamedType\(unnamedItemCount)"
         unnamedItemCount += 1
-        while namedTypes.keys.contains(proposedName) {
+        while namedTypes.contains(proposedName) {
             proposedName = "UnnamedType\(unnamedItemCount)"
             unnamedItemCount += 1
         }
@@ -191,6 +193,7 @@ class CodeGenerationContext {
 struct CodeGeneratorCandidService {
     let name: String
     let methods: [Method]
+    let originalDefinition: String?
     
     struct Method {
         let name: String

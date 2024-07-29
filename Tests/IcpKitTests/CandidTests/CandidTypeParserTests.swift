@@ -18,7 +18,7 @@ final class CandidTypeParserTests: XCTestCase {
     }
     
     func testParseComments() throws {
-        for (input, expectedComments) in CandidTypeParserTestVectors.comments {
+        for (input) in CandidTypeParserTestVectors.comments {
             let stream = try CandidParserStream(string: input)
             var foundComments: [String] = []
             while stream.hasNext {
@@ -27,7 +27,7 @@ final class CandidTypeParserTests: XCTestCase {
                     foundComments.append(comment)
                 }
             }
-            XCTAssertEqual(foundComments, expectedComments)
+            XCTAssertTrue(foundComments.isEmpty)
         }
     }
     
@@ -53,9 +53,18 @@ final class CandidTypeParserTests: XCTestCase {
     func testDidFiles() async throws {
         for (did, namedTypes, service) in CandidTypeParserTestVectors.didFiles {
             let interface = try await parser.parseInterfaceDescription(did)
-            XCTAssertEqual(interface.namedTypes, namedTypes)
+            XCTAssertEqual(interface.namedTypes, CandidInterfaceDefinition(namedTypes: namedTypes).namedTypes)
             XCTAssertEqual(interface.service, service)
             XCTAssertTrue(interface.isResolved())
+        }
+    }
+    
+    func testOriginalString() async throws {
+        for (did, originalStrings) in CandidTypeParserTestVectors.originalStringDid {
+            let interface = try await parser.parseInterfaceDescription(did)
+            for namedType in interface.namedTypes {
+                XCTAssertEqual(namedType.originalDefinition, originalStrings[namedType.name])
+            }
         }
     }
     
@@ -81,7 +90,7 @@ final class CandidTypeParserTests: XCTestCase {
         for (main, files, types, service) in CandidTypeParserTestVectors.importedFiles {
             let provider = MockProvider(main, files)
             let interface = try await parser.parseInterfaceDescription(provider)
-            XCTAssertEqual(interface.namedTypes, types)
+            XCTAssertEqual(interface.namedTypes, CandidInterfaceDefinition(namedTypes: types).namedTypes)
             XCTAssertEqual(interface.service, service)
             XCTAssertTrue(interface.isResolved())
         }

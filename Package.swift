@@ -51,6 +51,9 @@ let package = Package(
             name: "IcpKitTests",
             dependencies: [
                 "IcpKit",
+            ],
+            resources: [
+                .process("CandidTests/DidFiles/ICRC7.did")
             ]
         ),
     ],
