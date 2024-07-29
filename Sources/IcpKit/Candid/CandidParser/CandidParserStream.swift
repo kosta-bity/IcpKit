@@ -8,20 +8,30 @@
 import Foundation
 
 class CandidParserStream {
+    var hasNext: Bool {
+        var iteratorCopy = iterator.makeIterator()
+        return iteratorCopy.next() != nil
+    }
+    
+    var hasAtLeastTwo: Bool {
+        var iteratorCopy = iterator.makeIterator()
+        return iteratorCopy.next() != nil && iteratorCopy.next() != nil
+    }
+    
     private var tokens: [CandidParserToken]
     private var current: CandidParserToken!
-    var hasNext: Bool { !tokens.isEmpty }
-    var hasAtLeastTwo: Bool { tokens.count > 1 }
+    private var iterator: [CandidParserToken].Iterator
     
     init(string: String) throws {
         tokens = try Self.splitTokens(string)
+        iterator = tokens.makeIterator()
     }
     
     func takeNext() throws -> CandidParserToken {
-        guard !tokens.isEmpty else {
+        guard let next = iterator.next() else {
             throw CandidParserError.unexpectedEnd
         }
-        current = tokens.removeFirst()
+        current = next
         return current
     }
     
@@ -33,17 +43,20 @@ class CandidParserStream {
     }
     
     func peekNext() throws -> CandidParserToken {
-        guard let token = tokens.first else {
+        var iteratorCopy = iterator.makeIterator()
+        guard let token = iteratorCopy.next() else {
             throw CandidParserError.unexpectedEnd
         }
         return token
     }
     
     func peekSecondNext() throws -> CandidParserToken {
-        guard tokens.count > 1 else {
+        var iteratorCopy = iterator.makeIterator()
+        guard let _ = iteratorCopy.next(),
+              let next2 = iteratorCopy.next() else {
             throw CandidParserError.unexpectedEnd
         }
-        return tokens[1]
+        return next2
     }
     
     func expectCurrentId() throws -> String {
@@ -70,7 +83,8 @@ class CandidParserStream {
     }
     
     func takeIfNext(is token: CandidParserToken) throws -> Bool {
-        guard tokens.first == token else {
+        var iteratorCopy = iterator.makeIterator()
+        guard iteratorCopy.next() == token else {
             return false
         }
         try expectNext(token)

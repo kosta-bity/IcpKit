@@ -27,7 +27,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
                 name: "TestService",
                 signature: .concrete(.init([
                     .init("noArgsNoResults"),
-                    .init("singleUnnamedArg", [.text]),
+                    .init("singleUnnamedArg", [.text], query: true),
                     .init("singleUnnamedResult", [], [.option(.bool)]),
                     .init("multipleUnnamedArgsAndResults", [.text, .vector(.natural)], [.option(.bool), .vector(.blob)]),
                     .init("multipleNamedArgsAndResults", 
