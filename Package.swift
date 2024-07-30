@@ -7,7 +7,7 @@ let package = Package(
     name: "IcpKit",
     platforms: [
         .iOS(.v16),
-        .macOS(.v11)
+        .macOS(.v13)
     ], 
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -23,7 +23,7 @@ let package = Package(
         .package(url: "https://github.com/mattrubin/Bases", branch: "develop"),
         .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", exact: "0.10.0"),
         .package(url: "https://github.com/horizontalsystems/HsCryptoKit.Swift.git", .upToNextMajor(from: "1.2.1")),
-        
+        .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
     ], 
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -53,6 +53,13 @@ let package = Package(
         .target(
             name: "Candid",
             dependencies: ["Utils", "PotentCodables",]
+        ),
+        .executableTarget(
+            name: "CodeGenerator",
+            dependencies: [
+                "Candid",
+                .product(name: "ArgumentParser", package: "swift-argument-parser"),
+            ]
         ),
 //        .binaryTarget(
 //            name: "bls12381",

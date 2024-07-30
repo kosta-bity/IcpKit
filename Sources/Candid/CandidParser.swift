@@ -39,12 +39,6 @@ public enum CandidParserError: Error {
     case nonConformingType(CandidType, CandidValue)
 }
 
-public protocol CandidInterfaceDefinitionProvider {
-    func readMain() async throws -> String
-    func read(contentsOf file: String) async throws -> String
-}
-
-
 // MARK: Private
 class CandidInterfaceDefinitionStringProvider: CandidInterfaceDefinitionProvider {
     let string: String
