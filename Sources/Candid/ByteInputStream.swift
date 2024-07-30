@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Utils
 
 class ByteInputStream {
     private enum ByteInputStreamError: Error {
@@ -36,5 +37,20 @@ class ByteInputStream {
     
     func readNextBytes(_ n: Int) throws -> Data {
         try Data((0..<n).map { _ in try readNextByte() })
+    }
+}
+
+extension BinaryInteger {
+    /// read n bytes from stream and interpret them as little endian
+    static func readFrom(_ stream: ByteInputStream) throws -> Self {
+        let data = try stream.readNextBytes(MemoryLayout<Self>.size)
+        return Self.from(data)
+    }
+}
+
+extension BinaryFloatingPoint {
+    static func readFrom(_ stream: ByteInputStream) throws -> Self {
+        let data = try stream.readNextBytes(MemoryLayout<Self>.size)
+        return Self.from(data)
     }
 }

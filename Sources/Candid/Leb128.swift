@@ -8,68 +8,67 @@
 import Foundation
 import BigInt
 
-public extension ICPCryptography {
-    // MARK: Encoding
-    enum Leb128 {
-        public static func encodeUnsigned(_ literal: IntegerLiteralType) -> Data {
-            return encodeUnsigned(BigUInt(literal))
-        }
+// MARK: Encoding
+public enum Leb128 {
+    public static func encodeUnsigned(_ literal: IntegerLiteralType) -> Data {
+        return encodeUnsigned(BigUInt(literal))
+    }
+    
+    public static func encodeUnsigned(_ int: UInt) -> Data {
+        return encodeUnsigned(BigUInt(int))
+    }
+    
+    public static func encodeUnsigned(_ bigInt: BigUInt) -> Data {
+        var value = bigInt
+        var bytes = Data()
         
-        public static func encodeUnsigned(_ int: UInt) -> Data {
-            return encodeUnsigned(BigUInt(int))
-        }
-        
-        public static func encodeUnsigned(_ bigInt: BigUInt) -> Data {
-            var value = bigInt
-            var bytes = Data()
-            
-            repeat {
-                var byte = UInt8(value & 0x7F)
-                value = value >> 7
-                if value != 0 {
-                    byte |= 0x80
-                }
-                bytes.append(byte)
-            } while value != 0
-            
-            return bytes
-        }
-        
-        public static func encodeSigned(_ bigInt: BigInt) -> Data {
-            // TODO: Make this work with BigInts
-            // the BigInt shift operator >> does not produce the same results as the int shift operator...
-            // eg.    Int(-129) >> 7 = -2
-            //     BigInt(-129) >> 7 = -1   // should be -2
-            // shift operator on BigInt is not applied on the 2's complement for negative numbers, instead it is applied on their absolute value.
-            assert(bigInt.magnitude < Int.max, "Can not leb128 encode bigInts > Int.max! shift operator not working")
-            guard !bigInt.isZero else { return encodeSigned(Int(0)) }
-            let integerValue = Int(truncatingIfNeeded: bigInt)
-            return encodeSigned(integerValue)
-        }
-        
-        public static func encodeSigned(_ integer: Int) -> Data {
-            var value = integer
-            var more = true
-            var bytes = Data()
-            
-            while more {
-                var byte = UInt8(value & 0x7F)
-                value = value >> 7
-                if (value == 0 && (byte >> 6) == 0) || (value == -1 && (byte >> 6) == 1) {
-                    more = false
-                } else {
-                    byte |= 0x80
-                }
-                
-                bytes.append(byte)
+        repeat {
+            var byte = UInt8(value & 0x7F)
+            value = value >> 7
+            if value != 0 {
+                byte |= 0x80
             }
-            return bytes
+            bytes.append(byte)
+        } while value != 0
+        
+        return bytes
+    }
+    
+    public static func encodeSigned(_ bigInt: BigInt) -> Data {
+        // TODO: Make this work with BigInts
+        // the BigInt shift operator >> does not produce the same results as the int shift operator...
+        // eg.    Int(-129) >> 7 = -2
+        //     BigInt(-129) >> 7 = -1   // should be -2
+        // shift operator on BigInt is not applied on the 2's complement for negative numbers, instead it is applied on their absolute value.
+        assert(bigInt.magnitude < Int.max, "Can not leb128 encode bigInts > Int.max! shift operator not working")
+        guard !bigInt.isZero else { return encodeSigned(Int(0)) }
+        let integerValue = Int(truncatingIfNeeded: bigInt)
+        return encodeSigned(integerValue)
+    }
+    
+    public static func encodeSigned(_ integer: Int) -> Data {
+        var value = integer
+        var more = true
+        var bytes = Data()
+        
+        while more {
+            var byte = UInt8(value & 0x7F)
+            value = value >> 7
+            if (value == 0 && (byte >> 6) == 0) || (value == -1 && (byte >> 6) == 1) {
+                more = false
+            } else {
+                byte |= 0x80
+            }
+            
+            bytes.append(byte)
         }
+        return bytes
     }
 }
 
+
 // MARK: Decoding
-public extension ICPCryptography.Leb128 {
+public extension Leb128 {
     internal static func decodeUnsigned<T: BinaryInteger>(_ stream: ByteInputStream) throws -> T {
         //        result = 0;
         //        shift = 0;

@@ -7,7 +7,7 @@
 
 import XCTest
 import BigInt
-import IcpKit
+import Candid
 
 final class CandidEncoderTests: XCTestCase {
     func testEncoding() throws {

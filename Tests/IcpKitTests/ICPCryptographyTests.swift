@@ -7,6 +7,8 @@
 
 import XCTest
 @testable import IcpKit
+import Candid
+import Utils
 
 final class ICPCryptographyTests: XCTestCase {
     // test vectors generated using https://pi7.org/hash/sha224
@@ -20,11 +22,11 @@ final class ICPCryptographyTests: XCTestCase {
     
     // test vectors generated using https://crccalc.com/
     func testCRC32() {
-        XCTAssertEqual(Cryptography.crc32(Data()).hex, "00000000")
-        XCTAssertEqual(Cryptography.crc32("0".data(using: .utf8)!).hex, "F4DBDF21".lowercased())
-        XCTAssertEqual(Cryptography.crc32("abcd".data(using: .utf8)!).hex, "ED82CD11".lowercased())
-        XCTAssertEqual(Cryptography.crc32("./`~.?!@#$".data(using: .utf8)!).hex, "77838090".lowercased())
-        XCTAssertEqual(Cryptography.crc32("Lorem ipsum dolor sit amet, consectetur adipiscing elit".data(using: .utf8)!).hex, "6C8ADA71".lowercased())
+        XCTAssertEqual(CRC32.checksum(Data()).hex, "00000000")
+        XCTAssertEqual(CRC32.checksum("0".data(using: .utf8)!).hex, "F4DBDF21".lowercased())
+        XCTAssertEqual(CRC32.checksum("abcd".data(using: .utf8)!).hex, "ED82CD11".lowercased())
+        XCTAssertEqual(CRC32.checksum("./`~.?!@#$".data(using: .utf8)!).hex, "77838090".lowercased())
+        XCTAssertEqual(CRC32.checksum("Lorem ipsum dolor sit amet, consectetur adipiscing elit".data(using: .utf8)!).hex, "6C8ADA71".lowercased())
     }
     
     // test vectors generated using keysmith https://github.com/dfinity/keysmith and following procedure
@@ -44,10 +46,10 @@ final class ICPCryptographyTests: XCTestCase {
     
     // test vectors from https://internetcomputer.org/docs/current/references/id-encoding-spec#test-vectors
     func testCanonicalText() {
-        XCTAssertEqual(ICPCryptography.encodeCanonicalText(Data.fromHex("000102030405060708")!), "xtqug-aqaae-bagba-faydq-q")
-        XCTAssertEqual(ICPCryptography.encodeCanonicalText(Data.fromHex("00")!), "2ibo7-dia")
-        XCTAssertEqual(ICPCryptography.encodeCanonicalText(Data.fromHex("")!), "aaaaa-aa")
-        XCTAssertEqual(ICPCryptography.encodeCanonicalText(Data.fromHex("0102030405060708091011121314151617181920212223242526272829")!), "iineg-fibai-bqibi-ga4ea-searc-ijrif-iwc4m-bsibb-eirsi-jjge4-ucs")
+        XCTAssertEqual(CanonicalText.encode(Data.fromHex("000102030405060708")!), "xtqug-aqaae-bagba-faydq-q")
+        XCTAssertEqual(CanonicalText.encode(Data.fromHex("00")!), "2ibo7-dia")
+        XCTAssertEqual(CanonicalText.encode(Data.fromHex("")!), "aaaaa-aa")
+        XCTAssertEqual(CanonicalText.encode(Data.fromHex("0102030405060708091011121314151617181920212223242526272829")!), "iineg-fibai-bqibi-ga4ea-searc-ijrif-iwc4m-bsibb-eirsi-jjge4-ucs")
     }
     
     // test vectors generated using keysmith https://github.com/dfinity/keysmith
@@ -79,7 +81,7 @@ final class ICPCryptographyTests: XCTestCase {
     }
     
     func testOrderIndependentHash() throws {
-        let hash = { try ICPCryptography.orderIndependentHash($0) }
+        let hash = { try OrderIndependentHasher.orderIndependentHash($0) }
         XCTAssertEqual(try hash(0).base64EncodedString(), "bjQLnP+zepicpUTmu3gKLHiQHT+zNzh2hRGjBhevoB0=")
         XCTAssertEqual(try hash(624485).base64EncodedString(), "feIrCG+oMpxyE/8xmkTcLKgeI+6pn1/YvXIiLU/8tsI=")
         XCTAssertEqual(try hash("abcd").base64EncodedString(), "iNQmb9TmM40TuEX88olXnSCciXgjuSF9o+Fhk28DFYk=")

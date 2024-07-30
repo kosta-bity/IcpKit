@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Candid
 
 extension CandidValue {
     var ICPAmount: UInt64? { recordValue?["e8s"]?.natural64Value }

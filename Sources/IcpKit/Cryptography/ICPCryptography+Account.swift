@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Utils
 
 public extension ICPCryptography {
     enum ICPAccountError: Error {
@@ -22,7 +23,7 @@ public extension ICPCryptography {
                    subAccountId.bytes
         
         let hashed = Cryptography.sha224(data)
-        let checksum = Cryptography.crc32(hashed)
+        let checksum = CRC32.checksum(hashed)
         let accountId = checksum + hashed
         return accountId
     }
@@ -32,9 +33,9 @@ public extension ICPCryptography {
               data.count == 32 else {
             return false
         }
-        let checksum = data.prefix(Cryptography.crc32Length)
-        let hashed = data.suffix(from: Cryptography.crc32Length)
-        let expectedChecksum = Cryptography.crc32(hashed)
+        let checksum = data.prefix(CRC32.length)
+        let hashed = data.suffix(from: CRC32.length)
+        let expectedChecksum = CRC32.checksum(hashed)
         return checksum == expectedChecksum
     }
     

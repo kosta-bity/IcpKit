@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import IcpKit
+import Candid
 
 enum CandidValueParserTestVectors {
     static let singleValueTests: [(String, CandidValue)] = [

@@ -12,6 +12,7 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(name: "IcpKit", targets: ["IcpKit"]),
+        .library(name: "Candid", targets: ["Candid"]),
         //.library(name: "Bls12381", targets: ["bls12381"])
     ],
     dependencies: [
@@ -30,10 +31,10 @@ let package = Package(
         .target(
             name: "IcpKit",
             dependencies: [
+                "Utils",
+                "Candid",
                 "BigInt",
-                "PotentCodables",
                 "RealHTTP",
-                .product(name: "Base32", package: "Bases"),
                 .product(name: "secp256k1", package: "secp256k1.swift"),
                 .product(name: "HsCryptoKit", package: "HsCryptoKit.Swift"),
 //                .target(name: "bls12381"),
@@ -43,18 +44,30 @@ let package = Package(
 //            cxxSettings: [.headerSearchPath("Sources/bls12381/include"),
 //                          .unsafeFlags(["-ISources/bls12381/include/Bls12381.h"])]
         ),
+        .target(
+            name: "Utils",
+            dependencies: [
+                .product(name: "Base32", package: "Bases"),
+            ]
+        ),
+        .target(
+            name: "Candid",
+            dependencies: ["Utils", "PotentCodables",]
+        ),
 //        .binaryTarget(
 //            name: "bls12381",
 //            path: "Binaries/Bls12381.xcframework"
 //        ),
         .testTarget(
             name: "IcpKitTests",
-            dependencies: [
-                "IcpKit",
-            ],
+            dependencies: ["IcpKit",]
+        ),
+        .testTarget(
+            name: "CandidTests",
+            dependencies: ["Candid",],
             resources: [
-                .process("CandidTests/DidFiles/ICRC7.did"),
-                .process("CandidTests/DidFiles/GoldNFT.did")
+                .process("DidFiles/ICRC7.did"),
+                .process("DidFiles/GoldNFT.did")
             ]
         ),
     ],

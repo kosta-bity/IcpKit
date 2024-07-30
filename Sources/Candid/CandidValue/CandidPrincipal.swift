@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Utils
 
 public struct CandidPrincipal: Equatable, Codable {
     public let bytes: Data
@@ -13,11 +14,11 @@ public struct CandidPrincipal: Equatable, Codable {
     
     public init(_ string: String) throws {
         self.string = string
-        self.bytes = try ICPCryptography.decodeCanonicalText(string)
+        self.bytes = try CanonicalText.decode(string)
     }
     
     public init(_ bytes: Data) {
         self.bytes = bytes
-        self.string = ICPCryptography.encodeCanonicalText(bytes)
+        self.string = CanonicalText.encode(bytes)
     }
 }

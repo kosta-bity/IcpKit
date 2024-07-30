@@ -8,7 +8,7 @@
 import Foundation
 import BigInt
 
-extension BinaryInteger {
+public extension BinaryInteger {
     /// Little-endian = Least significant byte first
     var bytes: Data {
         return Data(withUnsafeBytes(of: self, Array.init))
@@ -18,15 +18,9 @@ extension BinaryInteger {
     static func from(_ data: any DataProtocol) -> Self {
         return Data(data).withUnsafeBytes { $0.load(as: Self.self) }
     }
-    
-    /// read n bytes from stream and interpret them as little endian
-    static func readFrom(_ stream: ByteInputStream) throws -> Self {
-        let data = try stream.readNextBytes(MemoryLayout<Self>.size)
-        return Self.from(data)
-    }
 }
 
-extension BigUInt {
+public extension BigUInt {
     var bytes: Data {
         Data(words.map { $0.bytes }.joined())
     }
@@ -36,28 +30,23 @@ extension BigUInt {
     }
 }
 
-extension FixedWidthInteger {
+public extension FixedWidthInteger {
     /// Big-endian = Most significant byte first
     var bigEndianBytes: Data {
         return bigEndian.bytes
     }
 }
 
-extension BinaryFloatingPoint {
+public extension BinaryFloatingPoint {
     /// IEEE754 with little-endian
     var bytes: Data { Data(withUnsafeBytes(of: self, Array.init)) }
     
     static func from(_ data: Data) -> Self {
         return data.withUnsafeBytes { $0.load(as: Self.self) }
     }
-    
-    static func readFrom(_ stream: ByteInputStream) throws -> Self {
-        let data = try stream.readNextBytes(MemoryLayout<Self>.size)
-        return Self.from(data)
-    }
 }
 
-extension Data {    
+public extension Data {
     init<T>(from value: T) {
         self = withUnsafePointer(to: value) { (ptr: UnsafePointer<T>) -> Data in
             Data(buffer: UnsafeBufferPointer(start: ptr, count: 1))

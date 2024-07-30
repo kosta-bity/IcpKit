@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Candid
 
 protocol ICPRequestContent: Encodable {
     var request_type: ICPRequestTypeEncodable { get }
@@ -16,7 +17,7 @@ protocol ICPRequestContent: Encodable {
 
 extension ICPRequestContent {
     func calculateRequestId() throws -> Data {
-        try ICPCryptography.orderIndependentHash(self)
+        try OrderIndependentHasher.orderIndependentHash(self)
     }
 }
 

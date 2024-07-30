@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Candid
 
 public struct ICPDomainSeparator {
     public let data: Data
@@ -13,7 +14,7 @@ public struct ICPDomainSeparator {
     
     public init(_ domain: String) {
         self.domain = domain
-        self.data = ICPCryptography.Leb128.encodeUnsigned(domain.count) + Data(domain.utf8)
+        self.data = Leb128.encodeUnsigned(domain.count) + Data(domain.utf8)
     }
     
     public func domainSeparatedData(_ data: any DataProtocol) -> Data {

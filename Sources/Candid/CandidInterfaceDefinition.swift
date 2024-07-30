@@ -49,6 +49,10 @@ public struct CandidInterfaceDefinition: Equatable {
             self.signature = signature
             self.originalDefinition = originalDefinition
         }
+        
+        public static func ==(lhs: ServiceDefinition, rhs: ServiceDefinition) -> Bool {
+            return lhs.name == rhs.name && lhs.initialisationArguments == rhs.initialisationArguments && lhs.signature == rhs.signature
+        }
     }
     
     public let namedTypes: [CandidNamedType]

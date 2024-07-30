@@ -10,12 +10,16 @@ import PotentCodables
 import BigInt
 import CryptoKit
 
-public extension ICPCryptography {
+public enum OrderIndependentHasher {
     /// https://internetcomputer.org/docs/current/references/ic-interface-spec/#hash-of-map
-    static func orderIndependentHash(_ value: any Encodable) throws -> Data
+    public static func orderIndependentHash(_ value: any Encodable) throws -> Data
     {
-        return try OIHasher({Data(CryptoKit.SHA256.hash(data: $0).bytes)}).encode(value)
+        return try OIHasher({Data(CryptoKit.SHA256.hash(data: $0).data)}).encode(value)
     }
+}
+
+private extension CryptoKit.Digest {
+    var data: Data { Data(makeIterator()) }
 }
 
 private struct OIHasher: PotentCodables.EncodesToData {
@@ -95,7 +99,7 @@ private struct OIHasher: PotentCodables.EncodesToData {
     }
     
     private func encode(_ integer: any UnsignedInteger) -> Data {
-        return ICPCryptography.Leb128.encodeUnsigned(BigUInt(integer))
+        return Leb128.encodeUnsigned(BigUInt(integer))
     }
     
     private func encode(_ integer: any SignedInteger) throws -> Data {
@@ -103,7 +107,7 @@ private struct OIHasher: PotentCodables.EncodesToData {
         guard bigInt.sign == .plus else {
             throw OIHasherError.nonPositiveNumber(bigInt)
         }
-        return ICPCryptography.Leb128.encodeUnsigned(bigInt.magnitude)
+        return Leb128.encodeUnsigned(bigInt.magnitude)
     }
     
     

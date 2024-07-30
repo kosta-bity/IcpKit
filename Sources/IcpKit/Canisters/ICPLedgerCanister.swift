@@ -7,6 +7,7 @@
 
 import Foundation
 import BigInt
+import Candid
 
 public enum ICPLedgerCanisterError: Error {
     case invalidAddress

@@ -7,6 +7,7 @@
 
 import XCTest
 import IcpKit
+import Candid
 
 final class ICPIntegrationTests: XCTestCase {
     private let client = ICPRequestClient()
@@ -22,7 +23,7 @@ final class ICPIntegrationTests: XCTestCase {
             XCTFail()
             return
         }
-        let timeSince1970s: Int = try ICPCryptography.Leb128.decodeUnsigned(timeLeb128) / 1_000_000_000
+        let timeSince1970s: Int = try Leb128.decodeUnsigned(timeLeb128) / 1_000_000_000
         let time = Date(timeIntervalSince1970: TimeInterval(timeSince1970s))
         XCTAssertGreaterThan(.now, time)
         XCTAssertGreaterThan(time.addingTimeInterval(10), .now)

@@ -6,7 +6,7 @@
 //
 
 import XCTest
-import IcpKit
+import Candid
 
 final class CandidSuperTypeTests: XCTestCase {
     func testSubTypes() {

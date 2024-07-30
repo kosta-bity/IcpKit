@@ -1,14 +1,15 @@
 //
-//  ICPCanonicalText.swift
+//  CanonicalText.swift
 //  Runner
 //
 //  Created by Konstantinos Gaitanis on 25.04.23.
 //
 
 import Foundation
+import Base32
 
-public extension ICPCryptography {
-    enum ICPCrc32Error: Error {
+public enum CanonicalText {
+    public enum CanonicalTextError: Error {
         case invalidChecksum
     }
     
@@ -22,25 +23,25 @@ public extension ICPCryptography {
     ///    - Base32 is the Base32 encoding as defined in RFC 4648, with no padding character added.
     ///    - The middle dot denotes concatenation.
     ///    - Grouped takes an ASCII string and inserts the separator - (dash) every 5 characters. The last group may contain less than 5 characters. A separator never appears at the beginning or end.
-    static func encodeCanonicalText(_ data: Data) -> String {
-        let checksum = Cryptography.crc32(data)
+    public static func encode(_ data: Data) -> String {
+        let checksum = CRC32.checksum(data)
         let dataWithChecksum = checksum + data
-        let base32Encoded = Cryptography.base32.encode(dataWithChecksum).lowercased().filter { $0 != "=" }
+        let base32Encoded = Base32.encode(dataWithChecksum).lowercased().filter { $0 != "=" }
         let grouped = base32Encoded.grouped(by: canonicalTextSeparator, every: 5)
         return grouped
     }
     
-    static func decodeCanonicalText(_ text: String) throws -> Data {
+    public static func decode(_ text: String) throws -> Data {
         let degrouped = text.replacingOccurrences(of: canonicalTextSeparator, with: "")
         let base32Encoded: String
         if degrouped.count % 2 != 0 { base32Encoded = degrouped + "=" }
         else { base32Encoded = degrouped }
-        let decoded = try Cryptography.base32.decode(base32Encoded)
-        let checksum = decoded.prefix(Cryptography.crc32Length)
-        let data = decoded.suffix(from: Cryptography.crc32Length)
-        let expectedChecksum = Cryptography.crc32(data)
+        let decoded = try Base32.decode(base32Encoded)
+        let checksum = decoded.prefix(CRC32.length)
+        let data = decoded.suffix(from: CRC32.length)
+        let expectedChecksum = CRC32.checksum(data)
         guard expectedChecksum == checksum else {
-            throw ICPCryptography.ICPCrc32Error.invalidChecksum
+            throw CanonicalTextError.invalidChecksum
         }
         return data
     }

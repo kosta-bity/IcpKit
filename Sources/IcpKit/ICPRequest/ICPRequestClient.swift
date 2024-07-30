@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Candid
 
 public enum ICPRequestRejectCode: UInt8, Decodable {
     case systemFatal = 1

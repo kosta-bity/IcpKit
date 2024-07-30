@@ -7,7 +7,7 @@
 
 import XCTest
 import BigInt
-@testable import IcpKit
+@testable import Candid
 
 final class Leb128Tests: XCTestCase {
 
@@ -23,7 +23,7 @@ final class Leb128Tests: XCTestCase {
             (18446744073709551615, [0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01]),
         ]
         for (value, expected) in testVectors {
-            XCTAssertEqual(ICPCryptography.Leb128.encodeUnsigned(value), Data(expected))
+            XCTAssertEqual(Leb128.encodeUnsigned(value), Data(expected))
         }
     }
     
@@ -45,7 +45,7 @@ final class Leb128Tests: XCTestCase {
             (-999999999, [0x81, 0xec, 0x94, 0xa3, 0x7c]),
         ]
         for (value, expected) in testVectors {
-            XCTAssertEqual(ICPCryptography.Leb128.encodeSigned(value), Data(expected))
+            XCTAssertEqual(Leb128.encodeSigned(value), Data(expected))
         }
     }
     
@@ -62,7 +62,7 @@ final class Leb128Tests: XCTestCase {
         for (expected, inputBytes) in testVectors {
             let data = Data(inputBytes)
             let stream = ByteInputStream(data)
-            XCTAssertEqual(try ICPCryptography.Leb128.decodeUnsigned(stream), expected)
+            XCTAssertEqual(try Leb128.decodeUnsigned(stream), expected)
             XCTAssertFalse(stream.hasBytesAvailable)
         }
     }
@@ -86,7 +86,7 @@ final class Leb128Tests: XCTestCase {
         for (expected, inputBytes) in testVectors {
             let data = Data(inputBytes)
             let stream = ByteInputStream(data)
-            XCTAssertEqual(try ICPCryptography.Leb128.decodeSigned(stream), expected)
+            XCTAssertEqual(try Leb128.decodeSigned(stream), expected)
             XCTAssertFalse(stream.hasBytesAvailable)
         }
     }
@@ -94,8 +94,8 @@ final class Leb128Tests: XCTestCase {
     // TODO: Remove this when Leb encodeSigned works with BigInt
     func testLeb128EncodeSignedBigInt() {
         for i in 0...255 {
-            let int = ICPCryptography.Leb128.encodeSigned(-i)
-            let bigInt = ICPCryptography.Leb128.encodeSigned(BigInt(-i))
+            let int = Leb128.encodeSigned(-i)
+            let bigInt = Leb128.encodeSigned(BigInt(-i))
             XCTAssertEqual(int, bigInt)
             if int != bigInt {
                 print("MISMATCH \(i) --> int: \(int.hex) | bigInt: \(bigInt.hex)")

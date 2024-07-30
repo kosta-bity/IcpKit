@@ -11,13 +11,15 @@ import OrderedCollections
 
 /// see section Serialisation at the bottom of
 /// https://github.com/dfinity/candid/blob/master/spec/Candid.md
-class CandidSerialiser {
+public class CandidSerialiser {
+    public init() {}
+    
     static let magicBytes = Data("DIDL".utf8)  //0x4449444C
     
     /// Serialises a single candid value. The given CandidValue instance is wrapped in a single element list before being serialised.
     /// - Parameter value: An optional CandidValue, if none provided this will serialise an empty list.
     /// - Returns: the Candid serialisation of the given CandidValue
-    func encode(_ value: CandidValue?) -> Data {
+    public func encode(_ value: CandidValue?) -> Data {
         guard let value = value else {
             return encode([])
         }
@@ -27,12 +29,12 @@ class CandidSerialiser {
     /// Serialises a list of Candid Values
     /// - Parameter values: The Candid Values to be serialised
     /// - Returns: The serialisation of the given Candid Values
-    func encode(_ values: [CandidValue]) -> Data {
+    public func encode(_ values: [CandidValue]) -> Data {
         let typeTable = CandidTypeTable()
         let encodableValues = values.map { Self.buildTree($0, typeTable) }
         return Self.magicBytes +
                 typeTable.encode() +
-                ICPCryptography.Leb128.encodeUnsigned(UInt(encodableValues.count)) +
+                Leb128.encodeUnsigned(UInt(encodableValues.count)) +
                 encodableValues.map { $0.encodeType() }.joinedData() +
                 encodableValues.map { $0.encodeValue() }.joinedData()
     }
@@ -132,8 +134,8 @@ private struct CandidTypeData: Equatable {
         
         func encode() -> Data {
             switch self {
-            case .signed(let int): return ICPCryptography.Leb128.encodeSigned(int)
-            case .unsigned(let uInt): return ICPCryptography.Leb128.encodeUnsigned(uInt)
+            case .signed(let int): return Leb128.encodeSigned(int)
+            case .unsigned(let uInt): return Leb128.encodeUnsigned(uInt)
             case .data(let data): return data
             }
         }
@@ -213,7 +215,7 @@ private class CandidTypeTable {
     }
     
     func encode() -> Data {
-        ICPCryptography.Leb128.encodeUnsigned(UInt(customTypes.count)) +
+        Leb128.encodeUnsigned(UInt(customTypes.count)) +
         customTypes.map { $0.encode() }.joinedData()
     }
     
@@ -262,7 +264,7 @@ private indirect enum CandidEncodableValue {
     case principal(typeRef: Int, Data?)
     
     func encodeType() -> Data {
-        let encodeSigned: (Int) -> Data = ICPCryptography.Leb128.encodeSigned
+        let encodeSigned: (Int) -> Data = Leb128.encodeSigned
         switch self {
         case .null: return encodeSigned(CandidPrimitiveType.null.rawValue)
         case .bool: return encodeSigned(CandidPrimitiveType.bool.rawValue)
@@ -294,12 +296,12 @@ private indirect enum CandidEncodableValue {
     }
     
     func encodeValue() -> Data {
-        let encodeUnsigned: (UInt) -> Data = ICPCryptography.Leb128.encodeUnsigned
+        let encodeUnsigned: (UInt) -> Data = Leb128.encodeUnsigned
         switch self {
         case .null: return Data()
         case .bool(let bool): return Data(from: bool)
-        case .natural(let bigUInt): return ICPCryptography.Leb128.encodeUnsigned(bigUInt)
-        case .integer(let bigInt): return ICPCryptography.Leb128.encodeSigned(bigInt)
+        case .natural(let bigUInt): return Leb128.encodeUnsigned(bigUInt)
+        case .integer(let bigInt): return Leb128.encodeSigned(bigInt)
         case .natural8(let uInt8): return uInt8.bytes
         case .natural16(let uInt16): return uInt16.bytes
         case .natural32(let uInt32): return uInt32.bytes

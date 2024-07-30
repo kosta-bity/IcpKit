@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import IcpKit
+@testable import Candid
 
 final class CandidSerialisationTests: XCTestCase {
     let serialiser = CandidSerialiser()

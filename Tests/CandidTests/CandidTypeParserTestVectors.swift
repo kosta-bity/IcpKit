@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import IcpKit
+@testable import Candid
 
 enum CandidTypeParserTestVectors {
     static let passingSingleTypes: [(String, CandidType)] = [

@@ -8,6 +8,7 @@
 import Foundation
 import BigInt
 import PotentCBOR
+import Candid
 
 private let canisterBaseUrl: URL = "https://icp-api.io/api/v2/canister"
 

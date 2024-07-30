@@ -28,4 +28,8 @@ extension DataProtocol {
         }
         return data
     }
+    
+    public var bytes: [UInt8] {
+        return [UInt8](self)
+    }
 }

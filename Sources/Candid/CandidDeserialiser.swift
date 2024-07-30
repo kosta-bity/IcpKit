@@ -9,20 +9,22 @@ import Foundation
 
 /// see section Serialisation at the bottom of
 /// https://github.com/dfinity/candid/blob/master/spec/Candid.md
-class CandidDeserialiser {
+public class CandidDeserialiser {
+    public init() {}
+    
     /// Desrialises the given data into a list of CandidValues or throws a `CandidDeserialisationError`
     /// - Parameter data: Candid serialised Data
     /// - Returns: The list of deserialised Candid Values
-    func decode(_ data: Data) throws -> [CandidValue] {
+    public func decode(_ data: Data) throws -> [CandidValue] {
         guard data.prefix(CandidSerialiser.magicBytes.count) == CandidSerialiser.magicBytes else {
             throw CandidDeserialisationError.invalidPrefix
         }
         let unwrappedData = data.suffix(from: CandidSerialiser.magicBytes.count)
         let stream = ByteInputStream(unwrappedData)
         let typeTable = try CandidDecodableTypeTable(stream)
-        let nCandidValues: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+        let nCandidValues: Int = try Leb128.decodeUnsigned(stream)
         let decodedTypes = try (0..<nCandidValues).map { _ in
-            let typeRef: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+            let typeRef: Int = try Leb128.decodeSigned(stream)
             return typeRef
         }
         let decodedValues = try decodedTypes.map { candidType in
@@ -36,7 +38,7 @@ class CandidDeserialiser {
     }
 }
 
-enum CandidDeserialisationError: Error {
+public enum CandidDeserialisationError: Error {
     case invalidPrefix
     case invalidPrimitive
     case invalidTypeReference
@@ -49,7 +51,7 @@ private class CandidDecodableTypeTable {
     private let types: [CandidType]
     
     init(_ stream: ByteInputStream) throws {
-        let typeCount: UInt = try ICPCryptography.Leb128.decodeUnsigned(stream)
+        let typeCount: UInt = try Leb128.decodeUnsigned(stream)
         let typeRange = 0..<typeCount
         let tableData = try typeRange.map { _ in
             try CandidTypeTableData.decode(stream)
@@ -184,17 +186,17 @@ private enum CandidTypeTableData {
     case service(methods: [ServiceMethod])
     
     static func decode(_ stream: ByteInputStream) throws -> CandidTypeTableData {
-        let candidType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+        let candidType: Int = try Leb128.decodeSigned(stream)
         guard let primitive = CandidPrimitiveType(rawValue: candidType) else {
             throw CandidDeserialisationError.invalidPrimitive
         }
         switch primitive {
         case .vector:
-            let containedType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+            let containedType: Int = try Leb128.decodeSigned(stream)
             return .vector(containedType: containedType)
             
         case .option:
-            let containedType: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+            let containedType: Int = try Leb128.decodeSigned(stream)
             return .option(containedType: containedType)
             
         case .variant:
@@ -206,17 +208,17 @@ private enum CandidTypeTableData {
             return .record(rows: rows)
             
         case .function:
-            let nInputs: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let nInputs: Int = try Leb128.decodeUnsigned(stream)
             let inputTypes: [Int] = try (0..<nInputs).map { _ in
-                try ICPCryptography.Leb128.decodeSigned(stream)
+                try Leb128.decodeSigned(stream)
             }
-            let nOutputs: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let nOutputs: Int = try Leb128.decodeUnsigned(stream)
             let outputTypes: [Int] = try (0..<nOutputs).map { _ in
-                try ICPCryptography.Leb128.decodeSigned(stream)
+                try Leb128.decodeSigned(stream)
             }
-            let nAnnotations: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let nAnnotations: Int = try Leb128.decodeUnsigned(stream)
             let annotations: [UInt] = try (0..<nAnnotations).map { _ in
-                try ICPCryptography.Leb128.decodeUnsigned(stream)
+                try Leb128.decodeUnsigned(stream)
             }
             return .function(
                 inputTypes: inputTypes,
@@ -225,14 +227,14 @@ private enum CandidTypeTableData {
             )
             
         case .service:
-            let nMethods: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let nMethods: Int = try Leb128.decodeUnsigned(stream)
             let methods: [ServiceMethod] = try (0..<nMethods).map { _ in
-                let nameLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                let nameLength: Int = try Leb128.decodeUnsigned(stream)
                 let nameData = try stream.readNextBytes(nameLength)
                 guard let name = String(data: nameData, encoding: .utf8) else {
                     throw CandidDeserialisationError.invalidUtf8String
                 }
-                let functionReference: Int = try ICPCryptography.Leb128.decodeSigned(stream)
+                let functionReference: Int = try Leb128.decodeSigned(stream)
                 return ServiceMethod(name: name, functionType: functionReference)
             }
             return .service(methods: methods)
@@ -243,11 +245,11 @@ private enum CandidTypeTableData {
     }
     
     private static func decodeRows(_ stream: ByteInputStream) throws -> [KeyedContainerRowData] {
-        let nRows: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+        let nRows: Int = try Leb128.decodeUnsigned(stream)
         let rows: [KeyedContainerRowData] = try (0..<nRows).map { _ in
             (
-                try ICPCryptography.Leb128.decodeUnsigned(stream), // hashed key
-                try ICPCryptography.Leb128.decodeSigned(stream)  // type
+                try Leb128.decodeUnsigned(stream), // hashed key
+                try Leb128.decodeSigned(stream)  // type
             )
         }
         return rows
@@ -275,7 +277,7 @@ private extension CandidDeserialiser {
             }
             
         case .vector(let containedType):
-            let nItems: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let nItems: Int = try Leb128.decodeUnsigned(stream)
             let items = try (0..<nItems).map { _ in
                 try decodeValue(containedType, stream, table)
             }
@@ -296,7 +298,7 @@ private extension CandidDeserialiser {
             return .record(CandidDictionary(dictionary))
             
         case .variant(let rowTypes):
-            let valueIndex: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let valueIndex: Int = try Leb128.decodeUnsigned(stream)
             let valueType = rowTypes[valueIndex].type
             return .variant(CandidVariant(
                 candidTypes: try rowTypes.map { .init(
@@ -314,9 +316,9 @@ private extension CandidDeserialiser {
                 guard try stream.readNextByte() == 1 else {
                     throw CandidDeserialisationError.invalidTypeReference
                 }
-                let principalIdLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                let principalIdLength: Int = try Leb128.decodeUnsigned(stream)
                 let principalId = try stream.readNextBytes(principalIdLength)
-                let nameLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                let nameLength: Int = try Leb128.decodeUnsigned(stream)
                 let nameData = try stream.readNextBytes(nameLength)
                 guard let name = String(data: nameData, encoding: .utf8) else {
                     throw CandidDeserialisationError.invalidUtf8String
@@ -336,7 +338,7 @@ private extension CandidDeserialiser {
             let isPresent = try stream.readNextByte() == 1
             let principal: CandidPrincipal?
             if isPresent {
-                let principalIdLength: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                let principalIdLength: Int = try Leb128.decodeUnsigned(stream)
                 principal = CandidPrincipal(try stream.readNextBytes(principalIdLength))
             } else {
                 principal = nil
@@ -352,8 +354,8 @@ private extension CandidDeserialiser {
         switch primitiveType {
         case .null: return .null
         case .bool: return .bool(try stream.readNextByte() != 0)
-        case .natural: return .natural(try ICPCryptography.Leb128.decodeUnsigned(stream))
-        case .integer: return .integer(try ICPCryptography.Leb128.decodeSigned(stream))
+        case .natural: return .natural(try Leb128.decodeUnsigned(stream))
+        case .integer: return .integer(try Leb128.decodeSigned(stream))
         case .natural8: return .natural8(try .readFrom(stream))
         case .natural16: return .natural16(try .readFrom(stream))
         case .natural32: return .natural32(try .readFrom(stream))
@@ -365,7 +367,7 @@ private extension CandidDeserialiser {
         case .float32: return .float32(try .readFrom(stream))
         case .float64: return .float64(try .readFrom(stream))
         case .text:
-            let count: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+            let count: Int = try Leb128.decodeUnsigned(stream)
             let data = try stream.readNextBytes(count)
             guard let string = String(data: data, encoding: .utf8) else {
                 throw CandidDeserialisationError.invalidUtf8String
@@ -376,7 +378,7 @@ private extension CandidDeserialiser {
         case .principal:
             let isPresent = try stream.readNextByte() == 1
             if isPresent {
-                let nBytes: Int = try ICPCryptography.Leb128.decodeUnsigned(stream)
+                let nBytes: Int = try Leb128.decodeUnsigned(stream)
                 let bytes = try (0..<nBytes).map { _ in
                     try UInt8.readFrom(stream)
                 }

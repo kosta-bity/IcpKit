@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import IcpKit
+@testable import Candid
 
 enum CandidSerialisationTestVectors {
     static let singleValueTestVectors: [(CandidValue, [UInt8])] = [

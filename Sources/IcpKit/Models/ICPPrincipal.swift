@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Utils
 
 /// from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal
 public struct ICPPrincipal: Equatable {
@@ -14,11 +15,11 @@ public struct ICPPrincipal: Equatable {
     
     public init(_ string: String) throws {
         self.string = string
-        self.bytes = try ICPCryptography.decodeCanonicalText(string)
+        self.bytes = try CanonicalText.decode(string)
     }
     
     public init(_ bytes: Data) {
         self.bytes = bytes
-        self.string = ICPCryptography.encodeCanonicalText(bytes)
+        self.string = CanonicalText.encode(bytes)
     }
 }

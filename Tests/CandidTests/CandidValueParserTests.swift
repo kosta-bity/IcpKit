@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import IcpKit
+@testable import Candid
 
 final class CandidValueParserTests: XCTestCase {
     private let parser = CandidValueParser()
