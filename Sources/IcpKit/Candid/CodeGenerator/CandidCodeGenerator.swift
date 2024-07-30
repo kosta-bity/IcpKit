@@ -19,7 +19,7 @@ public class CandidCodeGenerator {
     public func generateSwiftCode(for interface: CandidInterfaceDefinition, serviceName: String? = nil) throws -> String {
         let context = try CodeGenerationContext(from: interface, serviceName: serviceName)
         let header = buildHeader()
-        let types = context.namedTypes.map(buildType)
+        let types = context.namedTypes.map { buildType($0, context.namedTypes)}
         
         let output = IndentedString()
         output.addBlock(header, newLine: true)
@@ -56,7 +56,9 @@ public class CandidCodeGenerator {
     private func buildServiceMethod(_ method: CodeGeneratorCandidService.Method) -> IndentedString {
         let block = IndentedString()
         var unnamedArgCount = 0
-        let args = method.signature.arguments.map { $0.swiftStringForFunctionArgument(&unnamedArgCount) }.joined(separator: ", ")
+        let args = (method.signature.arguments.map { $0.swiftStringForFunctionArgument(&unnamedArgCount) } + [
+            "sender: ICPSigningPrincipal? = nil",
+        ]).joined(separator: ", ")
         let results: String
         switch method.signature.results.count {
         case 0: results = ""
@@ -89,9 +91,9 @@ public class CandidCodeGenerator {
         }
         let clientCall: String
         if method.signature.annotations.query {
-            clientCall = "try await client.query(method, effectiveCanister: canister)"
+            clientCall = "try await client.query(method, effectiveCanister: canister, sender: sender)"
         } else {
-            clientCall = "try await client.callAndPoll(method, effectiveCanister: canister)"
+            clientCall = "try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)"
         }
         if results.isEmpty {
             block.addLine("_ = \(clientCall)")
@@ -117,16 +119,17 @@ public class CandidCodeGenerator {
     
     private func buildHeader() -> IndentedString {
         IndentedString(
+            "import Foundation",
             "import IcpKit",
             "import BigInt"
         )
     }
         
-    private func buildType(_ namedType: CandidNamedType) -> GeneratedCode {
+    private func buildType(_ namedType: CandidNamedType, _ namedTypes: [CandidNamedType]) -> GeneratedCode {
         switch namedType.type.codeGenerationType {
         case .typealias(let candidType): return buildTypeAlias(namedType.name, candidType, namedType.originalDefinition)
         case .struct(let candidKeyedTypes): return buildStruct(namedType.name, candidKeyedTypes, namedType.originalDefinition)
-        case .variant(let candidKeyedTypes): return buildVariant(namedType.name, candidKeyedTypes, namedType.originalDefinition)
+        case .variant(let candidKeyedTypes): return buildVariant(namedType.name, candidKeyedTypes, namedType.originalDefinition, namedTypes)
         }
     }
     
@@ -144,7 +147,7 @@ public class CandidCodeGenerator {
     private func buildStruct(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?) -> GeneratedCode {
         let block = IndentedString()
         block.addSwiftDocumentation(originalDefinition)
-        block.addLine("struct \(name): GeneratedCandidType {")
+        block.addLine("struct \(name): Codable {")
         block.increaseIndent()
         for keyedType in keyedTypes {
             block.addLine("let \(keyedType.swiftString())")
@@ -158,10 +161,11 @@ public class CandidCodeGenerator {
         return GeneratedCode(name: name, output: block, type: .namedType)
     }
     
-    private func buildVariant(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?) -> GeneratedCode {
+    private func buildVariant(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?, _ allNamedTypes: [CandidNamedType]) -> GeneratedCode {
         let block = IndentedString()
         block.addSwiftDocumentation(originalDefinition)
-        block.addLine("enum \(name): GeneratedCandidType {")
+        let indirect = keyedTypes.isIndirectEnum(name, allNamedTypes) ? "indirect " : ""
+        block.addLine("\(indirect)enum \(name): Codable {")
         block.increaseIndent()
         for keyedType in keyedTypes {
             block.addLine(buildVariantCase(keyedType))
@@ -294,11 +298,20 @@ private extension CandidContainerKey {
     var isUnnamed: Bool { string == nil }
     var swiftString: String {
         if let string = string {
-            return string
+            return sanitize(string)
         } else {
             return String("_\(hash)")
         }
     }
+    
+    private func sanitize(_ string: String) -> String {
+        if Self.swiftReservedKeywords.contains(string) {
+            return "`\(string)`"
+        }
+        return string
+    }
+    
+    private static let swiftReservedKeywords = ["extension", "private", "public", "internal", "operator", "var", "let", "func", "default", "if", "while"]
 }
 
 private extension CandidFunctionSignature.Parameter {
@@ -319,3 +332,21 @@ private extension CandidFunctionSignature.Parameter {
     }
 }
 
+private extension CandidKeyedTypes {
+    func isIndirectEnum(_ name: String, _ namedTypes: [CandidNamedType]) -> Bool {
+        contains { $0.type.references(name, namedTypes) }
+    }
+}
+
+private extension CandidType {
+    func references(_ name: String, _ namedTypes: [CandidNamedType]) -> Bool {
+        switch self {
+        case .option(let containedType): return containedType.references(name, namedTypes)
+        case .named(let referencedName): 
+            if referencedName == name { return true }
+            return namedTypes[referencedName]?.references(name, namedTypes) ?? false
+            
+        default: return false
+        }
+    }
+}

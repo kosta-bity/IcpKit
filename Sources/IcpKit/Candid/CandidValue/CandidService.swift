@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidService: Equatable, Encodable {
+public struct CandidService: Equatable, Codable {
     public let principal: CandidPrincipal?
     public let signature: CandidServiceSignature
     
@@ -17,9 +17,9 @@ public struct CandidService: Equatable, Encodable {
     }
 }
 
-public struct CandidServiceSignature: Equatable, Encodable {
-    public struct Method: Equatable, Encodable {
-        public enum FunctionSignatureType: Equatable, Encodable {
+public struct CandidServiceSignature: Equatable, Codable {
+    public struct Method: Equatable, Codable {
+        public enum FunctionSignatureType: Equatable, Codable {
             case concrete(CandidFunctionSignature)
             case reference(String)
         }

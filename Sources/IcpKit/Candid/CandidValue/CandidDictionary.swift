@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable, Encodable {
+public struct CandidDictionary: ExpressibleByDictionaryLiteral, Equatable, Codable {
     public let candidSortedItems: [CandidKeyedItem]
     
     public var candidValues: [CandidValue] {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidKeyedItem: Equatable, Comparable, Encodable {
+public struct CandidKeyedItem: Equatable, Comparable, Codable {
     public let key: CandidContainerKey
     public let value: CandidValue
     
@@ -29,7 +29,7 @@ public struct CandidKeyedItem: Equatable, Comparable, Encodable {
     }
 }
 
-public struct CandidKeyedItemType: Equatable, Comparable, Encodable {
+public struct CandidKeyedItemType: Equatable, Comparable, Codable {
     public let key: CandidContainerKey
     public let type: CandidType
     
@@ -58,7 +58,7 @@ public struct CandidKeyedItemType: Equatable, Comparable, Encodable {
     }
 }
 
-public protocol CandidContainerKeyProtocol: Equatable, Hashable, Comparable, Encodable {
+public protocol CandidContainerKeyProtocol: Equatable, Hashable, Comparable, Codable {
     var hash: Int { get }
     var string: String? { get }
 }

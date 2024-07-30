@@ -89,14 +89,16 @@ extension Array where Element == CandidNamedType {
         get { first { $0.name == name }?.type }
     }
     
-    mutating func set(_ name: String, _ type: CandidType, _ originalDefinition: String?) {
-        guard let index = firstIndex(where: { $0.name == name}) else {
-            return
-        }
-        self[index] = CandidNamedType(name: name, type: type, originalDefinition: originalDefinition)
-    }
-    
     func contains(_ name: String) -> Bool { contains { $0.name == name} }
+    
+    func replacing(_ name: String, with item: CandidNamedType) -> [CandidNamedType] {
+        guard let index = firstIndex(where: {$0.name == name}) else {
+            return self
+        }
+        var copy = self
+        copy[index] = item
+        return copy
+    }
 }
 
 private extension CandidType {

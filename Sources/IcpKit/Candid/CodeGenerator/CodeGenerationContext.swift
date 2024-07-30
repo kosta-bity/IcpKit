@@ -12,15 +12,28 @@ class CodeGenerationContext {
     private (set) var service: CodeGeneratorCandidService?
     
     init(from interface: CandidInterfaceDefinition, serviceName: String?) throws {
-        for namedType in interface.namedTypes {
+        let swiftSanitizedInterface = replacingReservedKeywords(interface)
+        for namedType in swiftSanitizedInterface.namedTypes {
             addNamedType(namedType)
         }
-        if let service = interface.service {
+        if let service = swiftSanitizedInterface.service {
             guard let finalServiceName = service.name ?? serviceName else {
                 throw CandidCodeGeneratorError.noServiceName
             }
             try setService(finalServiceName, service)
         }
+    }
+    
+    private static let swiftReservedKeywords = ["Data", "Int8",  "UInt8", "Int16",  "UInt16", "Int32",  "UInt32", "Int64",  "UInt64", "Int",  "UInt", "Bool", "String", "nil", "Optional", "Array", "Sequence", "Collection"]
+    private func replacingReservedKeywords(_ interface: CandidInterfaceDefinition) -> CandidInterfaceDefinition {
+        var sanitized = interface
+        for namedType in interface.namedTypes {
+            if Self.swiftReservedKeywords.contains(namedType.name) {
+                sanitized = sanitized.replacing(namedType.name, with: "C_\(namedType.name)")
+            }
+        }
+        
+        return sanitized
     }
     
     private func addNamedType(_ namedType: CandidNamedType) {
@@ -198,5 +211,93 @@ struct CodeGeneratorCandidService {
     struct Method {
         let name: String
         let signature: CandidFunctionSignature
+    }
+}
+
+private extension CandidInterfaceDefinition {
+    func replacing(_ name: String, with newName: String) -> CandidInterfaceDefinition {
+        guard let namedType = namedTypes.first(where: { $0.name == name }) else { return self }
+        let replaced = namedTypes.replacing(name, with: .init(name: newName, type: namedType.type, originalDefinition: namedType.originalDefinition))
+        let replacedReferences = replaced.map { CandidNamedType(name: $0.name, type: $0.type.replacing(name, with: newName), originalDefinition: $0.originalDefinition)}
+        
+        let replacedService = service?.replacing(name, with: newName)
+        
+        return CandidInterfaceDefinition(replacedReferences, service: replacedService)
+    }
+}
+
+private extension CandidType {
+    func replacing(_ name: String, with newName: String) -> CandidType {
+        switch self {
+        case .vector(let containedType):
+            return .vector(containedType.replacing(name, with: newName))
+        case .option(let containedType):
+            return .option(containedType.replacing(name, with: newName))
+        case .record(let keyedTypes):
+            return .record(keyedTypes.replacing(name, with: newName))
+        case .variant(let keyedTypes):
+            return .variant(keyedTypes.replacing(name, with: newName))
+        case .function(let signature):
+            return .function(signature.replacing(name, with: newName))
+        case .service(let signature):
+            return .service(signature.replacing(name, with: newName))
+        case .named(let selfName):
+            guard selfName == name else { return self }
+            return .named(newName)
+        default: return self
+        }
+    }
+}
+
+private extension CandidKeyedTypes {
+    func replacing(_ name: String, with newName: String) -> CandidKeyedTypes {
+        return CandidKeyedTypes(items.map { CandidKeyedItemType($0.key, $0.type.replacing(name, with: newName))})
+    }
+}
+
+private extension CandidFunctionSignature {
+    func replacing(_ name: String, with newName: String) -> CandidFunctionSignature {
+        return CandidFunctionSignature(
+            arguments.map { $0.replacing(name, with: newName) },
+            results.map { $0.replacing(name, with: newName) },
+            annotations
+        )
+    }
+}
+
+private extension CandidFunctionSignature.Parameter {
+    func replacing(_ name: String, with newName: String) -> CandidFunctionSignature.Parameter {
+        guard self.name == name else { return self }
+        return .init(index: index, name: newName, type: type)
+    }
+}
+
+private extension CandidServiceSignature {
+    func replacing(_ name: String, with newName: String) -> CandidServiceSignature {
+        return .init(methods.map { $0.replacing(name, with: newName) })
+    }
+}
+
+private extension CandidServiceSignature.Method {
+    func replacing(_ name: String, with newName: String) -> CandidServiceSignature.Method {
+        switch functionSignature {
+        case .reference(let referencedName):
+            guard referencedName == name else { return self }
+            return .init(name: self.name, signatureType: .reference(newName))
+        case .concrete(let signature):
+            return .init(name: self.name, functionSignature: signature.replacing(name, with: newName))
+        }
+    }
+}
+
+private extension CandidInterfaceDefinition.ServiceDefinition {
+    func replacing(_ name: String, with newName: String) -> CandidInterfaceDefinition.ServiceDefinition {
+        switch signature {
+        case .reference(let referencedName):
+            guard referencedName == name else { return self }
+            return .init(name: self.name, initialisationArguments: initialisationArguments, signatureReference: newName, originalDefinition: originalDefinition)
+        case .concrete(let signature):
+            return .init(name: self.name, initialisationArguments: initialisationArguments, signature: signature.replacing(name, with: newName), originalDefinition: originalDefinition)
+        }
     }
 }

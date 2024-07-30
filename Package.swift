@@ -53,7 +53,8 @@ let package = Package(
                 "IcpKit",
             ],
             resources: [
-                .process("CandidTests/DidFiles/ICRC7.did")
+                .process("CandidTests/DidFiles/ICRC7.did"),
+                .process("CandidTests/DidFiles/GoldNFT.did")
             ]
         ),
     ],

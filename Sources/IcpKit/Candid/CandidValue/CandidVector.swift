@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidVector: Equatable, Encodable {
+public struct CandidVector: Equatable, Codable {
     //public typealias Element = CandidValue
     
     private enum CandidVectorError: Error {

@@ -1,3 +1,5 @@
+// https://github.com/dfinity/ICRC/blob/main/ICRCs/ICRC-7/ICRC-7.did
+
 type Subaccount = blob;
 
 type Account = record { owner : principal; subaccount : opt Subaccount };
