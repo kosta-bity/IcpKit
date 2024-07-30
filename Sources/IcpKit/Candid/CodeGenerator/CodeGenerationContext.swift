@@ -11,15 +11,13 @@ class CodeGenerationContext {
     private (set) var namedTypes: [CandidNamedType] = []
     private (set) var service: CodeGeneratorCandidService?
     
-    init(from interface: CandidInterfaceDefinition, serviceName: String?) throws {
+    init(from interface: CandidInterfaceDefinition) throws {
         let swiftSanitizedInterface = replacingReservedKeywords(interface)
         for namedType in swiftSanitizedInterface.namedTypes {
             addNamedType(namedType)
         }
         if let service = swiftSanitizedInterface.service {
-            guard let finalServiceName = service.name ?? serviceName else {
-                throw CandidCodeGeneratorError.noServiceName
-            }
+            let finalServiceName = service.name ?? "Service"
             try setService(finalServiceName, service)
         }
     }

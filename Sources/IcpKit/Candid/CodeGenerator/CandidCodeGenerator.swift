@@ -10,23 +10,26 @@ import Foundation
 public enum CandidCodeGeneratorError: Error {
     case invalidServiceReference
     case invalidFunctionReference
-    case noServiceName
 }
 
 public class CandidCodeGenerator {
     public init() {}
     
-    public func generateSwiftCode(for interface: CandidInterfaceDefinition, serviceName: String? = nil) throws -> String {
-        let context = try CodeGenerationContext(from: interface, serviceName: serviceName)
+    public func generateSwiftCode(for interface: CandidInterfaceDefinition, nameSpace: String) throws -> String {
+        let context = try CodeGenerationContext(from: interface)
         let header = buildHeader()
         let types = context.namedTypes.map { buildType($0, context.namedTypes)}
         
         let output = IndentedString()
         output.addBlock(header, newLine: true)
+        output.addLine("enum \(nameSpace) {")
+        output.increaseIndent()
         output.addBlock(buildTypesBlock(types), newLine: true)
         if let service = context.service {
             output.addBlock(buildServiceBlock(service), newLine: true)
         }
+        output.decreaseIndent()
+        output.addLine("}")
         return output.output
     }
     
@@ -111,7 +114,7 @@ public class CandidCodeGenerator {
         let namedTypes = types.filter { $0.type == .namedType }
         
         let block = IndentedString()
-        typeAliases.sorted().forEach { block.addBlock($0.output) }
+        typeAliases.sorted().forEach { block.addBlock($0.output, newLine: true) }
         if !typeAliases.isEmpty { block.addLine() }
         namedTypes.sorted().forEach { block.addBlock($0.output, newLine: true) }
         return block
@@ -119,6 +122,13 @@ public class CandidCodeGenerator {
     
     private func buildHeader() -> IndentedString {
         IndentedString(
+            "//",
+            "// This file was generated using CandidCodeGenerator",
+            "// created: \(Date.now)",
+            "//",
+            "// You can modify this file if needed",
+            "//",
+            "",
             "import Foundation",
             "import IcpKit",
             "import BigInt"

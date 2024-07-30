@@ -40,7 +40,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
         
         for (namedTypes, service) in testVectors {
             let interface = CandidInterfaceDefinition(namedTypes: namedTypes, service: service)
-            let generated = try CandidCodeGenerator().generateSwiftCode(for: interface)
+            let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, nameSpace: "TestCodeGeneration")
             print(generated)
         }
     }
@@ -49,7 +49,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
         let path = Bundle.module.url(forResource: "ICRC7", withExtension: "did")!
         let didFile = try String(contentsOf: path)
         let interface = try await CandidParser().parseInterfaceDescription(didFile)
-        let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, serviceName: "ICRC7Service")
+        let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, nameSpace: "ICRC7")
         print(generated)
     }
     
@@ -57,7 +57,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
         let path = Bundle.module.url(forResource: "GoldNFT", withExtension: "did")!
         let didFile = try String(contentsOf: path)
         let interface = try await CandidParser().parseInterfaceDescription(didFile)
-        let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, serviceName: "GoldNFTService")
+        let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, nameSpace: "GoldNFT")
         print(generated)
     }
 }
