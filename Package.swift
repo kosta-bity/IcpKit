@@ -76,6 +76,7 @@ let package = Package(
                 .process("DidFiles/ICRC7.did"),
                 .process("DidFiles/GoldNFT.did"),
                 .process("DidFiles/EVMProviders.did"),
+                .process("DidFiles/LedgerCanister.did"),
             ]
         ),
     ],

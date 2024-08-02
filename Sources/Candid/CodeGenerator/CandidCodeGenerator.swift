@@ -450,7 +450,7 @@ private extension CandidValue {
             block.append(initValues)
             block.decreaseIndent()
             block.addLine()
-            block.addLine(")")
+            block.append(")")
             return block
             
         case .variant(let variant):
