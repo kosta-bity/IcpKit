@@ -10,6 +10,7 @@ import Foundation
 class CodeGenerationContext {
     private (set) var namedTypes: [CandidNamedType] = []
     private (set) var service: CodeGeneratorCandidService?
+    private (set) var candidValueSimplifiedType: CandidType?
     
     init(from interface: CandidInterfaceDefinition) throws {
         let swiftSanitizedInterface = replacingReservedKeywords(interface)
@@ -20,6 +21,11 @@ class CodeGenerationContext {
             let finalServiceName = service.name ?? "Service"
             try setService(finalServiceName, service)
         }
+    }
+    
+    init(from value: CandidValue) throws {
+        let simplifiedType = simplifyType(value.candidType, isNamedType: false)
+        candidValueSimplifiedType = simplifiedType
     }
     
     private static let swiftReservedKeywords = ["Data", "Int8",  "UInt8", "Int16",  "UInt16", "Int32",  "UInt32", "Int64",  "UInt64", "Int",  "UInt", "Bool", "String", "nil", "Optional", "Array", "Sequence", "Collection"]

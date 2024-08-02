@@ -18,6 +18,21 @@ class IndentedString {
             addLine(line)
         }
     }
+    
+    static func inline(_ content: String) -> IndentedString {
+        let block = IndentedString()
+        block.output = content
+        return block
+    }
+    
+    func append(_ content: String) {
+        if output.suffix(1) == self.newLine { output.append(whiteSpace) }
+        output.append(contentsOf: withIndent(content))
+    }
+    
+    func append(_ block: IndentedString) {
+        append(block.output)
+    }
         
     func increaseIndent() {
         indent += 1
@@ -37,12 +52,18 @@ class IndentedString {
     }
     
     func addBlock(_ block: IndentedString, newLine: Bool = false) {
-        if block.output.isEmpty { return }
-        let indentedBlock = block.output.replacingOccurrences(
-            of: self.newLine, with: "\n\(whiteSpace)",
-            range: block.output.startIndex..<block.output.index(before: block.output.endIndex) // don't replace last \n
+        if block.output.isEmpty || block.output.replacingOccurrences(of: self.newLine, with: "").isEmpty { return }
+        let indented = withIndent(block.output)
+        output += whiteSpace + indented + (newLine ? self.newLine : "")
+    }
+    
+    private func withIndent(_ string: String) -> String {
+        let lastChar = string.index(before: string.endIndex)
+        let indentedString = string.replacingOccurrences(
+            of: self.newLine, with: "\(self.newLine)\(whiteSpace)",
+            range: string.startIndex..<lastChar // don't replace last \n
         )
-        output += whiteSpace + indentedBlock + (newLine ? self.newLine : "")
+        return indentedString
     }
     
     private static let indentationWhiteSpace: String = "\t"

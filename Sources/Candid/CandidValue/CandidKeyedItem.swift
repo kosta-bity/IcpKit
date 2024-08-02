@@ -67,6 +67,8 @@ public struct CandidContainerKey: CandidContainerKeyProtocol {
     public let hash: Int
     public let string: String?
     
+    public var hasString: Bool { string != nil }
+    
     public init(_ hashedKey: Int) {
         self.hash = hashedKey
         self.string = nil

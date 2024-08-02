@@ -71,10 +71,11 @@ let package = Package(
         ),
         .testTarget(
             name: "CandidTests",
-            dependencies: ["Candid",],
+            dependencies: ["Candid"],
             resources: [
                 .process("DidFiles/ICRC7.did"),
-                .process("DidFiles/GoldNFT.did")
+                .process("DidFiles/GoldNFT.did"),
+                .process("DidFiles/EVMProviders.did"),
             ]
         ),
     ],

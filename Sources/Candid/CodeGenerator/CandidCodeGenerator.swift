@@ -33,6 +33,24 @@ public class CandidCodeGenerator {
         return output.output
     }
     
+    public func generateSwiftCode(for value: CandidValue, valueName: String) throws -> String {
+        let context = try CodeGenerationContext(from: value)
+        //let header = buildHeader()
+        let types = context.namedTypes.map { buildType($0, context.namedTypes)}
+        
+        let output = IndentedString()
+        //output.addBlock(header, newLine: true)
+        output.addBlock(buildTypesBlock(types))
+        output.addBlock(buildValueBlock(value, valueName, context.candidValueSimplifiedType!))
+        return output.output
+    }
+    
+    private func buildValueBlock(_ value: CandidValue, _ valueName: String, _ simplifiedType: CandidType) -> IndentedString {
+        let block = IndentedString.inline("let \(valueName): \(simplifiedType.swiftType()) = ")
+        block.append(value.swiftValue)
+        return block
+    }
+    
     private func buildServiceBlock(_ service: CodeGeneratorCandidService) -> IndentedString {
         let block = IndentedString()
         block.addSwiftDocumentation(service.originalDefinition)
@@ -115,7 +133,7 @@ public class CandidCodeGenerator {
         
         let block = IndentedString()
         typeAliases.sorted().forEach { block.addBlock($0.output, newLine: true) }
-        if !typeAliases.isEmpty { block.addLine() }
+        if !typeAliases.isEmpty && !namedTypes.isEmpty { block.addLine() }
         namedTypes.sorted().forEach { block.addBlock($0.output, newLine: true) }
         return block
     }
@@ -163,6 +181,15 @@ public class CandidCodeGenerator {
             block.addLine("let \(keyedType.swiftString())")
         }
         if keyedTypes.hasUnnamedParameters {
+            block.addLine()
+            let initialiserArgs = keyedTypes.map { "\($0.key.swiftInitDefString): \($0.type.swiftType())" }.joined(separator: ", ")
+            block.addLine("init(\(initialiserArgs)) {")
+            block.increaseIndent()
+            for arg in keyedTypes {
+                block.addLine("self.\(arg.key.swiftString) = \(arg.key.swiftString)")
+            }
+            block.decreaseIndent()
+            block.addLine("}")
             block.addLine()
             block.addBlock(buildCodingKeys(keyedTypes))
         }
@@ -310,7 +337,23 @@ private extension CandidContainerKey {
         if let string = string {
             return sanitize(string)
         } else {
-            return String("_\(hash)")
+            return "_\(hash)"
+        }
+    }
+    /// used for init definition eg. MyType{ init(_ _0: Int, a: String) }
+    var swiftInitDefString: String {
+        if hasString {
+            return swiftString
+        } else {
+            return "_ \(swiftString)"
+        }
+    }
+    /// used for value init eg. MyType(0, a: "string")
+    var swiftInitString: String {
+        if hasString {
+            return "\(swiftString): "
+        } else {
+            return ""
         }
     }
     
@@ -357,6 +400,82 @@ private extension CandidType {
             return namedTypes[referencedName]?.references(name, namedTypes) ?? false
             
         default: return false
+        }
+    }
+}
+
+private extension CandidValue {
+    var swiftValue: IndentedString {
+        switch self {
+        case .null, .reserved, .empty: return IndentedString.inline("nil")
+        case .bool(let bool): return IndentedString.inline("\(bool)")
+        case .natural(let bigUInt): return IndentedString.inline("\(bigUInt)")
+        case .integer(let bigInt): return IndentedString.inline("\(bigInt)")
+        case .natural8(let uInt8): return IndentedString.inline("\(uInt8)")
+        case .natural16(let uInt16): return IndentedString.inline("\(uInt16)")
+        case .natural32(let uInt32): return IndentedString.inline("\(uInt32)")
+        case .natural64(let uInt64): return IndentedString.inline("\(uInt64)")
+        case .integer8(let int8): return IndentedString.inline("\(int8)")
+        case .integer16(let int16): return IndentedString.inline("\(int16)")
+        case .integer32(let int32): return IndentedString.inline("\(int32)")
+        case .integer64(let int64): return IndentedString.inline("\(int64)")
+        case .float32(let float): return IndentedString.inline("\(float)")
+        case .float64(let double): return IndentedString.inline("\(double)")
+        case .text(let string): return IndentedString.inline("\"\(string)\"")
+        case .blob(let data): return IndentedString.inline("Data.fromHex(\"\(data.hex)\")!")
+            
+        case .option(let option):
+            if let value = option.value { return value.swiftValue }
+            else { return IndentedString.inline("nil") }
+            
+        case .vector(let vector):
+            if vector.values.isEmpty { return IndentedString.inline("[]") }
+            let block = IndentedString()
+            block.addLine("[")
+            block.increaseIndent()
+            for value in vector.values {
+                block.append(value.swiftValue)
+                block.append(",\n")
+            }
+            block.decreaseIndent()
+            block.addLine("]")
+            return block
+            
+        case .record(let record):
+            if record.candidSortedItems.isEmpty { return IndentedString.inline(".init()") }
+            
+            let block = IndentedString(".init(")
+            block.increaseIndent()
+            let initValues = record.candidSortedItems.map { "\($0.key.swiftInitString)\($0.value.swiftValue.output)" }.joined(separator: ",\n")
+            block.append(initValues)
+            block.decreaseIndent()
+            block.addLine()
+            block.addLine(")")
+            return block
+            
+        case .variant(let variant):
+            switch variant.value {
+            case .record(let record):
+                // named and/or multiple associated values
+                let associatedValues = record.candidSortedItems.map { "\($0.key.swiftInitString)\($0.value.swiftValue.output)" }.joined(separator: ", ")
+                
+                return IndentedString.inline(".\(variant.key.swiftString)(\(associatedValues))")
+            case .null:
+                return IndentedString.inline(".\(variant.key.swiftString)")
+            default:
+                // single unnamed associated value
+                return IndentedString.inline(".\(variant.key.swiftString)(\(variant.value.swiftValue.output))")
+            }
+            
+        case .principal(let candidPrincipal):
+            guard let principal = candidPrincipal else { return IndentedString.inline("nil") }
+            return IndentedString.inline("try! CandidPrincipal(\"\(principal.string)\")")
+        
+        case .function(let candidFunction):
+            fatalError()
+            
+        case .service(let candidService):
+            fatalError()
         }
     }
 }
