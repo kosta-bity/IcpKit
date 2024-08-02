@@ -149,6 +149,7 @@ public class CandidCodeGenerator {
             "",
             "import Foundation",
             "import IcpKit",
+            "import Candid",
             "import BigInt"
         )
     }
@@ -306,7 +307,20 @@ private extension CandidType {
             fatalError("all records should be named by now")
         case .variant:
             fatalError("all variants should be named by now")
-        case .function: return "CandidFunctionSignature"
+        case .function(let signature):
+            precondition(signature.arguments.count <= 1, "function arguments should have been simplified by now")
+            precondition(signature.results.count <= 1, "function results should have been simplified by now")
+            guard let argument = signature.arguments.first else {
+                guard let result = signature.results.first else {
+                    return "ICPFunctionNoArgsNoResult"
+                }
+                return "ICPFunctionNoArgs<\(result.type.swiftType())>"
+            }
+            guard let result = signature.results.first else {
+                return "ICPFunctionNoResult<\(argument.type.swiftType())>"
+            }
+            return "ICPFunction<\(argument.type.swiftType()), \(result.type.swiftType())>"
+            
         case .service: return "CandidServiceSignature"
         case .principal: return "CandidPrincipal"
         case .named(let name): return name
@@ -469,13 +483,20 @@ private extension CandidValue {
             
         case .principal(let candidPrincipal):
             guard let principal = candidPrincipal else { return IndentedString.inline("nil") }
-            return IndentedString.inline("try! CandidPrincipal(\"\(principal.string)\")")
+            return IndentedString.inline(principal.swiftValueInit)
         
         case .function(let candidFunction):
-            fatalError()
+            guard let method = candidFunction.method else {
+                return IndentedString.inline("nil")
+            }
+            return IndentedString.inline(".init(\(method.principal.swiftValueInit), \"\(method.name)\", \(candidFunction.signature.annotations.query))")
             
         case .service(let candidService):
             fatalError()
         }
     }
+}
+
+private extension CandidPrincipal {
+    var swiftValueInit: String { "try! CandidPrincipal(\"\(string)\")" }
 }

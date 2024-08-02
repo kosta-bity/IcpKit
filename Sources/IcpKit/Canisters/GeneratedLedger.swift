@@ -1,6 +1,6 @@
 //
 // This file was generated using CandidCodeGenerator
-// created: 2024-08-02 07:26:38 +0000
+// created: 2024-08-02 12:01:10 +0000
 //
 // You can modify this file if needed
 //
@@ -30,7 +30,7 @@ enum Ledger {
     
     /// // A function that is used for fetching archived ledger blocks.
     /// type QueryArchiveFn = func (GetBlocksArgs) -> (QueryArchiveResult) query;
-    typealias QueryArchiveFn = CandidFunctionSignature
+    typealias QueryArchiveFn = ICPFunction<GetBlocksArgs, QueryArchiveResult>
     
     /// type SubAccount = blob;
     typealias SubAccount = Data
@@ -58,14 +58,14 @@ enum Ledger {
     }
     
     /// type Block = record {
-    ///     parent_hash: Hash;
+    ///     parent_hash: opt Hash;
     ///     transaction: Transaction;
     ///     timestamp: TimeStamp;
     /// };
     struct Block: Codable {
         let transaction: Transaction
         let timestamp: TimeStamp
-        let parent_hash: Hash
+        let parent_hash: Hash?
     }
     
     /// // A prefix of the block range specified in the [GetBlocksArgs] request.
@@ -98,6 +98,20 @@ enum Ledger {
     struct GetBlocksArgs: Codable {
         let start: BlockIndex
         let length: UInt64
+    }
+    
+    /// type QueryArchiveResult = variant {
+    ///     Ok : BlockRange;
+    ///     Err : null;      // we don't know the values here...
+    /// };
+    enum QueryArchiveResult: Codable {
+        case Ok(BlockRange)
+        case Err
+        
+        enum CodingKeys: Int, CodingKey {
+            case Ok = 17724
+            case Err = 3456837
+        }
     }
     
     /// // The result of a "query_blocks" call.
@@ -167,14 +181,14 @@ enum Ledger {
     }
     
     /// type Transaction = record {
-    ///     transfer: Transfer;
+    ///     operation: opt Transfer;
     ///     memo: Memo;
     ///     created_at_time: TimeStamp;
     /// };
     struct Transaction: Codable {
         let memo: Memo
+        let operation: Transfer?
         let created_at_time: TimeStamp
-        let transfer: Transfer
     }
     
     /// //There are three types of operations: minting tokens, burning tokens & transferring tokens

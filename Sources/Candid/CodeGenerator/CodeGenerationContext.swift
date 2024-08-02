@@ -143,27 +143,29 @@ class CodeGenerationContext {
     }
     
     private func simplifyFunctionSignature(_ signature: CandidFunctionSignature) -> CandidFunctionSignature {
-        let simplifiedArguments = signature.arguments.map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name ,type:  simplifyType($0.type)) }
-        let simplifiedResults: [CandidFunctionSignature.Parameter]
-        if signature.results.count > 1 {
-            var unnamedIndex = 0
-            let recordResults = CandidType.record(
-                signature.results.map {
-                    if let name = $0.name {
-                        return CandidKeyedItemType(name, $0.type)
-                    } else {
-                        let item = CandidKeyedItemType(hashedKey: unnamedIndex, type: $0.type)
-                        unnamedIndex += 1
-                        return item
-                    }
-                }
-            )
-            let simplifiedRecord = simplifyType(recordResults)
-            simplifiedResults = [.init(index: 0, name: nil, type: simplifiedRecord)]
-        } else {
-            simplifiedResults = signature.results.map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name ,type:  simplifyType($0.type)) }
-        }
+        let simplifiedArguments = simplifyFunctionParameters(signature.arguments)
+        let simplifiedResults = simplifyFunctionParameters(signature.results)
         return CandidFunctionSignature(simplifiedArguments, simplifiedResults, signature.annotations)
+    }
+    
+    private func simplifyFunctionParameters(_ parameters: [CandidFunctionSignature.Parameter]) -> [CandidFunctionSignature.Parameter] {
+        guard parameters.count > 1 else {
+            return parameters.map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name ,type:  simplifyType($0.type)) }
+        }
+        var unnamedIndex = 0
+        let recordResults = CandidType.record(
+            parameters.map {
+                if let name = $0.name {
+                    return CandidKeyedItemType(name, $0.type)
+                } else {
+                    let item = CandidKeyedItemType(hashedKey: unnamedIndex, type: $0.type)
+                    unnamedIndex += 1
+                    return item
+                }
+            }
+        )
+        let simplifiedRecord = simplifyType(recordResults)
+        return [.init(index: 0, name: nil, type: simplifiedRecord)]
     }
     
     private func simplifyServiceSignature(_ signature: CandidServiceSignature) -> CandidServiceSignature {

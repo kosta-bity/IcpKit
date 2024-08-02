@@ -47,6 +47,14 @@ private class CandidValueDecoder: Decoder {
         } else if T.self is BigInt.Type {
             let bigInt = try input.integer(codingPath)
             return bigInt as! T
+            
+        } else if T.self is CandidFunctionProtocol.Type {
+            let function = try input.function(codingPath)
+            guard let method = function.method else {
+                throw EncodingError.invalidValue(function, .init(codingPath: codingPath, debugDescription: "No method defined in CandidFunction"))
+            }
+            let functionProtocol = (T.self as! CandidFunctionProtocol.Type).init(method.principal, method.name, function.signature.annotations.query)
+            return functionProtocol as! T
         }
         return try T.init(from: self)
     }
@@ -176,9 +184,17 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
         let associatedCandidValue: CandidValue
         if let record = value.recordValue {
             let associatedValueItems = record.candidSortedItems.map {
-                return CandidKeyedItem($0.key.toEnumKey(), $0.value)
+                CandidKeyedItem($0.key.toEnumKey(), $0.value)
             }
-            associatedCandidValue = .record(associatedValueItems)
+            if associatedValueItems.contains(where: { NestedKey(stringValue: $0.key.string ?? "") != nil }) {
+                // at least one associatedValue can be mapped to NestedKey
+                associatedCandidValue = .record(associatedValueItems)
+            } else {
+                // this is the case of an enum containing a single unnamed value of type record
+                // we handle this like the case of a single value.
+                associatedCandidValue = CandidValue.record(["_0": value])
+            }
+            
         } else {
             associatedCandidValue = CandidValue.record(["_0": value])
         }
@@ -368,6 +384,13 @@ private extension CandidValue {
             throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a String"))
          }
         return string
+    }
+    
+    func function(_ codingPath: [CodingKey]) throws -> CandidFunction {
+        guard case .function(let signature) = self else {
+            throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Function"))
+        }
+        return signature
     }
 }
 

@@ -37,13 +37,13 @@ type TimeStamp = record {
 };
 
 type Transaction = record {
-    transfer: Transfer;
+    operation: opt Transfer;
     memo: Memo;
     created_at_time: TimeStamp;
 };
 
 type Block = record {
-    parent_hash: Hash;
+    parent_hash: opt Hash;
     transaction: Transaction;
     timestamp: TimeStamp;
 };
@@ -121,6 +121,11 @@ type BlockRange = record {
     // 1. [GetBlocksArgs.len] was zero.
     // 2. [GetBlocksArgs.from] was larger than the last block known to the canister.
     blocks : vec Block;
+};
+
+type QueryArchiveResult = variant {
+    Ok : BlockRange;
+    Err : null;      // we don't know the values here...
 };
 
 // A function that is used for fetching archived ledger blocks.

@@ -51,6 +51,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
         let interface = try await CandidParser().parseInterfaceDescription(didFile)
         let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, nameSpace: "Ledger")
         print(generated)
+        // TODO: test is same as expected Ledger
     }
     
     func testICRC7() async throws {
@@ -79,6 +80,9 @@ final class CandidCodeGeneratorTests: XCTestCase {
             try! .variant(["a": .null, "b": .integer8], ("b", .integer8(2))),
             try! .variant(["a": .null, "b": .integer8, "c": .record([0:.bool, 1:.integer8])], ("c", .record([0:.bool(true), 1: .integer8(7)]))),
             try! .variant(["a": .null, "b": .integer8, "c": .record(["bool":.bool, "int8":.integer8])], ("c", .record(["bool":.bool(true), "int8": .integer8(7)]))),
+            try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"),
+            try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"),
+            try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"),
         ]
         for input in testVectors {
             let generated = try CandidCodeGenerator().generateSwiftCode(for: input, valueName: "cValue")
@@ -94,3 +98,4 @@ final class CandidCodeGeneratorTests: XCTestCase {
         print(generated)
     }
 }
+
