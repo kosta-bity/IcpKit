@@ -18,7 +18,7 @@ public class CandidCodeGenerator {
     public func generateSwiftCode(for interface: CandidInterfaceDefinition, nameSpace: String) throws -> String {
         let context = try CodeGenerationContext(from: interface)
         let header = buildHeader()
-        let types = context.namedTypes.map { buildType($0, context.namedTypes)}
+        let types = try context.namedTypes.map { try buildType($0, context.namedTypes)}
         
         let output = IndentedString()
         output.addBlock(header, newLine: true)
@@ -26,7 +26,8 @@ public class CandidCodeGenerator {
         output.increaseIndent()
         output.addBlock(buildTypesBlock(types), newLine: true)
         if let service = context.service {
-            output.addBlock(buildServiceBlock(service), newLine: true)
+            let serviceBlock = try buildServiceBlock(service, context.namedTypes)
+            output.addBlock(serviceBlock, newLine: true)
         }
         output.decreaseIndent()
         output.addLine("}")
@@ -36,7 +37,7 @@ public class CandidCodeGenerator {
     public func generateSwiftCode(for value: CandidValue, valueName: String) throws -> String {
         let context = try CodeGenerationContext(from: value)
         //let header = buildHeader()
-        let types = context.namedTypes.map { buildType($0, context.namedTypes)}
+        let types = try context.namedTypes.map { try buildType($0, context.namedTypes)}
         
         let output = IndentedString()
         //output.addBlock(header, newLine: true)
@@ -51,7 +52,7 @@ public class CandidCodeGenerator {
         return block
     }
     
-    private func buildServiceBlock(_ service: CodeGeneratorCandidService) -> IndentedString {
+    private func buildServiceBlock(_ service: CodeGeneratorCandidService, _ namedTypes: [CandidNamedType]) throws -> IndentedString {
         switch service.type {
         case .reference(let referencedService):
             return IndentedString("typealias \(service.name) = \(referencedService)")
@@ -72,7 +73,8 @@ public class CandidCodeGenerator {
             block.addLine("}")
             block.addLine()
             for method in methods {
-                block.addBlock(buildServiceMethod(method), newLine: true)
+                let methodBlock = try buildServiceMethod(method, namedTypes)
+                block.addBlock(methodBlock, newLine: true)
             }
             block.decreaseIndent()
             block.addLine("}")
@@ -80,57 +82,57 @@ public class CandidCodeGenerator {
         }
     }
     
-    private func buildServiceMethod(_ method: CodeGeneratorCandidService.Method) -> IndentedString {
+    private func getConcreteFunctionSignature(_ name: String, _ namedTypes: [CandidNamedType]) throws -> CandidFunctionSignature {
+        guard let namedType = namedTypes[name] else {
+            throw CandidCodeGeneratorError.invalidFunctionReference
+        }
+        switch namedType {
+        case .named(let subRef): return try getConcreteFunctionSignature(subRef, namedTypes)
+        case .function(let signature): return signature
+        default: throw CandidCodeGeneratorError.invalidFunctionReference
+        }
+    }
+    
+    private func buildServiceMethod(_ method: CodeGeneratorCandidService.Method, _ namedTypes: [CandidNamedType]) throws -> IndentedString {
+        let signature: CandidFunctionSignature
+        let methodCaller: String
+        switch method.signature {
+        case .concrete(let concreteSignature):
+            signature = concreteSignature
+            methodCaller = CandidType.function(signature).swiftType()
+        case .reference(let referencedName):
+            signature = try getConcreteFunctionSignature(referencedName, namedTypes)
+            methodCaller = referencedName
+        }
         let block = IndentedString()
-        var unnamedArgCount = 0
-        let args = (method.signature.arguments.map { $0.swiftStringForFunctionArgument(&unnamedArgCount) } + [
-            "sender: ICPSigningPrincipal? = nil",
-        ]).joined(separator: ", ")
-        let results: String
-        switch method.signature.results.count {
-        case 0: results = ""
-        case 1: results = " -> \(method.signature.results.first!.type.swiftType())"
-        default: results = " -> (\(method.signature.results.map { $0.swiftStringForFunctionMultipleResult() }.joined(separator: ", ")))"
-        }
-        block.addLine("func \(method.name)(\(args)) async throws\(results) {")
+        block.addLine(buildFunctionDefinition(method.name, signature))
         block.increaseIndent()
-        if method.signature.arguments.isEmpty {
-            block.addLine("let method = ICPMethod(canister: canister,  methodName: \"\(method.name)\")")
-        } else {
-            block.addLine("let method = ICPMethod(")
-            block.increaseIndent()
-            block.addLine("canister: canister,")
-            block.addLine("methodName: \"\(method.name)\",")
-            if method.signature.arguments.count == 1 {
-                let arg = method.signature.arguments.first!
-                block.addLine("args: try CandidEncoder().encode(\(arg.name ?? "arg\(arg.index)"))")
-            } else {
-                block.addLine("args: .record([")
-                block.increaseIndent()
-                for arg in method.signature.arguments {
-                    block.addLine("\(arg.index): try CandidEncoder().encode(\(arg.name ?? "arg\(arg.index)")),")
-                }
-                block.decreaseIndent()
-                block.addLine("])")
-            }
-            block.decreaseIndent()
-            block.addLine(")")
-        }
-        let clientCall: String
-        if method.signature.annotations.query {
-            clientCall = "try await client.query(method, effectiveCanister: canister, sender: sender)"
-        } else {
-            clientCall = "try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)"
-        }
-        if results.isEmpty {
-            block.addLine("_ = \(clientCall)")
-        } else {
-            block.addLine("let response = \(clientCall)")
-            block.addLine("return try CandidDecoder().decode(response)")
+        block.addLine("let caller = \(methodCaller)(canister, \"\(method.name)\", query: \(signature.annotations.query))")
+        let args = signature.arguments.isEmpty ? "" : "args, "
+        let varName = signature.results.isEmpty ? "_" : "response"
+        block.addLine("let \(varName) = try await caller.callMethod(\(args)client, sender: sender)")
+        if !signature.results.isEmpty {
+            block.addLine("return response")
         }
         block.decreaseIndent()
         block.addLine("}")
         return block
+    }
+    
+    private func buildFunctionDefinition(_ name: String, _ signature: CandidFunctionSignature) -> String {
+        precondition(signature.arguments.count <= 1)
+        precondition(signature.results.count <= 1)
+        // all functions are simplified by now. max 1 result and 1 argument
+        let args = signature.arguments.isEmpty ? "" : "\(signature.arguments.first!.swiftStringForFunctionArgument), "
+        let results: String
+        switch signature.results.count {
+        case 0: results = ""
+        case 1: results = " -> \(signature.results.first!.type.swiftType())"
+        default: 
+            // this should never happen but code is there so...
+            results = " -> (\(signature.results.map { $0.swiftStringForFunctionMultipleResult() }.joined(separator: ", ")))"
+        }
+        return "func \(name)(\(args)sender: ICPSigningPrincipal? = nil) async throws\(results) {"
     }
     
     private func buildTypesBlock(_ types: [GeneratedCode]) -> IndentedString {
@@ -160,27 +162,22 @@ public class CandidCodeGenerator {
         )
     }
         
-    private func buildType(_ namedType: CandidNamedType, _ namedTypes: [CandidNamedType]) -> GeneratedCode {
+    private func buildType(_ namedType: CandidNamedType, _ namedTypes: [CandidNamedType]) throws -> GeneratedCode {
         switch namedType.type.codeGenerationType {
         case .typealias(let candidType): return buildTypeAlias(namedType.name, candidType, namedType.originalDefinition)
         case .struct(let candidKeyedTypes): return buildStruct(namedType.name, candidKeyedTypes, namedType.originalDefinition)
         case .variant(let candidKeyedTypes): return buildVariant(namedType.name, candidKeyedTypes, namedType.originalDefinition, namedTypes)
-        case .service(let signature): return buildServiceType(namedType.name, signature, namedType.originalDefinition)
+        case .service(let signature): return try buildServiceType(namedType.name, signature, namedType.originalDefinition, namedTypes)
         }
     }
     
-    private func buildServiceType(_ name: String, _ signature: CandidServiceSignature, _ originalDefinition: String?) -> GeneratedCode {
+    private func buildServiceType(_ name: String, _ signature: CandidServiceSignature, _ originalDefinition: String?, _ namedTypes: [CandidNamedType]) throws -> GeneratedCode {
         let service = CodeGeneratorCandidService(
             name: name,
-            type: .concrete(signature.methods.map {
-                guard case .concrete(let functionSignature) = $0.functionSignature else {
-                    fatalError("all functions should be concrete by now")
-                }
-                return .init(name: $0.name, signature: functionSignature)
-            }),
+            type: .concrete(signature.methods.map { .init(name: $0.name, signature: $0.functionSignature) }),
             originalDefinition: originalDefinition
         )
-        let serviceBlock = buildServiceBlock(service)
+        let serviceBlock = try buildServiceBlock(service, namedTypes)
         return GeneratedCode(name: name, output: serviceBlock, type: .namedType)
     }
         
@@ -221,10 +218,10 @@ public class CandidCodeGenerator {
         return GeneratedCode(name: name, output: block, type: .namedType)
     }
     
-    private func buildVariant(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?, _ allNamedTypes: [CandidNamedType]) -> GeneratedCode {
+    private func buildVariant(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?, _ namedTypes: [CandidNamedType]) -> GeneratedCode {
         let block = IndentedString()
         block.addSwiftDocumentation(originalDefinition)
-        let indirect = keyedTypes.isIndirectEnum(name, allNamedTypes) ? "indirect " : ""
+        let indirect = keyedTypes.isIndirectEnum(name, namedTypes) ? "indirect " : ""
         block.addLine("\(indirect)enum \(name): Codable {")
         block.increaseIndent()
         for keyedType in keyedTypes {
@@ -406,12 +403,11 @@ private extension CandidContainerKey {
 }
 
 private extension CandidFunctionSignature.Parameter {
-    func swiftStringForFunctionArgument(_ unnamedIndex: inout Int) -> String {
+    var swiftStringForFunctionArgument: String {
         if let name = name {
             return "\(name): \(type.swiftType())"
         }
-        let string = "_ arg\(unnamedIndex): \(type.swiftType())"
-        unnamedIndex += 1
+        let string = "_ args: \(type.swiftType())"
         return string
     }
     

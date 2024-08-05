@@ -87,16 +87,16 @@ class CodeGenerationContext {
         }
     }
     
-    private func simplifyServiceMethod(_ functionSignatureType: CandidServiceSignature.Method.FunctionSignatureType) throws -> CandidFunctionSignature {
+    private func simplifyServiceMethod(_ functionSignatureType: CandidServiceSignature.Method.FunctionSignatureType) throws -> CandidServiceSignature.Method.FunctionSignatureType {
         switch functionSignatureType {
         case .concrete(let functionSignature):
-            return simplifyFunctionSignature(functionSignature)
+            return .concrete(simplifyFunctionSignature(functionSignature))
         case .reference(let name):
             guard let referencedType = namedTypes[name],
-                  case .function(let functionSignature) = referencedType else {
+                  case .function = referencedType else {
                 throw CandidCodeGeneratorError.invalidFunctionReference
             }
-            return functionSignature
+            return .reference(name)
         }
     }
     
@@ -229,7 +229,7 @@ struct CodeGeneratorCandidService {
     
     struct Method {
         let name: String
-        let signature: CandidFunctionSignature
+        let signature: CandidServiceSignature.Method.FunctionSignatureType
     }
 }
 

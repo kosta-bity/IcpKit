@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import IcpKit
 import Candid
 import BigInt
 

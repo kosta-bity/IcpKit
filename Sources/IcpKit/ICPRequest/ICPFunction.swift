@@ -9,8 +9,15 @@ import Foundation
 import Candid
 
 
+public extension CandidFunctionProtocol {
+    init(_ canister: ICPPrincipal, _ method: String, query: Bool) {
+        self.init(CandidPrincipal(canister.bytes), method, query)
+    }
+    
+    var icpPrincipal: ICPPrincipal { ICPPrincipal(canister) }
+}
+
 extension CandidFunctionProtocol {
-    var icpPrincipal: ICPPrincipal { ICPPrincipal(canister.bytes) }
     func callOrQuery(_ method: ICPMethod, _ client: ICPRequestClient, _ sender: ICPSigningPrincipal?) async throws -> CandidValue {
         if query {
             return try await client.query(method, effectiveCanister: icpPrincipal, sender: sender)
@@ -20,7 +27,7 @@ extension CandidFunctionProtocol {
     }
 }
 
-public struct ICPFunction<Argument, Result>: CandidFunctionProtocol where Argument: Codable, Result: Codable {
+public struct ICPFunction<Argument, Result>: CandidFunctionProtocol where Argument: Encodable, Result: Decodable {
     public let canister: CandidPrincipal
     public let method: String
     public let query: Bool

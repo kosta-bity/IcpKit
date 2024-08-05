@@ -349,15 +349,47 @@ enum Ledger {
         }
         
         func transfer(_ arg0: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "transfer",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunction<TransferArgs, TransferResult>(canister, "transfer", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
+            return response
+        }
+        
+        func query_archive_fn(_ arg0: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryArchiveResult {
+            let caller = QueryArchiveFn(canister, "query_archive_fn", query: true)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
+            return response
         }
         
     }
+    
+}
+enum TestCodeGeneration {
+    typealias Function1 = ICPFunctionNoArgsNoResult
+    
+    
+    class TestServiceDef {
+        let canister: ICPPrincipal
+        let client: ICPRequestClient
+        
+        init(canister: ICPPrincipal, client: ICPRequestClient) {
+            self.canister = canister
+            self.client = client
+        }
+        
+        func foo(_ args: UInt8, sender: ICPSigningPrincipal? = nil) async throws -> Int8 {
+            let caller = ICPFunction<UInt8, Int8>(canister, "foo", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
+        }
+        
+        func ref(sender: ICPSigningPrincipal? = nil) async throws {
+            let caller = Function1(canister, "ref", query: false)
+            let _ = try await caller.callMethod(client, sender: sender)
+        }
+        
+    }
+    
+    
+    typealias TestService = TestServiceDef
     
 }

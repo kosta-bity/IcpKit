@@ -7,6 +7,7 @@
 
 import Foundation
 import Utils
+import Candid
 
 /// from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal
 public struct ICPPrincipal: Equatable {
@@ -21,5 +22,10 @@ public struct ICPPrincipal: Equatable {
     public init(_ bytes: Data) {
         self.bytes = bytes
         self.string = CanonicalText.encode(bytes)
+    }
+    
+    public init(_ candidPrincipal: CandidPrincipal) {
+        self.bytes = candidPrincipal.bytes
+        self.string = candidPrincipal.string
     }
 }
