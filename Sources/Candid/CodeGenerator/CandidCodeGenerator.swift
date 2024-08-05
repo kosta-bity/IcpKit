@@ -238,7 +238,7 @@ public class CandidCodeGenerator {
         return GeneratedCode(name: name, output: block, type: .namedType)
     }
     
-    private func buildVariantCase(_ keyedType: CandidKeyedItemType) -> String {
+    private func buildVariantCase(_ keyedType: CandidKeyedType) -> String {
         switch keyedType.type {
         case .null, .empty, .reserved, .option(.null), .option(.empty):
             // no associated values `case noValue`
@@ -247,7 +247,7 @@ public class CandidCodeGenerator {
         case .record(let recordKeyedTypes):
             // multiple associated values `case multipleValues(String, name: Int)`
             let associatedValues = recordKeyedTypes.map {
-                if let valueName = $0.key.string {
+                if let valueName = $0.key.stringValue {
                     return "\(valueName): \($0.type.swiftType())"
                 }
                 return $0.type.swiftType()
@@ -265,7 +265,7 @@ public class CandidCodeGenerator {
         block.addLine("enum CodingKeys: Int, CodingKey {")
         block.increaseIndent()
         for keyedType in keyedTypes {
-            block.addLine("case \(keyedType.key.swiftString) = \(keyedType.key.hash)")
+            block.addLine("case \(keyedType.key.swiftString) = \(keyedType.key.intValue)")
         }
         block.decreaseIndent()
         block.addLine("}")
@@ -366,17 +366,17 @@ private extension CandidKeyedTypes {
     var hasUnnamedParameters: Bool { contains { $0.key.isUnnamed }}
 }
 
-private extension CandidKeyedItemType {
+private extension CandidKeyedType {
     func swiftString() -> String { "\(key.swiftString): \(type.swiftType())" }
 }
 
-private extension CandidContainerKey {
-    var isUnnamed: Bool { string == nil }
+private extension CandidKey {
+    var isUnnamed: Bool { stringValue == nil }
     var swiftString: String {
-        if let string = string {
+        if let string = stringValue {
             return sanitize(string)
         } else {
-            return "_\(hash)"
+            return "_\(intValue)"
         }
     }
     /// used for init definition eg. MyType{ init(_ _0: Int, a: String) }

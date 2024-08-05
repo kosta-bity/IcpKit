@@ -94,7 +94,7 @@ public extension CandidValue {
         return candidVector
     }
     
-    var recordValue: CandidDictionary? {
+    var recordValue: CandidRecord? {
         guard case .record(let candidDictionary) = self else { return nil }
         return candidDictionary
     }

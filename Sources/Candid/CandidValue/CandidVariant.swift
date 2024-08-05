@@ -12,30 +12,30 @@ public enum CandidVariantError: Error {
 }
 
 public struct CandidVariant: Equatable, Codable {
-    public let candidTypes: [CandidKeyedItemType]
+    public let candidTypes: [CandidKeyedType]
     public let value: CandidValue
     public let valueIndex: UInt
-    public var key: CandidContainerKey { candidTypes[Int(valueIndex)].key }
+    public var key: CandidKey { candidTypes[Int(valueIndex)].key }
     
-    public init(candidTypes: [CandidKeyedItemType], value: CandidValue, valueIndex: UInt) {
+    public init(candidTypes: [CandidKeyedType], value: CandidValue, valueIndex: UInt) {
         self.candidTypes = candidTypes.sorted()
         self.value = value
         self.valueIndex = valueIndex
     }
     
-    public init(candidTypes: [CandidKeyedItemType], value: CandidValue, valueKey: Int) throws {
+    public init(candidTypes: [CandidKeyedType], value: CandidValue, valueKey: Int) throws {
         let sortedTypes = candidTypes.sorted()
         self.candidTypes = sortedTypes
         self.value = value
-        guard let index = sortedTypes.firstIndex(where: { $0.key.hash == valueKey }) else {
+        guard let index = sortedTypes.firstIndex(where: { $0.key.intValue == valueKey }) else {
             throw CandidVariantError.valueNotPartOfTypes
         }
         valueIndex = UInt(index)
     }
     
     public init(candidTypes: [(String, CandidType)], value: (String, CandidValue)) throws {
-        let sortedTypes = candidTypes.map(CandidKeyedItemType.init).sorted()
-        guard let index = sortedTypes.firstIndex(where: { $0.key.string == value.0 }) else {
+        let sortedTypes = candidTypes.map(CandidKeyedType.init).sorted()
+        guard let index = sortedTypes.firstIndex(where: { $0.key.stringValue == value.0 }) else {
             throw CandidVariantError.valueNotPartOfTypes
         }
         self.valueIndex = UInt(index)
@@ -44,11 +44,11 @@ public struct CandidVariant: Equatable, Codable {
     }
     
     public subscript (_ key: String) -> CandidValue? {
-        self[CandidContainerKey.candidHash(key)]
+        self[CandidKey.candidHash(key)]
     }
     
     public subscript (_ key: Int) -> CandidValue? {
-        guard self.key.hash == key else { return nil }
+        guard self.key.intValue == key else { return nil }
         return value
     }
 }

@@ -39,11 +39,11 @@ public indirect enum CandidType: Equatable, Codable {
 }
 
 public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence, Codable {
-    public typealias Element = CandidKeyedItemType
-    public typealias Iterator = Array<CandidKeyedItemType>.Iterator
-    public let items: [CandidKeyedItemType]
+    public typealias Element = CandidKeyedType
+    public typealias Iterator = Array<CandidKeyedType>.Iterator
+    public let items: [CandidKeyedType]
     
-    public init(arrayLiteral elements: CandidKeyedItemType...) {
+    public init(arrayLiteral elements: CandidKeyedType...) {
         items = elements.sorted()
     }
     
@@ -51,30 +51,30 @@ public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence, 
         var index = 0
         self.items = items
             .map {
-                let keyedItem = CandidKeyedItemType(hashedKey: index, type: $0)
+                let keyedItem = CandidKeyedType(index, $0)
                 index += 1
                 return keyedItem
             }
             .sorted()
     }
     
-    public init(_ items: any Sequence<CandidKeyedItemType>) {
+    public init(_ items: any Sequence<CandidKeyedType>) {
         self.items = items.sorted()
     }
     
-    public subscript (_ keyHash: Int) -> CandidKeyedItemType? {
-        return items.first { $0.key.hash == keyHash }
+    public subscript (_ keyHash: Int) -> CandidKeyedType? {
+        return items.first { $0.key.intValue == keyHash }
     }
     
-    public subscript (_ key: String) -> CandidKeyedItemType? {
-        return items.first { $0.key.string == key }
+    public subscript (_ key: String) -> CandidKeyedType? {
+        return items.first { $0.key.stringValue == key }
     }
     
-    public subscript (_ key: CandidContainerKey) -> CandidKeyedItemType? {
+    public subscript (_ key: CandidKey) -> CandidKeyedType? {
         return items.first { $0.key == key }
     }
     
-    public func makeIterator() -> Array<CandidKeyedItemType>.Iterator { items.makeIterator() }
+    public func makeIterator() -> Array<CandidKeyedType>.Iterator { items.makeIterator() }
     public var count: Int { items.count }
 }
 

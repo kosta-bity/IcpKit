@@ -104,10 +104,10 @@ enum CandidValueParserTestVectors {
         ])),
         
         // MARK: Variants
-        ("variant { ok = 42 }", .variant(CandidKeyedItem("ok", .natural(42)))),
-        (#"variant { "unicode, too: ☃" = true }"#, .variant(CandidKeyedItem("unicode, too: ☃", .bool(true)))),
-        ("variant { fall }", .variant(CandidKeyedItem(0, .text("fall")))),
-        ("variant { 42:nat8 }", .variant(CandidKeyedItem(0, .natural8(42)))),
+        ("variant { ok = 42 }", .variant(CandidKeyedValue("ok", .natural(42)))),
+        (#"variant { "unicode, too: ☃" = true }"#, .variant(CandidKeyedValue("unicode, too: ☃", .bool(true)))),
+        ("variant { fall }", .variant(CandidKeyedValue(0, .text("fall")))),
+        ("variant { 42:nat8 }", .variant(CandidKeyedValue(0, .natural8(42)))),
         
         // MARK: Blobs
         ("blob hello", .blob(Data("hello".utf8))),

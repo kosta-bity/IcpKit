@@ -80,7 +80,7 @@ private class CandidValueEncoder: Encoder {
         }
     }
     
-    private func convertRecordToVariant(_ record: CandidDictionary) throws -> CandidValue {
+    private func convertRecordToVariant(_ record: CandidRecord) throws -> CandidValue {
         guard record.candidSortedItems.count == 1,
               let value = record.candidSortedItems.first,
               let associatedValues = value.value.recordValue else {
@@ -88,15 +88,15 @@ private class CandidValueEncoder: Encoder {
         }
         let variantValueKey = value.key
         if associatedValues.candidSortedItems.isEmpty {
-            return .variant(CandidKeyedItem(variantValueKey))
+            return .variant(CandidKeyedValue(variantValueKey))
         } else if associatedValues.candidSortedItems.count == 1,
                let associatedValue = associatedValues.candidSortedItems.first {
-            return .variant(CandidKeyedItem(variantValueKey, associatedValue.value))
+            return .variant(CandidKeyedValue(variantValueKey, associatedValue.value))
         } else {
             let variantValues = try associatedValues.candidSortedItems.map {
-                return CandidKeyedItem(try $0.key.toVariantKey(), $0.value)
+                return CandidKeyedValue(try $0.key.toVariantKey(), $0.value)
             }
-            return .variant(CandidKeyedItem(value.key, .record(variantValues)))
+            return .variant(CandidKeyedValue(value.key, .record(variantValues)))
         }
     }
         
@@ -203,16 +203,16 @@ private class CandidUnkeyedEncodingValue: CandidEncodingValue {
 }
 
 private class CandidKeyedEncodingValue<Key>: CandidEncodingValue where Key: CodingKey {
-    var candidValue: CandidValue! { .record(items.map { CandidKeyedItem($0.key, $0.value.candidValue) }) }
-    private var items: [CandidContainerKey: CandidEncodingValue] = [:]
+    var candidValue: CandidValue! { .record(items.map { CandidKeyedValue($0.key, $0.value.candidValue) }) }
+    private var items: [CandidKey: CandidEncodingValue] = [:]
     func set(_ value: CandidEncodingValue, for key: Key) { items[candidKey(for: key)] = value }
     func set(_ value: CandidValue, for key: Key) { set(CandidSingleEncodingValue(value), for: key) }
     
-    private func candidKey(for key: Key) -> CandidContainerKey {
+    private func candidKey(for key: Key) -> CandidKey {
         if let int = key.intValue {
-            return CandidContainerKey(int)
+            return CandidKey(int)
         }
-        return CandidContainerKey(key.stringValue)
+        return CandidKey(key.stringValue)
     }
 }
 
@@ -371,14 +371,14 @@ private extension Collection {
     var wrappedType: Element.Type { Element.self }
 }
 
-private extension CandidContainerKey {
-    func toVariantKey() throws -> CandidContainerKey {
-        guard let stringKey = string,
+private extension CandidKey {
+    func toVariantKey() throws -> CandidKey {
+        guard let stringKey = stringValue,
             let numberString = try Self.unnamedEnumRegex.wholeMatch(in: stringKey)?["number"]?.substring,
               let intKey = Int(numberString) else {
             return self
         }
-        return CandidContainerKey(intKey)
+        return CandidKey(intKey)
     }
     
     static let unnamedEnumRegex = try! Regex(#"_(?'number'\d+)"#)

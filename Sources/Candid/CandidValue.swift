@@ -30,7 +30,7 @@ public indirect enum CandidValue: Equatable, Codable {
     case empty
     case option(CandidOption)
     case vector(CandidVector)
-    case record(CandidDictionary)
+    case record(CandidRecord)
     case variant(CandidVariant)
     case function(CandidFunction)
     case principal(CandidPrincipal?)

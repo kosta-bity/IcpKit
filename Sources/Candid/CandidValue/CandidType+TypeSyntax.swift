@@ -14,7 +14,7 @@ public extension CandidType {
             return "\(primitiveType.syntax) \(containedType.syntax)"
             
         case .record(let items), .variant(let items):
-            let itemString = items.map { "\($0.key.string ?? String($0.key.hash)): \($0.type.syntax)" }.joined(separator: "; ")
+            let itemString = items.map { "\($0.key.stringValue ?? String($0.key.intValue)): \($0.type.syntax)" }.joined(separator: "; ")
             return "\(primitiveType.syntax) { \(itemString)}"
             
         case .function(_):

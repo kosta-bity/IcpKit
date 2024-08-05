@@ -56,20 +56,20 @@ extension CandidVector: CustomStringConvertible {
     }
 }
 
-extension CandidDictionary: CustomStringConvertible {
+extension CandidRecord: CustomStringConvertible {
     public var description: String {
         let itemsString = candidSortedItems.map { $0.description }.joined(separator: ";\n\t")
         return "\n\t\(itemsString)"
     }
 }
 
-extension CandidKeyedItemType: CustomStringConvertible {
+extension CandidKeyedType: CustomStringConvertible {
     public var description: String {
         return "\(key.hash): \(type)"
     }
 }
 
-extension CandidKeyedItem: CustomStringConvertible {
+extension CandidKeyedValue: CustomStringConvertible {
     public var description: String {
         return "\(key.hash) = \(value)"
     }

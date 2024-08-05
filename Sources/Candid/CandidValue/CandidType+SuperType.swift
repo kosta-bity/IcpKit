@@ -148,7 +148,7 @@ private extension CandidKeyedTypes {
     }
 }
 
-private extension CandidKeyedItemType {
+private extension CandidKeyedType {
     func isRecordSuperType(_ other: CandidKeyedTypes) -> Bool {
         guard let otherItem = other[key] else {
             //  optional fields can be removed

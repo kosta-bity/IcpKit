@@ -179,17 +179,17 @@ private extension CandidTypeParser {
     // record { first_name : text; second_name : text }
     // record { "name with spaces" : nat; "unicode, too: ☃" : bool }
     // record { text; text; opt bool }
-    private func parseRecordKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedItemType] {
+    private func parseRecordKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedType] {
         let items = try Self.parseEnclosedItems(.brackets, .semicolon, stream, parseOptionalNamedType)
             .enumerated()
             .map {
                 guard let name = $0.element.0 else {
-                    return CandidKeyedItemType(hashedKey: $0.offset, type: $0.element.1)
+                    return CandidKeyedType($0.offset, $0.element.1)
                 }
                 if let number = Int(name, radix: 10) {
-                    return CandidKeyedItemType(hashedKey: number, type: $0.element.1)
+                    return CandidKeyedType(number, $0.element.1)
                 }
-                return CandidKeyedItemType(name, $0.element.1)
+                return CandidKeyedType(name, $0.element.1)
             }
         return items
     }
@@ -211,20 +211,20 @@ private extension CandidTypeParser {
     // variant { ok : nat; error : text }
     // variant { "name with spaces" : nat; "unicode, too: ☃" : bool }
     // variant { spring; summer; fall; winter }
-    private func parseVariantKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedItemType] {
+    private func parseVariantKeyedTypes(_ stream: CandidParserStream) throws -> [CandidKeyedType] {
         return try Self.parseEnclosedItems(.brackets, .semicolon, stream, parseVariantKeyedType)
     }
     
     /// <name> (: <type>)?
-    private func parseVariantKeyedType(_ stream: CandidParserStream) throws -> CandidKeyedItemType {
+    private func parseVariantKeyedType(_ stream: CandidParserStream) throws -> CandidKeyedType {
         let key = try stream.expectNextTextOrWord()
         let nextToken = try stream.peekNext()
         if nextToken == .colon {
             try stream.expectNext(.colon)
             let keyType = try parseCandidType(stream)
-            return CandidKeyedItemType(key, keyType)
+            return CandidKeyedType(key, keyType)
         }
-        return CandidKeyedItemType(key, .null)
+        return CandidKeyedType(key, .null)
     }
     
     /// func () -> ()

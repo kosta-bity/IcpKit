@@ -72,26 +72,26 @@ public extension CandidValue {
     
     static func variant(_ items: [Int: CandidType], _ value: CandidValue, _ valueKey: Int) throws -> CandidValue {
         return .variant(try CandidVariant(
-            candidTypes: items.map { CandidKeyedItemType(hashedKey: $0.key, type: $0.value) },
+            candidTypes: items.map { CandidKeyedType($0.key, $0.value) },
             value: value,
             valueKey: valueKey
         ))
     }
     
-    static func variant(_ value: CandidKeyedItem) -> CandidValue {
+    static func variant(_ value: CandidKeyedValue) -> CandidValue {
         return .variant(CandidVariant(candidTypes: [.init(value)], value: value.value, valueIndex: 0))
     }
     
-    static func record(_ items: any Sequence<CandidKeyedItem> = []) -> CandidValue {
-        return .record(CandidDictionary(items))
+    static func record(_ items: any Sequence<CandidKeyedValue> = []) -> CandidValue {
+        return .record(CandidRecord(items))
     }
 
     static func record(_ items: any Sequence<CandidValue>) -> CandidValue {
-        return .record(CandidDictionary(items))
+        return .record(CandidRecord(items))
     }
     
     static func record(_ items: [Int: CandidValue]) -> CandidValue {
-        return .record(CandidDictionary(items))
+        return .record(CandidRecord(items))
     }
     
     static func principal(_ string: String) throws -> CandidValue {

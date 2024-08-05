@@ -55,8 +55,8 @@ enum CandidTypeParserTestVectors {
         ("record {}", .record()),
         ("record { first_name : text; text : text }", .record(["first_name": .text, "text": .text])),
         (#"record { "name with spaces" : nat; "unicode, too: ☃" : bool }"#, .record(["name with spaces": .natural, "unicode, too: ☃": .bool])),
-        ("record { text; text; opt bool }", .record([CandidKeyedItemType(hashedKey: 0, type: .text),CandidKeyedItemType(hashedKey: 1, type: .text),CandidKeyedItemType(hashedKey: 2, type: .option(.bool))])),
-        (#"record{record{opt bool};"key":text}"#, .record([CandidKeyedItemType(hashedKey: 0, type:  .record([CandidKeyedItemType(hashedKey: 0, type: .option(.bool))])), CandidKeyedItemType("key", .text)])),
+        ("record { text; text; opt bool }", .record([.text, .text, .option(.bool)])),
+        (#"record{record{opt bool};"key":text}"#, .record([CandidKeyedType(0, .record([.option(.bool)])), CandidKeyedType("key", .text)])),
         
         ("func () -> ()", .function()),
         ("func () -> () oneway", .function(oneWay: true)),
@@ -130,10 +130,10 @@ enum CandidTypeParserTestVectors {
 //        "zip_code": .natural,
 //        "country": .text
         ("type A = record { 288167939 : text; 1103114667 : text; 220614283 : nat; 492419670 : text;};", ["A": .record([
-                .init(hashedKey: 288167939, type: .text),
-                .init(hashedKey: 1103114667, type: .text),
-                .init(hashedKey: 220614283, type: .natural),
-                .init(hashedKey: 492419670, type: .text),
+                .init(288167939, .text),
+                .init(1103114667, .text),
+                .init(220614283, .natural),
+                .init(492419670, .text),
         ])], nil),
         ("service: {};", [:], .init(name: nil, initialisationArguments: nil, signature: .init([]))),
         ("service: {}", [:], .init(name: nil, initialisationArguments: nil, signature: .init([]))),

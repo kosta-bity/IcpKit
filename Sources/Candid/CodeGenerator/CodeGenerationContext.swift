@@ -140,16 +140,16 @@ class CodeGenerationContext {
     }
     
     private func simplifyRecordKeyedTypes(_ keyedTypes: CandidKeyedTypes) -> CandidKeyedTypes {
-        CandidKeyedTypes(keyedTypes.map { CandidKeyedItemType($0.key, simplifyType($0.type)) })
+        CandidKeyedTypes(keyedTypes.map { CandidKeyedType($0.key, simplifyType($0.type)) })
     }
     
     private func simplifyVariantKeyedTypes(_ keyedTypes: CandidKeyedTypes) -> CandidKeyedTypes {
         CandidKeyedTypes(keyedTypes.map {
             if case .record(let associatedValues) = $0.type {
                 // variant records represent the names of associated values. keep the record but simplify each associated value
-                return CandidKeyedItemType($0.key, .record(simplifyRecordKeyedTypes(associatedValues)))
+                return CandidKeyedType($0.key, .record(simplifyRecordKeyedTypes(associatedValues)))
             } else {
-                return CandidKeyedItemType($0.key, simplifyType($0.type))
+                return CandidKeyedType($0.key, simplifyType($0.type))
             }
         })
     }
@@ -168,9 +168,9 @@ class CodeGenerationContext {
         let recordResults = CandidType.record(
             parameters.map {
                 if let name = $0.name {
-                    return CandidKeyedItemType(name, $0.type)
+                    return CandidKeyedType(name, $0.type)
                 } else {
-                    let item = CandidKeyedItemType(hashedKey: unnamedIndex, type: $0.type)
+                    let item = CandidKeyedType(unnamedIndex, $0.type)
                     unnamedIndex += 1
                     return item
                 }
@@ -285,7 +285,7 @@ private extension CandidType {
 
 private extension CandidKeyedTypes {
     func replacing(_ name: String, with newName: String) -> CandidKeyedTypes {
-        return CandidKeyedTypes(items.map { CandidKeyedItemType($0.key, $0.type.replacing(name, with: newName))})
+        return CandidKeyedTypes(items.map { CandidKeyedType($0.key, $0.type.replacing(name, with: newName))})
     }
 }
 

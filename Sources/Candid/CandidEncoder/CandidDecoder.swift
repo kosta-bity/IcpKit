@@ -147,12 +147,12 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     let codingPath: [CodingKey]
     var allKeys: [Key] { 
         values.compactMap {
-            if let string = $0.key.string, let stringKey = Key(stringValue: string) { return stringKey }
-            return Key(intValue: $0.key.hash)
+            if let string = $0.key.stringValue, let stringKey = Key(stringValue: string) { return stringKey }
+            return Key(intValue: $0.key.intValue)
         }
     }
-    private let keys: [CandidContainerKey]
-    private let values: [CandidContainerKey: CandidValue]
+    private let keys: [CandidKey]
+    private let values: [CandidKey: CandidValue]
     
     init(_ input: CandidValue, _ codingPath: [CodingKey]) throws {
         if let record = input.recordValue {
@@ -171,9 +171,9 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     
     func contains(_ key: Key) -> Bool {
         if let int = key.intValue {
-            return keys.contains { $0.hash == int }
+            return keys.contains { $0.intValue == int }
         }
-        return keys.contains { $0.string == key.stringValue }
+        return keys.contains { $0.stringValue == key.stringValue }
     }
     
     func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
@@ -192,9 +192,9 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
         let associatedCandidValue: CandidValue
         if let record = value.recordValue {
             let associatedValueItems = record.candidSortedItems.map {
-                CandidKeyedItem($0.key.toEnumKey(), $0.value)
+                CandidKeyedValue($0.key.toEnumKey(), $0.value)
             }
-            if associatedValueItems.contains(where: { NestedKey(stringValue: $0.key.string ?? "") != nil }) {
+            if associatedValueItems.contains(where: { NestedKey(stringValue: $0.key.stringValue ?? "") != nil }) {
                 // at least one associatedValue can be mapped to NestedKey
                 associatedCandidValue = .record(associatedValueItems)
             } else {
@@ -219,9 +219,9 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     func superDecoder() throws -> Decoder { fatalError("superDecoder not supported") }
     func superDecoder(forKey key: Key) throws -> Decoder { fatalError("superDecoder not supported") }
     
-    private func candidKey(_ key: Key) -> CandidContainerKey {
-        if let int = key.intValue { return CandidContainerKey(int) }
-        return CandidContainerKey(key.stringValue)
+    private func candidKey(_ key: Key) -> CandidKey {
+        if let int = key.intValue { return CandidKey(int) }
+        return CandidKey(key.stringValue)
     }
     
     private func value(_ key: Key) throws -> CandidValue {
@@ -409,10 +409,10 @@ private extension CandidValue {
     }
 }
 
-private extension CandidContainerKey {
-    func toEnumKey() -> CandidContainerKey {
-        if string == nil {
-            return CandidContainerKey("_\(hash)")
+private extension CandidKey {
+    func toEnumKey() -> CandidKey {
+        if stringValue == nil {
+            return CandidKey("_\(intValue)")
         }
         return self
     }

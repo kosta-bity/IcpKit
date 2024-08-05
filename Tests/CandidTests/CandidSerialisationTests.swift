@@ -64,7 +64,7 @@ final class CandidSerialisationTests: XCTestCase {
             (String(repeating: "abcd", count: 1000), 3277195728),
         ]
         for (string, expectedHash) in testVectors {
-            let hashed = CandidContainerKey.candidHash(string)
+            let hashed = CandidKey.candidHash(string)
             XCTAssertEqual(hashed, expectedHash)
         }
     }

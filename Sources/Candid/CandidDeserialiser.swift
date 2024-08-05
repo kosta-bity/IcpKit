@@ -104,14 +104,14 @@ private class CandidDecodableTypeTable {
         case .record(let rows):
             let rowTypes = try rows.map {
                 let rowType = try candidType(for: $0.type, with: table)
-                return CandidKeyedItemType(hashedKey: $0.hashedKey, type: rowType)
+                return CandidKeyedType($0.hashedKey, rowType)
             }
             return .record(rowTypes)
             
         case .variant(let rows):
             let rowTypes = try rows.map {
                 let rowType = try candidType(for: $0.type, with: table)
-                return CandidKeyedItemType(hashedKey: $0.hashedKey, type: rowType)
+                return CandidKeyedType($0.hashedKey, rowType)
             }
             return .variant(rowTypes)
             
@@ -295,15 +295,15 @@ private extension CandidDeserialiser {
             for rowType in rowTypes {
                 dictionary[rowType.hashedKey] = try decodeValue(rowType.type, stream, table)
             }
-            return .record(CandidDictionary(dictionary))
+            return .record(CandidRecord(dictionary))
             
         case .variant(let rowTypes):
             let valueIndex: Int = try Leb128.decodeUnsigned(stream)
             let valueType = rowTypes[valueIndex].type
             return .variant(CandidVariant(
                 candidTypes: try rowTypes.map { .init(
-                    hashedKey: $0.hashedKey,
-                    type: try table.getTypeForReference($0.type))
+                    $0.hashedKey,
+                    try table.getTypeForReference($0.type))
                 },
                 value: try decodeValue(valueType, stream, table),
                 valueIndex: UInt(valueIndex)
