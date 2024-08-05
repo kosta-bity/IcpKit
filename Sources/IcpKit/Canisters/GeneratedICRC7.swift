@@ -1,6 +1,6 @@
 //
 // This file was generated using CandidCodeGenerator
-// created: 2024-08-05 10:59:09 +0000
+// created: 2024-08-05 13:02:54 +0000
 //
 // You can modify this file if needed
 //
@@ -82,32 +82,6 @@ enum ICRC7 {
         }
     }
     
-    struct UnnamedType0: Codable {
-        let _0: String
-        let _1: Value
-        
-        init(_ _0: String, _ _1: Value) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType1: Codable {
-        let prev: BigUInt?
-        let take: BigUInt?
-    }
-    
-    struct UnnamedType2: Codable {
-        let prev: BigUInt?
-        let take: BigUInt?
-        let account: Account
-    }
-    
     /// // Generic value in accordance with ICRC-3
     /// type Value = variant {
     ///     Blob : blob;
@@ -119,7 +93,7 @@ enum ICRC7 {
     /// };
     enum Value: Codable {
         case Int(BigInt)
-        case Map([UnnamedType0])
+        case Map([CandidTuple2<String, Value>])
         case Nat(BigUInt)
         case Blob(Data)
         case Text(String)
@@ -173,8 +147,8 @@ enum ICRC7 {
         }
         
         /// icrc7_collection_metadata : () -> (vec record { text; Value } ) query;
-        func icrc7_collection_metadata(sender: ICPSigningPrincipal? = nil) async throws -> [UnnamedType0] {
-            let caller = ICPFunctionNoArgs<[UnnamedType0]>(canister, "icrc7_collection_metadata", query: true)
+        func icrc7_collection_metadata(sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<String, Value>] {
+            let caller = ICPFunctionNoArgs<[CandidTuple2<String, Value>]>(canister, "icrc7_collection_metadata", query: true)
             let response = try await caller.callMethod(client, sender: sender)
             return response
         }
@@ -277,8 +251,8 @@ enum ICRC7 {
             return response
         }
         
-        func icrc7_token_metadata(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[UnnamedType0]?] {
-            let caller = ICPFunction<[BigUInt], [[UnnamedType0]?]>(canister, "icrc7_token_metadata", query: true)
+        func icrc7_token_metadata(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[CandidTuple2<String, Value>]?] {
+            let caller = ICPFunction<[BigUInt], [[CandidTuple2<String, Value>]?]>(canister, "icrc7_token_metadata", query: true)
             let response = try await caller.callMethod(token_ids, client, sender: sender)
             return response
         }
@@ -290,227 +264,29 @@ enum ICRC7 {
         }
         
         /// icrc7_balance_of : (vec Account) -> (vec nat) query;
-        func icrc7_balance_of(_ args: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+        func icrc7_balance_of(_ arg0: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
             let caller = ICPFunction<[Account], [BigUInt]>(canister, "icrc7_balance_of", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
-        func icrc7_tokens(_ args: UnnamedType1, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-            let caller = ICPFunction<UnnamedType1, [BigUInt]>(canister, "icrc7_tokens", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func icrc7_tokens(prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+            let caller = ICPFunction<CandidTuple2<BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens", query: true)
+            let response = try await caller.callMethod(.init(prev, take), client, sender: sender)
             return response
         }
         
-        func icrc7_tokens_of(_ args: UnnamedType2, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-            let caller = ICPFunction<UnnamedType2, [BigUInt]>(canister, "icrc7_tokens_of", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func icrc7_tokens_of(account: Account, prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+            let caller = ICPFunction<CandidTuple3<Account, BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens_of", query: true)
+            let response = try await caller.callMethod(.init(account, prev, take), client, sender: sender)
             return response
         }
         
         /// icrc7_transfer : (vec TransferArg) -> (vec opt TransferResult);
-        func icrc7_transfer(_ args: [TransferArg], sender: ICPSigningPrincipal? = nil) async throws -> [TransferResult?] {
+        func icrc7_transfer(_ arg0: [TransferArg], sender: ICPSigningPrincipal? = nil) async throws -> [TransferResult?] {
             let caller = ICPFunction<[TransferArg], [TransferResult?]>(canister, "icrc7_transfer", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
-        }
-        
-    }
-    
-}
-
-enum TestCodeGeneration {
-    typealias ABool = Bool
-    
-    typealias AData = Data
-    
-    typealias Function1 = ICPFunctionNoArgsNoResult
-    
-    typealias UnnamedType0_0 = RepeatedRecord
-    
-    typealias VectorBool = [Bool]
-    
-    typealias VectorOptionalText = [String?]
-    
-    
-    struct Record: Codable {
-        let a: [BigInt?]
-        let b: BigUInt
-        let c: UnnamedType0
-    }
-    
-    struct RepeatedRecord: Codable {
-        let _0: [Int8?]
-        let _1: UInt8
-        
-        init(_ _0: [Int8?], _ _1: UInt8) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    class TestServiceDef {
-        let canister: ICPPrincipal
-        let client: ICPRequestClient
-        
-        init(canister: ICPPrincipal, client: ICPRequestClient) {
-            self.canister = canister
-            self.client = client
-        }
-        
-        func foo(_ args: UInt8, sender: ICPSigningPrincipal? = nil) async throws -> Int8 {
-            let caller = ICPFunction<UInt8, Int8>(canister, "foo", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
-            return response
-        }
-        
-        func ref(sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = Function1(canister, "ref", query: false)
-            let _ = try await caller.callMethod(client, sender: sender)
-        }
-        
-    }
-    
-    struct UnnamedType0: Codable {
-        let _0: Bool
-        let _1: String
-        
-        init(_ _0: Bool, _ _1: String) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType1: Codable {
-        let _0: String
-        let _1: [BigUInt]
-        
-        init(_ _0: String, _ _1: [BigUInt]) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType2: Codable {
-        let _0: Bool?
-        let _1: [Data]
-        
-        init(_ _0: Bool?, _ _1: [Data]) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType3: Codable {
-        let ids: [BigUInt]
-        let name: String
-    }
-    
-    struct UnnamedType4: Codable {
-        let out1: Bool?
-        let out2: [Data]
-    }
-    
-    enum UnnamedVariant: Codable {
-        case fall
-        case winter
-        case summer
-        case spring
-        
-        enum CodingKeys: Int, CodingKey {
-            case fall = 1135983739
-            case winter = 1385738053
-            case summer = 2706091375
-            case spring = 3281376973
-        }
-    }
-    
-    enum Variant: Codable {
-        case a
-        case b(String)
-        case c(String, BigInt)
-        case d(one: Bool, two: Data, three: RepeatedRecord)
-        
-        enum CodingKeys: Int, CodingKey {
-            case a = 97
-            case b = 98
-            case c = 99
-            case d = 100
-        }
-    }
-    
-    
-    class TestService {
-        let canister: ICPPrincipal
-        let client: ICPRequestClient
-        
-        init(canister: ICPPrincipal, client: ICPRequestClient) {
-            self.canister = canister
-            self.client = client
-        }
-        
-        func noArgsNoResults(sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = ICPFunctionNoArgsNoResult(canister, "noArgsNoResults", query: false)
-            let _ = try await caller.callMethod(client, sender: sender)
-        }
-        
-        func singleUnnamedArg(_ args: String, sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = ICPFunctionNoResult<String>(canister, "singleUnnamedArg", query: true)
-            let _ = try await caller.callMethod(args, client, sender: sender)
-        }
-        
-        func singleNamedArg(myString: String, sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = ICPFunctionNoResult<String>(canister, "singleNamedArg", query: true)
-            let _ = try await caller.callMethod(myString, client, sender: sender)
-        }
-        
-        func singleUnnamedResult(sender: ICPSigningPrincipal? = nil) async throws -> Bool? {
-            let caller = ICPFunctionNoArgs<Bool?>(canister, "singleUnnamedResult", query: false)
-            let response = try await caller.callMethod(client, sender: sender)
-            return response
-        }
-        
-        func singleNamedResult(sender: ICPSigningPrincipal? = nil) async throws -> String {
-            let caller = ICPFunctionNoArgs<String>(canister, "singleNamedResult", query: true)
-            let response = try await caller.callMethod(client, sender: sender)
-            return response
-        }
-        
-        func multipleUnnamedArgsAndResults(_ args: UnnamedType1, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType2 {
-            let caller = ICPFunction<UnnamedType1, UnnamedType2>(canister, "multipleUnnamedArgsAndResults", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
-            return response
-        }
-        
-        func multipleNamedArgsAndResults(_ args: UnnamedType3, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType4 {
-            let caller = ICPFunction<UnnamedType3, UnnamedType4>(canister, "multipleNamedArgsAndResults", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
-            return response
-        }
-        
-        func functionReference(sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = Function1(canister, "functionReference", query: false)
-            let _ = try await caller.callMethod(client, sender: sender)
         }
         
     }

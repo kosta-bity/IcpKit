@@ -104,17 +104,20 @@ public class CandidCodeGenerator {
             signature = try getConcreteFunctionSignature(referencedName, namedTypes)
             methodCaller = referencedName
         }
-        let simplifiedArgument = signature.arguments.first
         let block = IndentedString()
         block.addSwiftDocumentation(method.originalDefinition)
         block.addLine(buildFunctionDefinition(method.name, signature))
         block.increaseIndent()
         block.addLine("let caller = \(methodCaller)(canister, \"\(method.name)\", query: \(signature.annotations.query))")
-        let args = simplifiedArgument.map { "\($0.name ?? "args"), " } ?? ""
+        let args = signature.arguments.swiftStringForCallerInit
         let varName = signature.results.isEmpty ? "_" : "response"
         block.addLine("let \(varName) = try await caller.callMethod(\(args)client, sender: sender)")
         if !signature.results.isEmpty {
-            block.addLine("return response")
+            if signature.results.count == 1 {
+                block.addLine("return response")
+            } else {
+                block.addLine("return response.tuple")
+            }
         }
         block.decreaseIndent()
         block.addLine("}")
@@ -122,18 +125,8 @@ public class CandidCodeGenerator {
     }
     
     private func buildFunctionDefinition(_ name: String, _ signature: CandidFunctionSignature) -> String {
-        precondition(signature.arguments.count <= 1)
-        precondition(signature.results.count <= 1)
-        // all functions are simplified by now. max 1 result and 1 argument
-        let args = signature.arguments.isEmpty ? "" : "\(signature.arguments.first!.swiftStringForFunctionArgument), "
-        let results: String
-        switch signature.results.count {
-        case 0: results = ""
-        case 1: results = " -> \(signature.results.first!.type.swiftType())"
-        default: 
-            // this should never happen but code is there so...
-            results = " -> (\(signature.results.map { $0.swiftStringForFunctionMultipleResult() }.joined(separator: ", ")))"
-        }
+        let args = signature.arguments.isEmpty ? "" : "\(signature.arguments.swiftStringForArguments), "
+        let results = signature.results.isEmpty ? "" : " -> \(signature.results.swiftStringForResults)"
         return "func \(name)(\(args)sender: ICPSigningPrincipal? = nil) async throws\(results) {"
     }
     
@@ -198,6 +191,13 @@ public class CandidCodeGenerator {
     }
     
     private func buildStruct(_ name: String, _ keyedTypes: CandidKeyedTypes, _ originalDefinition: String?) -> GeneratedCode {
+        guard !keyedTypes.isTuple else {
+            return GeneratedCode(
+                name: name,
+                output: IndentedString("typealias \(name) = \(CandidType.record(keyedTypes).swiftType())"),
+                type: .typeAlias
+            )
+        }
         let block = IndentedString()
         block.addSwiftDocumentation(originalDefinition)
         block.addLine("struct \(name): Codable {")
@@ -329,23 +329,20 @@ private extension CandidType {
         case .option(let candidType): return "\(candidType.swiftType())?"
         case .vector(let candidType):
             return "[\(candidType.swiftType())]"
-        case .record:
-            fatalError("all records should be named by now")
+        case .record(let keyedTypes):
+            guard keyedTypes.isTuple else {
+                fatalError("all non-tuple records should be named by now")
+            }
+            return "CandidTuple\(keyedTypes.count)<\(keyedTypes.map { $0.type.swiftType() }.joined(separator: ", "))>"
         case .variant:
             fatalError("all variants should be named by now")
         case .function(let signature):
-            precondition(signature.arguments.count <= 1, "function arguments should have been simplified by now")
-            precondition(signature.results.count <= 1, "function results should have been simplified by now")
-            guard let argument = signature.arguments.first else {
-                guard let result = signature.results.first else {
-                    return "ICPFunctionNoArgsNoResult"
-                }
-                return "ICPFunctionNoArgs<\(result.type.swiftType())>"
+            switch (signature.arguments.isEmpty, signature.results.isEmpty) {
+            case (true, true): return "ICPFunctionNoArgsNoResult"
+            case (true, false): return "ICPFunctionNoArgs<\(signature.results.swiftStringForFunctionType)>"
+            case (false, true): return "ICPFunctionNoResult<\(signature.arguments.swiftStringForFunctionType)>"
+            case (false, false): return "ICPFunction<\(signature.arguments.swiftStringForFunctionType), \(signature.results.swiftStringForFunctionType)>"
             }
-            guard let result = signature.results.first else {
-                return "ICPFunctionNoResult<\(argument.type.swiftType())>"
-            }
-            return "ICPFunction<\(argument.type.swiftType()), \(result.type.swiftType())>"
             
         case .service: return "CandidServiceSignature"
         case .principal: return "CandidPrincipal"
@@ -421,6 +418,62 @@ private extension CandidFunctionSignature.Parameter {
             return "\(name): \(type.swiftType())"
         }
         return type.swiftType()
+    }
+    
+    func swiftStringForArgument(_ count: inout Int) -> String {
+        if let name = name {
+            return "\(name): \(type.swiftType())"
+        }
+        let string = "_ arg\(count): \(type.swiftType())"
+        count += 1
+        return string
+    }
+}
+
+private extension Array where Element == CandidFunctionSignature.Parameter {
+    var swiftStringForResults: String {
+        switch count {
+        case 0: return ""
+        case 1: return first!.type.swiftType()
+        default:
+            return "(\(map { $0.swiftStringForFunctionMultipleResult() }.joined(separator: ", ")))"
+        }
+    }
+    
+    var swiftStringForArguments: String {
+        if isEmpty { return "" }
+        var unnamedCount = 0
+        return map { $0.swiftStringForArgument(&unnamedCount) }.joined(separator: ", ")
+    }
+    
+    var swiftStringForFunctionType: String {
+        switch count {
+        case 0: return ""
+        case 1: return first!.type.swiftType()
+        case 2...6:
+            let types = map { $0.type.swiftType() }.joined(separator: ", ")
+            return "CandidTuple\(count)<\(types)>"
+        default:
+            fatalError("function has too many arguments/parameters... not implemented")
+        }
+    }
+    
+    var swiftStringForCallerInit: String {
+        switch count {
+        case 0: return ""
+        case 1: return "\(first!.name ?? "arg0"), "
+        case 2...6:
+            var count = 0
+            let args = map {
+                if let name = $0.name { return name }
+                let arg = "arg\(count)"
+                count += 1
+                return arg
+            }.joined(separator: ", ")
+            return ".init(\(args)), "
+        default:
+            fatalError("function has too many arguments... not implemented")
+        }
     }
 }
 

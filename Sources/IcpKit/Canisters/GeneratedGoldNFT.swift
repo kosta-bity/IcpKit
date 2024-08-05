@@ -1,6 +1,7 @@
+
 //
 // This file was generated using CandidCodeGenerator
-// created: 2024-08-05 10:59:46 +0000
+// created: 2024-08-05 13:06:24 +0000
 //
 // You can modify this file if needed
 //
@@ -85,7 +86,7 @@ enum GoldNFT {
     typealias CanisterMemoryAggregatedData = [UInt64]
     
     /// type CollectionMetadata = vec record { text; Value };
-    typealias CollectionMetadata = [UnnamedType12]
+    typealias CollectionMetadata = [CandidTuple2<String, Value>]
     
     /// type DistributeSaleResponse = vec Result;
     typealias DistributeSaleResponse = [Result]
@@ -104,6 +105,8 @@ enum GoldNFT {
     
     /// type EXTTokenIdentifier = text;
     typealias EXTTokenIdentifier = String
+    
+    typealias EXTTokensResponse = CandidTuple3<UInt32, UnnamedType9?, Data?>
     
     /// type EndSaleResponse = record {
     ///   token_id : text;
@@ -255,6 +258,8 @@ enum GoldNFT {
     ///   archived_blocks : vec ArchivedTransactionResponse;
     /// };
     typealias GetTransactionsResult__1 = GetTransactionsResult
+    
+    typealias HeaderField = CandidTuple2<String, String>
     
     /// type ICTokenSpec__1 = record {
     ///   id : opt nat;
@@ -413,13 +418,13 @@ enum GoldNFT {
     ///   text;
     ///   EscrowRecord__1;
     /// };
-    typealias StableEscrowBalances = [UnnamedType39]
+    typealias StableEscrowBalances = [CandidTuple4<Account, Account, String, EscrowRecord__1>]
     
     /// type StableNftLedger = vec record { text; TransactionRecord };
-    typealias StableNftLedger = [UnnamedType40]
+    typealias StableNftLedger = [CandidTuple2<String, TransactionRecord>]
     
     /// type StableOffers = vec record { Account; Account; int };
-    typealias StableOffers = [UnnamedType41]
+    typealias StableOffers = [CandidTuple3<Account, Account, BigInt>]
     
     /// type StableSalesBalances = vec record {
     ///   Account;
@@ -427,7 +432,7 @@ enum GoldNFT {
     ///   text;
     ///   EscrowRecord__1;
     /// };
-    typealias StableSalesBalances = [UnnamedType39]
+    typealias StableSalesBalances = [CandidTuple4<Account, Account, String, EscrowRecord__1>]
     
     /// type Subaccount = vec nat8;
     typealias Subaccount = Data
@@ -593,7 +598,7 @@ enum GoldNFT {
     ///     TextContent : text;
     ///   };
     /// };
-    typealias Vec = [UnnamedType45]
+    typealias Vec = [CandidTuple2<String, GenericValue>]
     
     /// type WithdrawResponse = record {
     ///   token_id : text;
@@ -877,7 +882,7 @@ enum GoldNFT {
     ///   unsubscribe : record { principal; nat };
     /// };
     enum AskSubscribeRequest: Codable {
-        case subscribe(stake: UnnamedType2, filter: UnnamedType3?)
+        case subscribe(stake: CandidTuple2<CandidPrincipal, BigUInt>, filter: UnnamedType2?)
         case unsubscribe(CandidPrincipal, BigUInt)
         
         enum CodingKeys: Int, CodingKey {
@@ -912,7 +917,7 @@ enum GoldNFT {
         let min_increase: MinIncreaseType
         let allow_list: [CandidPrincipal]?
         let buy_now: BigUInt?
-        let ending: UnnamedType4
+        let ending: UnnamedType3
     }
     
     /// type AuctionStateShared = record {
@@ -931,8 +936,8 @@ enum GoldNFT {
     ///   config : PricingConfigShared__1;
     /// };
     struct AuctionStateShared: Codable {
-        let status: UnnamedType5
-        let participants: [UnnamedType6]
+        let status: UnnamedType4
+        let participants: [CandidTuple2<CandidPrincipal, BigInt>]
         let token: TokenSpec__1
         let current_bid_amount: BigUInt
         let winner: Account?
@@ -941,7 +946,7 @@ enum GoldNFT {
         let start_date: BigInt
         let wait_for_quiet_count: BigUInt?
         let current_escrow: EscrowReceipt?
-        let allow_list: [UnnamedType7]?
+        let allow_list: [CandidTuple2<CandidPrincipal, Bool>]?
         let min_next_bid: BigUInt
         let config: PricingConfigShared__1
     }
@@ -1132,7 +1137,7 @@ enum GoldNFT {
     /// };
     struct BidResponse: Codable {
         let token_id: String
-        let txn_type: UnnamedType9
+        let txn_type: UnnamedType6
         let timestamp: BigInt
         let index: BigUInt
     }
@@ -1171,7 +1176,7 @@ enum GoldNFT {
     /// };
     indirect enum C_Data: Codable {
         case Int(BigInt)
-        case Map([UnnamedType10])
+        case Map([CandidTuple2<CandyShared, CandyShared>])
         case Nat(BigUInt)
         case Set([CandyShared])
         case Nat16(UInt16)
@@ -1380,7 +1385,7 @@ enum GoldNFT {
         let name: String?
         let network: CandidPrincipal?
         let created_at: UInt64?
-        let fields: [UnnamedType11]?
+        let fields: [CandidTuple3<String, BigUInt?, BigUInt?>]?
         let upgraded_at: UInt64?
         let token_ids_count: BigUInt?
         let available_space: BigUInt?
@@ -1570,8 +1575,8 @@ enum GoldNFT {
     ///   decay_type : variant { flat : nat; percent : float64 };
     /// };
     struct DutchParams: Codable {
-        let time_unit: UnnamedType13
-        let decay_type: UnnamedType14
+        let time_unit: UnnamedType7
+        let decay_type: UnnamedType8
     }
     
     /// type EXTBalanceRequest = record { token : EXTTokenIdentifier; user : EXTUser };
@@ -1649,29 +1654,6 @@ enum GoldNFT {
         }
     }
     
-    /// type EXTTokensResponse = record {
-    ///   nat32;
-    ///   opt record { locked : opt int; seller : principal; price : nat64 };
-    ///   opt vec nat8;
-    /// };
-    struct EXTTokensResponse: Codable {
-        let _0: UInt32
-        let _1: UnnamedType15?
-        let _2: Data?
-        
-        init(_ _0: UInt32, _ _1: UnnamedType15?, _ _2: Data?) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-        }
-    }
-    
     /// type EXTTokensResult = variant {
     ///   ok : vec EXTTokensResponse;
     ///   err : EXTCommonError;
@@ -1718,7 +1700,7 @@ enum GoldNFT {
     /// };
     enum EXTTransferResponse: Codable {
         case ok(EXTBalance)
-        case err(UnnamedType16)
+        case err(UnnamedType10)
         
         enum CodingKeys: Int, CodingKey {
             case ok = 24860
@@ -2008,7 +1990,7 @@ enum GoldNFT {
     ///   amount : nat;
     /// };
     struct FeeDepositWithdrawDescription: Codable {
-        let status: UnnamedType17
+        let status: UnnamedType11
         let token: TokenSpec__1
         let withdraw_to: Account
         let account: Account
@@ -2138,7 +2120,7 @@ enum GoldNFT {
     /// };
     struct GetTransactionsResult: Codable {
         let log_length: BigUInt
-        let blocks: [UnnamedType18]
+        let blocks: [UnnamedType12]
         let archived_blocks: [ArchivedTransactionResponse]
     }
     
@@ -2194,22 +2176,6 @@ enum GoldNFT {
         let status_code: UInt16
     }
     
-    /// type HeaderField = record { text; text };
-    struct HeaderField: Codable {
-        let _0: String
-        let _1: String
-        
-        init(_ _0: String, _ _1: String) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
     /// type HistoryResult = variant { ok : vec TransactionRecord; err : OrigynError };
     enum HistoryResult: Codable {
         case ok([TransactionRecord])
@@ -2262,7 +2228,7 @@ enum GoldNFT {
         let fee: BigUInt?
         let decimals: BigUInt
         let canister: CandidPrincipal
-        let standard: UnnamedType19
+        let standard: UnnamedType13
         let symbol: String
     }
     
@@ -2434,8 +2400,8 @@ enum GoldNFT {
     ///   configure_storage : variant { stableBtree : opt nat; heap : opt nat };
     /// };
     enum ManageStorageRequest: Codable {
-        case add_storage_canisters([UnnamedType21])
-        case configure_storage(UnnamedType22)
+        case add_storage_canisters([CandidTuple3<CandidPrincipal, BigUInt, CandidTuple3<BigUInt, BigUInt, BigUInt>>])
+        case configure_storage(UnnamedType14)
         
         enum CodingKeys: Int, CodingKey {
             case add_storage_canisters = 2947008074
@@ -2533,9 +2499,9 @@ enum GoldNFT {
         let collection_data: StableCollectionData
         let nft_ledgers: StableNftLedger
         let canister: CandidPrincipal
-        let allocations: [UnnamedType23]
-        let nft_sales: [UnnamedType24]
-        let buckets: [UnnamedType25]
+        let allocations: [CandidTuple2<CandidTuple2<String, String>, AllocationRecordStable>]
+        let nft_sales: [CandidTuple2<String, SaleStatusShared>]
+        let buckets: [CandidTuple2<CandidPrincipal, StableBucketData>]
         let escrow_balances: StableEscrowBalances
     }
     
@@ -2813,22 +2779,22 @@ enum GoldNFT {
         }
         
         /// __advance_time : (int) -> (int);
-        func __advance_time(_ args: BigInt, sender: ICPSigningPrincipal? = nil) async throws -> BigInt {
+        func __advance_time(_ arg0: BigInt, sender: ICPSigningPrincipal? = nil) async throws -> BigInt {
             let caller = ICPFunction<BigInt, BigInt>(canister, "__advance_time", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// __set_time_mode : (variant { test; standard }) -> (bool);
-        func __set_time_mode(_ args: UnnamedType26, sender: ICPSigningPrincipal? = nil) async throws -> Bool {
-            let caller = ICPFunction<UnnamedType26, Bool>(canister, "__set_time_mode", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func __set_time_mode(_ arg0: UnnamedType15, sender: ICPSigningPrincipal? = nil) async throws -> Bool {
+            let caller = ICPFunction<UnnamedType15, Bool>(canister, "__set_time_mode", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// __supports : () -> (vec record { text; text }) query;
-        func __supports(sender: ICPSigningPrincipal? = nil) async throws -> [HeaderField] {
-            let caller = ICPFunctionNoArgs<[HeaderField]>(canister, "__supports", query: true)
+        func __supports(sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<String, String>] {
+            let caller = ICPFunctionNoArgs<[CandidTuple2<String, String>]>(canister, "__supports", query: true)
             let response = try await caller.callMethod(client, sender: sender)
             return response
         }
@@ -2843,114 +2809,114 @@ enum GoldNFT {
         /// back_up : (nat) -> (
         ///       variant { eof : NFTBackupChunk; data : NFTBackupChunk },
         ///     ) query;
-        func back_up(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType27 {
-            let caller = ICPFunction<BigUInt, UnnamedType27>(canister, "back_up", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func back_up(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType16 {
+            let caller = ICPFunction<BigUInt, UnnamedType16>(canister, "back_up", query: true)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// balance : (EXTBalanceRequest) -> (EXTBalanceResult) query;
-        func balance(_ args: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
+        func balance(_ arg0: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
             let caller = ICPFunction<EXTBalanceRequest, EXTBalanceResult>(canister, "balance", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// balanceEXT : (EXTBalanceRequest) -> (EXTBalanceResult) query;
-        func balanceEXT(_ args: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
+        func balanceEXT(_ arg0: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
             let caller = ICPFunction<EXTBalanceRequest, EXTBalanceResult>(canister, "balanceEXT", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// balance_of_batch_nft_origyn : (vec Account) -> (vec BalanceResult) query;
-        func balance_of_batch_nft_origyn(_ args: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
+        func balance_of_batch_nft_origyn(_ arg0: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
             let caller = ICPFunction<[Account], [BalanceResult]>(canister, "balance_of_batch_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// balance_of_nft_origyn : (Account) -> (BalanceResult) query;
-        func balance_of_nft_origyn(_ args: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
+        func balance_of_nft_origyn(_ arg0: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
             let caller = ICPFunction<Account, BalanceResult>(canister, "balance_of_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// balance_of_secure_batch_nft_origyn : (vec Account) -> (vec BalanceResult);
-        func balance_of_secure_batch_nft_origyn(_ args: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
+        func balance_of_secure_batch_nft_origyn(_ arg0: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
             let caller = ICPFunction<[Account], [BalanceResult]>(canister, "balance_of_secure_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// balance_of_secure_nft_origyn : (Account) -> (BalanceResult);
-        func balance_of_secure_nft_origyn(_ args: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
+        func balance_of_secure_nft_origyn(_ arg0: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
             let caller = ICPFunction<Account, BalanceResult>(canister, "balance_of_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// bearer : (EXTTokenIdentifier) -> (EXTBearerResult) query;
-        func bearer(_ args: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
+        func bearer(_ arg0: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
             let caller = ICPFunction<EXTTokenIdentifier, EXTBearerResult>(canister, "bearer", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// bearerEXT : (EXTTokenIdentifier) -> (EXTBearerResult) query;
-        func bearerEXT(_ args: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
+        func bearerEXT(_ arg0: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
             let caller = ICPFunction<EXTTokenIdentifier, EXTBearerResult>(canister, "bearerEXT", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// bearer_batch_nft_origyn : (vec text) -> (vec BearerResult) query;
-        func bearer_batch_nft_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
+        func bearer_batch_nft_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
             let caller = ICPFunction<[String], [BearerResult]>(canister, "bearer_batch_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// bearer_batch_secure_nft_origyn : (vec text) -> (vec BearerResult);
-        func bearer_batch_secure_nft_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
+        func bearer_batch_secure_nft_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
             let caller = ICPFunction<[String], [BearerResult]>(canister, "bearer_batch_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// bearer_nft_origyn : (text) -> (BearerResult) query;
-        func bearer_nft_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
+        func bearer_nft_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
             let caller = ICPFunction<String, BearerResult>(canister, "bearer_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// bearer_secure_nft_origyn : (text) -> (BearerResult);
-        func bearer_secure_nft_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
+        func bearer_secure_nft_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
             let caller = ICPFunction<String, BearerResult>(canister, "bearer_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// canister_status : (record { canister_id : canister_id }) -> (canister_status);
-        func canister_status(_ args: UnnamedType28, sender: ICPSigningPrincipal? = nil) async throws -> canister_status {
-            let caller = ICPFunction<UnnamedType28, canister_status>(canister, "canister_status", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func canister_status(_ arg0: UnnamedType17, sender: ICPSigningPrincipal? = nil) async throws -> canister_status {
+            let caller = ICPFunction<UnnamedType17, canister_status>(canister, "canister_status", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// chunk_nft_origyn : (ChunkRequest) -> (ChunkResult) query;
-        func chunk_nft_origyn(_ args: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
+        func chunk_nft_origyn(_ arg0: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
             let caller = ICPFunction<ChunkRequest, ChunkResult>(canister, "chunk_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// chunk_secure_nft_origyn : (ChunkRequest) -> (ChunkResult);
-        func chunk_secure_nft_origyn(_ args: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
+        func chunk_secure_nft_origyn(_ arg0: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
             let caller = ICPFunction<ChunkRequest, ChunkResult>(canister, "chunk_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -2963,36 +2929,36 @@ enum GoldNFT {
         /// collection_nft_origyn : (opt vec record { text; opt nat; opt nat }) -> (
         ///       CollectionResult,
         ///     ) query;
-        func collection_nft_origyn(_ args: [UnnamedType11]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
-            let caller = ICPFunction<[UnnamedType11]?, CollectionResult>(canister, "collection_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func collection_nft_origyn(_ arg0: [CandidTuple3<String, BigUInt?, BigUInt?>]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
+            let caller = ICPFunction<[CandidTuple3<String, BigUInt?, BigUInt?>]?, CollectionResult>(canister, "collection_nft_origyn", query: true)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// collection_secure_nft_origyn : (
         ///       opt vec record { text; opt nat; opt nat },
         ///     ) -> (CollectionResult);
-        func collection_secure_nft_origyn(_ args: [UnnamedType11]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
-            let caller = ICPFunction<[UnnamedType11]?, CollectionResult>(canister, "collection_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func collection_secure_nft_origyn(_ arg0: [CandidTuple3<String, BigUInt?, BigUInt?>]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
+            let caller = ICPFunction<[CandidTuple3<String, BigUInt?, BigUInt?>]?, CollectionResult>(canister, "collection_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// collection_update_batch_nft_origyn : (vec ManageCollectionCommand) -> (
         ///       vec OrigynBoolResult,
         ///     );
-        func collection_update_batch_nft_origyn(_ args: [ManageCollectionCommand], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynBoolResult] {
+        func collection_update_batch_nft_origyn(_ arg0: [ManageCollectionCommand], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynBoolResult] {
             let caller = ICPFunction<[ManageCollectionCommand], [OrigynBoolResult]>(canister, "collection_update_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// collection_update_nft_origyn : (ManageCollectionCommand) -> (
         ///       OrigynBoolResult,
         ///     );
-        func collection_update_nft_origyn(_ args: ManageCollectionCommand, sender: ICPSigningPrincipal? = nil) async throws -> OrigynBoolResult {
+        func collection_update_nft_origyn(_ arg0: ManageCollectionCommand, sender: ICPSigningPrincipal? = nil) async throws -> OrigynBoolResult {
             let caller = ICPFunction<ManageCollectionCommand, OrigynBoolResult>(canister, "collection_update_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3004,9 +2970,9 @@ enum GoldNFT {
         }
         
         /// dip721_balance_of : (principal) -> (nat) query;
-        func dip721_balance_of(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
+        func dip721_balance_of(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
             let caller = ICPFunction<CandidPrincipal, BigUInt>(canister, "dip721_balance_of", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3020,9 +2986,9 @@ enum GoldNFT {
         /// dip721_is_approved_for_all : (principal, principal) -> (
         ///       DIP721BoolResult,
         ///     ) query;
-        func dip721_is_approved_for_all(_ args: UnnamedType29, sender: ICPSigningPrincipal? = nil) async throws -> DIP721BoolResult {
-            let caller = ICPFunction<UnnamedType29, DIP721BoolResult>(canister, "dip721_is_approved_for_all", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func dip721_is_approved_for_all(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721BoolResult {
+            let caller = ICPFunction<CandidTuple2<CandidPrincipal, CandidPrincipal>, DIP721BoolResult>(canister, "dip721_is_approved_for_all", query: true)
+            let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
             return response
         }
         
@@ -3050,39 +3016,39 @@ enum GoldNFT {
         /// dip721_operator_token_identifiers : (principal) -> (
         ///       DIP721TokensListMetadata,
         ///     ) query;
-        func dip721_operator_token_identifiers(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
+        func dip721_operator_token_identifiers(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
             let caller = ICPFunction<CandidPrincipal, DIP721TokensListMetadata>(canister, "dip721_operator_token_identifiers", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// dip721_operator_token_metadata : (principal) -> (DIP721TokensMetadata) query;
-        func dip721_operator_token_metadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+        func dip721_operator_token_metadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
             let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "dip721_operator_token_metadata", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// dip721_owner_of : (nat) -> (OwnerOfResponse) query;
-        func dip721_owner_of(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
+        func dip721_owner_of(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
             let caller = ICPFunction<BigUInt, OwnerOfResponse>(canister, "dip721_owner_of", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// dip721_owner_token_identifiers : (principal) -> (
         ///       DIP721TokensListMetadata,
         ///     ) query;
-        func dip721_owner_token_identifiers(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
+        func dip721_owner_token_identifiers(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
             let caller = ICPFunction<CandidPrincipal, DIP721TokensListMetadata>(canister, "dip721_owner_token_identifiers", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// dip721_owner_token_metadata : (principal) -> (DIP721TokensMetadata) query;
-        func dip721_owner_token_metadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+        func dip721_owner_token_metadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
             let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "dip721_owner_token_metadata", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3108,9 +3074,9 @@ enum GoldNFT {
         }
         
         /// dip721_token_metadata : (nat) -> (DIP721TokenMetadata) query;
-        func dip721_token_metadata(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokenMetadata {
+        func dip721_token_metadata(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokenMetadata {
             let caller = ICPFunction<BigUInt, DIP721TokenMetadata>(canister, "dip721_token_metadata", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3129,37 +3095,37 @@ enum GoldNFT {
         }
         
         /// dip721_transfer : (principal, nat) -> (DIP721NatResult);
-        func dip721_transfer(_ args: UnnamedType2, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let caller = ICPFunction<UnnamedType2, DIP721NatResult>(canister, "dip721_transfer", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func dip721_transfer(_ arg0: CandidPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<CandidTuple2<CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer", query: false)
+            let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
             return response
         }
         
         /// dip721_transfer_from : (principal, principal, nat) -> (DIP721NatResult);
-        func dip721_transfer_from(_ args: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let caller = ICPFunction<UnnamedType30, DIP721NatResult>(canister, "dip721_transfer_from", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func dip721_transfer_from(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<CandidTuple3<CandidPrincipal, CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer_from", query: false)
+            let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
             return response
         }
         
         /// getCanisterLog : (opt CanisterLogRequest) -> (opt CanisterLogResponse) query;
-        func getCanisterLog(_ args: CanisterLogRequest?, sender: ICPSigningPrincipal? = nil) async throws -> CanisterLogResponse? {
+        func getCanisterLog(_ arg0: CanisterLogRequest?, sender: ICPSigningPrincipal? = nil) async throws -> CanisterLogResponse? {
             let caller = ICPFunction<CanisterLogRequest?, CanisterLogResponse?>(canister, "getCanisterLog", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// getCanisterMetrics : (GetMetricsParameters) -> (opt CanisterMetrics) query;
-        func getCanisterMetrics(_ args: GetMetricsParameters, sender: ICPSigningPrincipal? = nil) async throws -> CanisterMetrics? {
+        func getCanisterMetrics(_ arg0: GetMetricsParameters, sender: ICPSigningPrincipal? = nil) async throws -> CanisterMetrics? {
             let caller = ICPFunction<GetMetricsParameters, CanisterMetrics?>(canister, "getCanisterMetrics", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// getEXTTokenIdentifier : (text) -> (text) query;
-        func getEXTTokenIdentifier(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> String {
+        func getEXTTokenIdentifier(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> String {
             let caller = ICPFunction<String, String>(canister, "getEXTTokenIdentifier", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3178,9 +3144,9 @@ enum GoldNFT {
         }
         
         /// get_nat_as_token_id_origyn : (nat) -> (text) query;
-        func get_nat_as_token_id_origyn(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> String {
+        func get_nat_as_token_id_origyn(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> String {
             let caller = ICPFunction<BigUInt, String>(canister, "get_nat_as_token_id_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3192,57 +3158,57 @@ enum GoldNFT {
         }
         
         /// get_token_id_as_nat : (text) -> (nat) query;
-        func get_token_id_as_nat(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
+        func get_token_id_as_nat(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
             let caller = ICPFunction<String, BigUInt>(canister, "get_token_id_as_nat", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// governance_batch_nft_origyn : (vec GovernanceRequest) -> (
         ///       vec GovernanceResult,
         ///     );
-        func governance_batch_nft_origyn(_ args: [GovernanceRequest], sender: ICPSigningPrincipal? = nil) async throws -> [GovernanceResult] {
+        func governance_batch_nft_origyn(_ arg0: [GovernanceRequest], sender: ICPSigningPrincipal? = nil) async throws -> [GovernanceResult] {
             let caller = ICPFunction<[GovernanceRequest], [GovernanceResult]>(canister, "governance_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// governance_nft_origyn : (GovernanceRequest) -> (GovernanceResult);
-        func governance_nft_origyn(_ args: GovernanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> GovernanceResult {
+        func governance_nft_origyn(_ arg0: GovernanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> GovernanceResult {
             let caller = ICPFunction<GovernanceRequest, GovernanceResult>(canister, "governance_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// history_batch_nft_origyn : (vec record { text; opt nat; opt nat }) -> (
         ///       vec HistoryResult,
         ///     ) query;
-        func history_batch_nft_origyn(_ args: [UnnamedType11], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
-            let caller = ICPFunction<[UnnamedType11], [HistoryResult]>(canister, "history_batch_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func history_batch_nft_origyn(_ arg0: [CandidTuple3<String, BigUInt?, BigUInt?>], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
+            let caller = ICPFunction<[CandidTuple3<String, BigUInt?, BigUInt?>], [HistoryResult]>(canister, "history_batch_nft_origyn", query: true)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// history_batch_secure_nft_origyn : (vec record { text; opt nat; opt nat }) -> (
         ///       vec HistoryResult,
         ///     );
-        func history_batch_secure_nft_origyn(_ args: [UnnamedType11], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
-            let caller = ICPFunction<[UnnamedType11], [HistoryResult]>(canister, "history_batch_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func history_batch_secure_nft_origyn(_ arg0: [CandidTuple3<String, BigUInt?, BigUInt?>], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
+            let caller = ICPFunction<[CandidTuple3<String, BigUInt?, BigUInt?>], [HistoryResult]>(canister, "history_batch_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// history_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult) query;
-        func history_nft_origyn(_ args: UnnamedType11, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
-            let caller = ICPFunction<UnnamedType11, HistoryResult>(canister, "history_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func history_nft_origyn(_ arg0: String, _ arg1: BigUInt?, _ arg2: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
+            let caller = ICPFunction<CandidTuple3<String, BigUInt?, BigUInt?>, HistoryResult>(canister, "history_nft_origyn", query: true)
+            let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
             return response
         }
         
         /// history_secure_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult);
-        func history_secure_nft_origyn(_ args: UnnamedType11, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
-            let caller = ICPFunction<UnnamedType11, HistoryResult>(canister, "history_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func history_secure_nft_origyn(_ arg0: String, _ arg1: BigUInt?, _ arg2: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
+            let caller = ICPFunction<CandidTuple3<String, BigUInt?, BigUInt?>, HistoryResult>(canister, "history_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
             return response
         }
         
@@ -3254,32 +3220,32 @@ enum GoldNFT {
         }
         
         /// http_request : (HttpRequest) -> (HTTPResponse) query;
-        func http_request(_ args: HttpRequest, sender: ICPSigningPrincipal? = nil) async throws -> HTTPResponse {
+        func http_request(_ arg0: HttpRequest, sender: ICPSigningPrincipal? = nil) async throws -> HTTPResponse {
             let caller = ICPFunction<HttpRequest, HTTPResponse>(canister, "http_request", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// http_request_streaming_callback : (StreamingCallbackToken) -> (
         ///       StreamingCallbackResponse,
         ///     ) query;
-        func http_request_streaming_callback(_ args: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
+        func http_request_streaming_callback(_ arg0: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
             let caller = ICPFunction<StreamingCallbackToken, StreamingCallbackResponse>(canister, "http_request_streaming_callback", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// icrc3_get_archives : (GetArchivesArgs) -> (GetArchivesResult) query;
-        func icrc3_get_archives(_ args: GetArchivesArgs, sender: ICPSigningPrincipal? = nil) async throws -> GetArchivesResult {
+        func icrc3_get_archives(_ arg0: GetArchivesArgs, sender: ICPSigningPrincipal? = nil) async throws -> GetArchivesResult {
             let caller = ICPFunction<GetArchivesArgs, GetArchivesResult>(canister, "icrc3_get_archives", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// icrc3_get_blocks : (vec TransactionRange) -> (GetTransactionsResult) query;
-        func icrc3_get_blocks(_ args: [TransactionRange], sender: ICPSigningPrincipal? = nil) async throws -> GetTransactionsResult {
+        func icrc3_get_blocks(_ arg0: [TransactionRange], sender: ICPSigningPrincipal? = nil) async throws -> GetTransactionsResult {
             let caller = ICPFunction<[TransactionRange], GetTransactionsResult>(canister, "icrc3_get_blocks", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3298,9 +3264,9 @@ enum GoldNFT {
         }
         
         /// icrc7_approve : (ApprovalArgs) -> (ApprovalResult);
-        func icrc7_approve(_ args: ApprovalArgs, sender: ICPSigningPrincipal? = nil) async throws -> ApprovalResult {
+        func icrc7_approve(_ arg0: ApprovalArgs, sender: ICPSigningPrincipal? = nil) async throws -> ApprovalResult {
             let caller = ICPFunction<ApprovalArgs, ApprovalResult>(canister, "icrc7_approve", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3312,9 +3278,9 @@ enum GoldNFT {
         }
         
         /// icrc7_balance_of : (vec Account__3) -> (vec nat) query;
-        func icrc7_balance_of(_ args: [Account__3], sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+        func icrc7_balance_of(_ arg0: [Account__3], sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
             let caller = ICPFunction<[Account__3], [BigUInt]>(canister, "icrc7_balance_of", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3396,9 +3362,9 @@ enum GoldNFT {
         }
         
         /// icrc7_owner_of : (vec nat) -> (vec opt Account__3) query;
-        func icrc7_owner_of(_ args: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [Account__3?] {
+        func icrc7_owner_of(_ arg0: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [Account__3?] {
             let caller = ICPFunction<[BigUInt], [Account__3?]>(canister, "icrc7_owner_of", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3433,23 +3399,23 @@ enum GoldNFT {
         /// icrc7_token_metadata : (vec nat) -> (
         ///       vec opt vec record { text; Value },
         ///     ) query;
-        func icrc7_token_metadata(_ args: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[UnnamedType12]?] {
-            let caller = ICPFunction<[BigUInt], [[UnnamedType12]?]>(canister, "icrc7_token_metadata", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func icrc7_token_metadata(_ arg0: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[CandidTuple2<String, Value>]?] {
+            let caller = ICPFunction<[BigUInt], [[CandidTuple2<String, Value>]?]>(canister, "icrc7_token_metadata", query: true)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// icrc7_tokens : (opt nat, opt nat32) -> (vec nat) query;
-        func icrc7_tokens(_ args: UnnamedType31, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-            let caller = ICPFunction<UnnamedType31, [BigUInt]>(canister, "icrc7_tokens", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func icrc7_tokens(_ arg0: BigUInt?, _ arg1: UInt32?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+            let caller = ICPFunction<CandidTuple2<BigUInt?, UInt32?>, [BigUInt]>(canister, "icrc7_tokens", query: true)
+            let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
             return response
         }
         
         /// icrc7_tokens_of : (Account__3, opt nat, opt nat32) -> (vec nat) query;
-        func icrc7_tokens_of(_ args: UnnamedType32, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-            let caller = ICPFunction<UnnamedType32, [BigUInt]>(canister, "icrc7_tokens_of", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func icrc7_tokens_of(_ arg0: Account__3, _ arg1: BigUInt?, _ arg2: UInt32?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+            let caller = ICPFunction<CandidTuple3<Account__3, BigUInt?, UInt32?>, [BigUInt]>(canister, "icrc7_tokens_of", query: true)
+            let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
             return response
         }
         
@@ -3461,16 +3427,16 @@ enum GoldNFT {
         }
         
         /// icrc7_transfer : (vec TransferArgs) -> (TransferResult);
-        func icrc7_transfer(_ args: [TransferArgs], sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
+        func icrc7_transfer(_ arg0: [TransferArgs], sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
             let caller = ICPFunction<[TransferArgs], TransferResult>(canister, "icrc7_transfer", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// icrc7_transfer_fee : (nat) -> (opt nat) query;
-        func icrc7_transfer_fee(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
+        func icrc7_transfer_fee(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
             let caller = ICPFunction<BigUInt, BigUInt?>(canister, "icrc7_transfer_fee", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3482,27 +3448,27 @@ enum GoldNFT {
         }
         
         /// manage_storage_nft_origyn : (ManageStorageRequest) -> (ManageStorageResult);
-        func manage_storage_nft_origyn(_ args: ManageStorageRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageStorageResult {
+        func manage_storage_nft_origyn(_ arg0: ManageStorageRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageStorageResult {
             let caller = ICPFunction<ManageStorageRequest, ManageStorageResult>(canister, "manage_storage_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// market_transfer_batch_nft_origyn : (vec MarketTransferRequest) -> (
         ///       vec MarketTransferResult,
         ///     );
-        func market_transfer_batch_nft_origyn(_ args: [MarketTransferRequest], sender: ICPSigningPrincipal? = nil) async throws -> [MarketTransferResult] {
+        func market_transfer_batch_nft_origyn(_ arg0: [MarketTransferRequest], sender: ICPSigningPrincipal? = nil) async throws -> [MarketTransferResult] {
             let caller = ICPFunction<[MarketTransferRequest], [MarketTransferResult]>(canister, "market_transfer_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// market_transfer_nft_origyn : (MarketTransferRequest) -> (
         ///       MarketTransferResult,
         ///     );
-        func market_transfer_nft_origyn(_ args: MarketTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> MarketTransferResult {
+        func market_transfer_nft_origyn(_ arg0: MarketTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> MarketTransferResult {
             let caller = ICPFunction<MarketTransferRequest, MarketTransferResult>(canister, "market_transfer_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3514,180 +3480,180 @@ enum GoldNFT {
         }
         
         /// metadataExt : (EXTTokenIdentifier) -> (EXTMetadataResult) query;
-        func metadataExt(_ args: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTMetadataResult {
+        func metadataExt(_ arg0: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTMetadataResult {
             let caller = ICPFunction<EXTTokenIdentifier, EXTMetadataResult>(canister, "metadataExt", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// mint_batch_nft_origyn : (vec record { text; Account }) -> (
         ///       vec OrigynTextResult,
         ///     );
-        func mint_batch_nft_origyn(_ args: [UnnamedType33], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
-            let caller = ICPFunction<[UnnamedType33], [OrigynTextResult]>(canister, "mint_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func mint_batch_nft_origyn(_ arg0: [CandidTuple2<String, Account>], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
+            let caller = ICPFunction<[CandidTuple2<String, Account>], [OrigynTextResult]>(canister, "mint_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// mint_nft_origyn : (text, Account) -> (OrigynTextResult);
-        func mint_nft_origyn(_ args: UnnamedType33, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
-            let caller = ICPFunction<UnnamedType33, OrigynTextResult>(canister, "mint_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func mint_nft_origyn(_ arg0: String, _ arg1: Account, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
+            let caller = ICPFunction<CandidTuple2<String, Account>, OrigynTextResult>(canister, "mint_nft_origyn", query: false)
+            let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
             return response
         }
         
         /// nftStreamingCallback : (StreamingCallbackToken) -> (
         ///       StreamingCallbackResponse,
         ///     ) query;
-        func nftStreamingCallback(_ args: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
+        func nftStreamingCallback(_ arg0: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
             let caller = ICPFunction<StreamingCallbackToken, StreamingCallbackResponse>(canister, "nftStreamingCallback", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// nft_batch_origyn : (vec text) -> (vec NFTInfoResult) query;
-        func nft_batch_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
+        func nft_batch_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
             let caller = ICPFunction<[String], [NFTInfoResult]>(canister, "nft_batch_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// nft_batch_secure_origyn : (vec text) -> (vec NFTInfoResult);
-        func nft_batch_secure_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
+        func nft_batch_secure_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
             let caller = ICPFunction<[String], [NFTInfoResult]>(canister, "nft_batch_secure_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// balance_of_batch_nft_origyn : (vec Account) -> (vec BalanceResult) query;
-        func nft_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
+        func nft_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
             let caller = ICPFunction<String, NFTInfoResult>(canister, "nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// nft_secure_origyn : (text) -> (NFTInfoResult);
-        func nft_secure_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
+        func nft_secure_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
             let caller = ICPFunction<String, NFTInfoResult>(canister, "nft_secure_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// operaterTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
-        func operaterTokenMetadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+        func operaterTokenMetadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
             let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "operaterTokenMetadata", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// ownerOf : (nat) -> (OwnerOfResponse) query;
-        func ownerOf(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
+        func ownerOf(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
             let caller = ICPFunction<BigUInt, OwnerOfResponse>(canister, "ownerOf", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// ownerTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
-        func ownerTokenMetadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+        func ownerTokenMetadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
             let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "ownerTokenMetadata", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// sale_batch_nft_origyn : (vec ManageSaleRequest) -> (vec ManageSaleResult);
-        func sale_batch_nft_origyn(_ args: [ManageSaleRequest], sender: ICPSigningPrincipal? = nil) async throws -> [ManageSaleResult] {
+        func sale_batch_nft_origyn(_ arg0: [ManageSaleRequest], sender: ICPSigningPrincipal? = nil) async throws -> [ManageSaleResult] {
             let caller = ICPFunction<[ManageSaleRequest], [ManageSaleResult]>(canister, "sale_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// sale_info_batch_nft_origyn : (vec SaleInfoRequest) -> (
         ///       vec SaleInfoResult,
         ///     ) query;
-        func sale_info_batch_nft_origyn(_ args: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
+        func sale_info_batch_nft_origyn(_ arg0: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
             let caller = ICPFunction<[SaleInfoRequest], [SaleInfoResult]>(canister, "sale_info_batch_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// sale_info_batch_secure_nft_origyn : (vec SaleInfoRequest) -> (
         ///       vec SaleInfoResult,
         ///     );
-        func sale_info_batch_secure_nft_origyn(_ args: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
+        func sale_info_batch_secure_nft_origyn(_ arg0: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
             let caller = ICPFunction<[SaleInfoRequest], [SaleInfoResult]>(canister, "sale_info_batch_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// sale_info_nft_origyn : (SaleInfoRequest) -> (SaleInfoResult) query;
-        func sale_info_nft_origyn(_ args: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
+        func sale_info_nft_origyn(_ arg0: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
             let caller = ICPFunction<SaleInfoRequest, SaleInfoResult>(canister, "sale_info_nft_origyn", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// sale_info_secure_nft_origyn : (SaleInfoRequest) -> (SaleInfoResult);
-        func sale_info_secure_nft_origyn(_ args: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
+        func sale_info_secure_nft_origyn(_ arg0: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
             let caller = ICPFunction<SaleInfoRequest, SaleInfoResult>(canister, "sale_info_secure_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// sale_nft_origyn : (ManageSaleRequest) -> (ManageSaleResult);
-        func sale_nft_origyn(_ args: ManageSaleRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageSaleResult {
+        func sale_nft_origyn(_ arg0: ManageSaleRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageSaleResult {
             let caller = ICPFunction<ManageSaleRequest, ManageSaleResult>(canister, "sale_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// set_data_harvester : (nat) -> ();
-        func set_data_harvester(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws {
+        func set_data_harvester(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws {
             let caller = ICPFunctionNoResult<BigUInt>(canister, "set_data_harvester", query: false)
-            let _ = try await caller.callMethod(args, client, sender: sender)
+            let _ = try await caller.callMethod(arg0, client, sender: sender)
         }
         
         /// set_halt : (bool) -> ();
-        func set_halt(_ args: Bool, sender: ICPSigningPrincipal? = nil) async throws {
+        func set_halt(_ arg0: Bool, sender: ICPSigningPrincipal? = nil) async throws {
             let caller = ICPFunctionNoResult<Bool>(canister, "set_halt", query: false)
-            let _ = try await caller.callMethod(args, client, sender: sender)
+            let _ = try await caller.callMethod(arg0, client, sender: sender)
         }
         
         /// share_wallet_nft_origyn : (ShareWalletRequest) -> (OwnerUpdateResult);
-        func share_wallet_nft_origyn(_ args: ShareWalletRequest, sender: ICPSigningPrincipal? = nil) async throws -> OwnerUpdateResult {
+        func share_wallet_nft_origyn(_ arg0: ShareWalletRequest, sender: ICPSigningPrincipal? = nil) async throws -> OwnerUpdateResult {
             let caller = ICPFunction<ShareWalletRequest, OwnerUpdateResult>(canister, "share_wallet_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// stage_batch_nft_origyn : (vec record { metadata : CandyShared }) -> (
         ///       vec OrigynTextResult,
         ///     );
-        func stage_batch_nft_origyn(_ args: [UnnamedType34], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
-            let caller = ICPFunction<[UnnamedType34], [OrigynTextResult]>(canister, "stage_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func stage_batch_nft_origyn(_ arg0: [UnnamedType18], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
+            let caller = ICPFunction<[UnnamedType18], [OrigynTextResult]>(canister, "stage_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// stage_library_batch_nft_origyn : (vec StageChunkArg) -> (
         ///       vec StageLibraryResult,
         ///     );
-        func stage_library_batch_nft_origyn(_ args: [StageChunkArg], sender: ICPSigningPrincipal? = nil) async throws -> [StageLibraryResult] {
+        func stage_library_batch_nft_origyn(_ arg0: [StageChunkArg], sender: ICPSigningPrincipal? = nil) async throws -> [StageLibraryResult] {
             let caller = ICPFunction<[StageChunkArg], [StageLibraryResult]>(canister, "stage_library_batch_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// stage_library_nft_origyn : (StageChunkArg) -> (StageLibraryResult);
-        func stage_library_nft_origyn(_ args: StageChunkArg, sender: ICPSigningPrincipal? = nil) async throws -> StageLibraryResult {
+        func stage_library_nft_origyn(_ arg0: StageChunkArg, sender: ICPSigningPrincipal? = nil) async throws -> StageLibraryResult {
             let caller = ICPFunction<StageChunkArg, StageLibraryResult>(canister, "stage_library_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// stage_nft_origyn : (record { metadata : CandyShared }) -> (OrigynTextResult);
-        func stage_nft_origyn(_ args: UnnamedType34, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
-            let caller = ICPFunction<UnnamedType34, OrigynTextResult>(canister, "stage_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func stage_nft_origyn(_ arg0: UnnamedType18, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
+            let caller = ICPFunction<UnnamedType18, OrigynTextResult>(canister, "stage_nft_origyn", query: false)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3713,58 +3679,58 @@ enum GoldNFT {
         }
         
         /// tokens_ext : (text) -> (EXTTokensResult) query;
-        func tokens_ext(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> EXTTokensResult {
+        func tokens_ext(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> EXTTokensResult {
             let caller = ICPFunction<String, EXTTokensResult>(canister, "tokens_ext", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// dip721_transfer : (principal, nat) -> (DIP721NatResult);
-        func transfer(_ args: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
+        func transfer(_ arg0: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
             let caller = ICPFunction<EXTTransferRequest, EXTTransferResponse>(canister, "transfer", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// transferDip721 : (principal, nat) -> (DIP721NatResult);
-        func transferDip721(_ args: UnnamedType2, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let caller = ICPFunction<UnnamedType2, DIP721NatResult>(canister, "transferDip721", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func transferDip721(_ arg0: CandidPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<CandidTuple2<CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "transferDip721", query: false)
+            let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
             return response
         }
         
         /// transferEXT : (EXTTransferRequest) -> (EXTTransferResponse);
-        func transferEXT(_ args: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
+        func transferEXT(_ arg0: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
             let caller = ICPFunction<EXTTransferRequest, EXTTransferResponse>(canister, "transferEXT", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// transferFrom : (principal, principal, nat) -> (DIP721NatResult);
-        func transferFrom(_ args: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let caller = ICPFunction<UnnamedType30, DIP721NatResult>(canister, "transferFrom", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func transferFrom(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<CandidTuple3<CandidPrincipal, CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFrom", query: false)
+            let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
             return response
         }
         
         /// transferFromDip721 : (principal, principal, nat) -> (DIP721NatResult);
-        func transferFromDip721(_ args: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let caller = ICPFunction<UnnamedType30, DIP721NatResult>(canister, "transferFromDip721", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+        func transferFromDip721(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<CandidTuple3<CandidPrincipal, CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFromDip721", query: false)
+            let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
             return response
         }
         
         /// update_app_nft_origyn : (NFTUpdateRequest) -> (NFTUpdateResult);
-        func update_app_nft_origyn(_ args: NFTUpdateRequest, sender: ICPSigningPrincipal? = nil) async throws -> NFTUpdateResult {
+        func update_app_nft_origyn(_ arg0: NFTUpdateRequest, sender: ICPSigningPrincipal? = nil) async throws -> NFTUpdateResult {
             let caller = ICPFunction<NFTUpdateRequest, NFTUpdateResult>(canister, "update_app_nft_origyn", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// update_icrc3 : (vec UpdateSetting) -> (vec bool);
-        func update_icrc3(_ args: [UpdateSetting], sender: ICPSigningPrincipal? = nil) async throws -> [Bool] {
+        func update_icrc3(_ arg0: [UpdateSetting], sender: ICPSigningPrincipal? = nil) async throws -> [Bool] {
             let caller = ICPFunction<[UpdateSetting], [Bool]>(canister, "update_icrc3", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -3949,9 +3915,9 @@ enum GoldNFT {
     enum SaleInfoRequest: Codable {
         case status(String)
         case fee_deposit_info(Account?)
-        case active(UnnamedType35?)
+        case active(CandidTuple2<BigUInt, BigUInt>?)
         case deposit_info(Account?)
-        case history(UnnamedType35?)
+        case history(CandidTuple2<BigUInt, BigUInt>?)
         case escrow_info(EscrowReceipt)
         
         enum CodingKeys: Int, CodingKey {
@@ -3983,7 +3949,7 @@ enum GoldNFT {
     enum SaleInfoResponse: Codable {
         case status(SaleStatusShared?)
         case fee_deposit_info(SubAccountInfo)
-        case active(eof: Bool, records: [UnnamedType36], count: BigUInt)
+        case active(eof: Bool, records: [CandidTuple2<String, SaleStatusShared?>], count: BigUInt)
         case deposit_info(SubAccountInfo)
         case history(eof: Bool, records: [SaleStatusShared?], count: BigUInt)
         case escrow_info(SubAccountInfo)
@@ -4018,7 +3984,7 @@ enum GoldNFT {
     /// };
     struct SaleStatusShared: Codable {
         let token_id: String
-        let sale_type: UnnamedType37
+        let sale_type: UnnamedType19
         let broker_id: CandidPrincipal?
         let original_broker_id: CandidPrincipal?
         let sale_id: String
@@ -4059,10 +4025,10 @@ enum GoldNFT {
         let principal: CandidPrincipal
         let allocated_space: BigUInt
         let date_added: BigInt
-        let version: UnnamedType20
+        let version: CandidTuple3<BigUInt, BigUInt, BigUInt>
         let b_gateway: Bool
         let available_space: BigUInt
-        let allocations: [UnnamedType38]
+        let allocations: [CandidTuple2<CandidTuple2<String, String>, BigInt>]
     }
     
     /// type StableCollectionData = record {
@@ -4218,7 +4184,7 @@ enum GoldNFT {
         let account_id: Data
         let principal: CandidPrincipal
         let account_id_text: String
-        let account: UnnamedType42
+        let account: UnnamedType20
     }
     
     /// type SupportedStandard = record { url : text; name : text };
@@ -4248,9 +4214,9 @@ enum GoldNFT {
     ///   };
     /// };
     struct TokenIDFilter: Codable {
-        let filter_type: UnnamedType43
+        let filter_type: UnnamedType21
         let token_id: String
-        let tokens: [UnnamedType44]
+        let tokens: [UnnamedType22]
     }
     
     /// type TokenMetadata = record {
@@ -4275,7 +4241,7 @@ enum GoldNFT {
         let `operator`: CandidPrincipal?
         let approved_at: UInt64?
         let approved_by: CandidPrincipal?
-        let properties: [UnnamedType45]
+        let properties: [CandidTuple2<String, GenericValue>]
         let is_burned: Bool
         let token_identifier: BigUInt
         let burned_at: UInt64?
@@ -4301,7 +4267,7 @@ enum GoldNFT {
     /// };
     struct TokenSpecFilter: Codable {
         let token: TokenSpec__1
-        let filter_type: UnnamedType43
+        let filter_type: UnnamedType21
     }
     
     /// type TokenSpec__1 = variant { ic : ICTokenSpec__1; extensible : CandyShared };
@@ -4385,7 +4351,7 @@ enum GoldNFT {
     /// };
     struct TransferResultItem: Codable {
         let token_id: BigUInt
-        let transfer_result: UnnamedType46
+        let transfer_result: UnnamedType23
     }
     
     enum UnnamedType0: Codable {
@@ -4403,83 +4369,7 @@ enum GoldNFT {
         let approval_result: UnnamedType0
     }
     
-    struct UnnamedType10: Codable {
-        let _0: CandyShared
-        let _1: CandyShared
-        
-        init(_ _0: CandyShared, _ _1: CandyShared) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType11: Codable {
-        let _0: String
-        let _1: BigUInt?
-        let _2: BigUInt?
-        
-        init(_ _0: String, _ _1: BigUInt?, _ _2: BigUInt?) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-        }
-    }
-    
-    struct UnnamedType12: Codable {
-        let _0: String
-        let _1: Value
-        
-        init(_ _0: String, _ _1: Value) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    enum UnnamedType13: Codable {
-        case day(BigUInt)
-        case hour(BigUInt)
-        case minute(BigUInt)
-        
-        enum CodingKeys: Int, CodingKey {
-            case day = 4994652
-            case hour = 1158861092
-            case minute = 1393025748
-        }
-    }
-    
-    enum UnnamedType14: Codable {
-        case flat(BigUInt)
-        case percent(Double)
-        
-        enum CodingKeys: Int, CodingKey {
-            case flat = 1136528313
-            case percent = 2027596485
-        }
-    }
-    
-    struct UnnamedType15: Codable {
-        let locked: BigInt?
-        let seller: CandidPrincipal
-        let price: UInt64
-    }
-    
-    enum UnnamedType16: Codable {
+    enum UnnamedType10: Codable {
         case CannotNotify(EXTAccountIdentifier)
         case InsufficientBalance
         case InvalidToken(EXTTokenIdentifier)
@@ -4497,7 +4387,7 @@ enum GoldNFT {
         }
     }
     
-    enum UnnamedType17: Codable {
+    enum UnnamedType11: Codable {
         case locked(sale_id: String)
         case unlocked
         
@@ -4507,12 +4397,12 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType18: Codable {
+    struct UnnamedType12: Codable {
         let id: BigUInt
         let block: Value__1
     }
     
-    enum UnnamedType19: Codable {
+    enum UnnamedType13: Codable {
         case ICRC1
         case EXTFungible
         case DIP20
@@ -4528,58 +4418,7 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType2: Codable {
-        let _0: CandidPrincipal
-        let _1: BigUInt
-        
-        init(_ _0: CandidPrincipal, _ _1: BigUInt) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType20: Codable {
-        let _0: BigUInt
-        let _1: BigUInt
-        let _2: BigUInt
-        
-        init(_ _0: BigUInt, _ _1: BigUInt, _ _2: BigUInt) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-        }
-    }
-    
-    struct UnnamedType21: Codable {
-        let _0: CandidPrincipal
-        let _1: BigUInt
-        let _2: UnnamedType20
-        
-        init(_ _0: CandidPrincipal, _ _1: BigUInt, _ _2: UnnamedType20) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-        }
-    }
-    
-    enum UnnamedType22: Codable {
+    enum UnnamedType14: Codable {
         case stableBtree(BigUInt?)
         case heap(BigUInt?)
         
@@ -4589,52 +4428,7 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType23: Codable {
-        let _0: HeaderField
-        let _1: AllocationRecordStable
-        
-        init(_ _0: HeaderField, _ _1: AllocationRecordStable) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType24: Codable {
-        let _0: String
-        let _1: SaleStatusShared
-        
-        init(_ _0: String, _ _1: SaleStatusShared) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType25: Codable {
-        let _0: CandidPrincipal
-        let _1: StableBucketData
-        
-        init(_ _0: CandidPrincipal, _ _1: StableBucketData) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    enum UnnamedType26: Codable {
+    enum UnnamedType15: Codable {
         case test
         case standard
         
@@ -4644,7 +4438,7 @@ enum GoldNFT {
         }
     }
     
-    enum UnnamedType27: Codable {
+    enum UnnamedType16: Codable {
         case eof(NFTBackupChunk)
         case data(NFTBackupChunk)
         
@@ -4654,131 +4448,15 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType28: Codable {
+    struct UnnamedType17: Codable {
         let canister_id: canister_id
     }
     
-    struct UnnamedType29: Codable {
-        let _0: CandidPrincipal
-        let _1: CandidPrincipal
-        
-        init(_ _0: CandidPrincipal, _ _1: CandidPrincipal) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType3: Codable {
-        let tokens: [TokenSpecFilter]?
-        let token_ids: [TokenIDFilter]?
-    }
-    
-    struct UnnamedType30: Codable {
-        let _0: CandidPrincipal
-        let _1: CandidPrincipal
-        let _2: BigUInt
-        
-        init(_ _0: CandidPrincipal, _ _1: CandidPrincipal, _ _2: BigUInt) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-        }
-    }
-    
-    struct UnnamedType31: Codable {
-        let _0: BigUInt?
-        let _1: UInt32?
-        
-        init(_ _0: BigUInt?, _ _1: UInt32?) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType32: Codable {
-        let _0: Account__3
-        let _1: BigUInt?
-        let _2: UInt32?
-        
-        init(_ _0: Account__3, _ _1: BigUInt?, _ _2: UInt32?) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-        }
-    }
-    
-    struct UnnamedType33: Codable {
-        let _0: String
-        let _1: Account
-        
-        init(_ _0: String, _ _1: Account) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType34: Codable {
+    struct UnnamedType18: Codable {
         let metadata: CandyShared
     }
     
-    struct UnnamedType35: Codable {
-        let _0: BigUInt
-        let _1: BigUInt
-        
-        init(_ _0: BigUInt, _ _1: BigUInt) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType36: Codable {
-        let _0: String
-        let _1: SaleStatusShared?
-        
-        init(_ _0: String, _ _1: SaleStatusShared?) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    enum UnnamedType37: Codable {
+    enum UnnamedType19: Codable {
         case auction(AuctionStateShared)
         
         enum CodingKeys: Int, CodingKey {
@@ -4786,91 +4464,17 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType38: Codable {
-        let _0: HeaderField
-        let _1: BigInt
-        
-        init(_ _0: HeaderField, _ _1: BigInt) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
+    struct UnnamedType2: Codable {
+        let tokens: [TokenSpecFilter]?
+        let token_ids: [TokenIDFilter]?
     }
     
-    struct UnnamedType39: Codable {
-        let _0: Account
-        let _1: Account
-        let _2: String
-        let _3: EscrowRecord__1
-        
-        init(_ _0: Account, _ _1: Account, _ _2: String, _ _3: EscrowRecord__1) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-            self._3 = _3
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-            case _3 = 3
-        }
-    }
-    
-    enum UnnamedType4: Codable {
-        case date(BigInt)
-        case wait_for_quiet(max: BigUInt, date: BigInt, fade: Double, extension: UInt64)
-        
-        enum CodingKeys: Int, CodingKey {
-            case date = 1113806382
-            case wait_for_quiet = 1541627444
-        }
-    }
-    
-    struct UnnamedType40: Codable {
-        let _0: String
-        let _1: TransactionRecord
-        
-        init(_ _0: String, _ _1: TransactionRecord) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType41: Codable {
-        let _0: Account
-        let _1: Account
-        let _2: BigInt
-        
-        init(_ _0: Account, _ _1: Account, _ _2: BigInt) {
-            self._0 = _0
-            self._1 = _1
-            self._2 = _2
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-            case _2 = 2
-        }
-    }
-    
-    struct UnnamedType42: Codable {
+    struct UnnamedType20: Codable {
         let principal: CandidPrincipal
         let sub_account: Data
     }
     
-    enum UnnamedType43: Codable {
+    enum UnnamedType21: Codable {
         case allow
         case block
         
@@ -4880,28 +4484,13 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType44: Codable {
+    struct UnnamedType22: Codable {
         let token: TokenSpec__1
         let min_amount: BigUInt?
         let max_amount: BigUInt?
     }
     
-    struct UnnamedType45: Codable {
-        let _0: String
-        let _1: GenericValue
-        
-        init(_ _0: String, _ _1: GenericValue) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    enum UnnamedType46: Codable {
+    enum UnnamedType23: Codable {
         case Ok(BigUInt)
         case Err(TransferError)
         
@@ -4911,22 +4500,7 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType47: Codable {
-        let _0: String
-        let _1: Value__1
-        
-        init(_ _0: String, _ _1: Value__1) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    enum UnnamedType48: Codable {
+    enum UnnamedType24: Codable {
         case stopped
         case stopping
         case running
@@ -4938,7 +4512,17 @@ enum GoldNFT {
         }
     }
     
-    enum UnnamedType5: Codable {
+    enum UnnamedType3: Codable {
+        case date(BigInt)
+        case wait_for_quiet(max: BigUInt, date: BigInt, fade: Double, extension: UInt64)
+        
+        enum CodingKeys: Int, CodingKey {
+            case date = 1113806382
+            case wait_for_quiet = 1541627444
+        }
+    }
+    
+    enum UnnamedType4: Codable {
         case closed
         case open
         case not_started
@@ -4950,42 +4534,12 @@ enum GoldNFT {
         }
     }
     
-    struct UnnamedType6: Codable {
-        let _0: CandidPrincipal
-        let _1: BigInt
-        
-        init(_ _0: CandidPrincipal, _ _1: BigInt) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType7: Codable {
-        let _0: CandidPrincipal
-        let _1: Bool
-        
-        init(_ _0: CandidPrincipal, _ _1: Bool) {
-            self._0 = _0
-            self._1 = _1
-        }
-        
-        enum CodingKeys: Int, CodingKey {
-            case _0 = 0
-            case _1 = 1
-        }
-    }
-    
-    struct UnnamedType8: Codable {
+    struct UnnamedType5: Codable {
         let token: TokenSpec
         let amount: BigUInt
     }
     
-    enum UnnamedType9: Codable {
+    enum UnnamedType6: Codable {
         case escrow_deposit(token: TokenSpec, token_id: String, trx_id: TransactionID, seller: Account__1, extensible: CandyShared, buyer: Account__1, amount: BigUInt)
         case fee_deposit(token: TokenSpec, extensible: CandyShared, account: Account__1, amount: BigUInt)
         case canister_network_updated(network: CandidPrincipal, extensible: CandyShared)
@@ -4995,7 +4549,7 @@ enum GoldNFT {
         case burn(from: Account__1?, extensible: CandyShared)
         case data(hash: Data?, extensible: CandyShared, data_dapp: String?, data_path: String?)
         case sale_ended(token: TokenSpec, seller: Account__1, extensible: CandyShared, buyer: Account__1, amount: BigUInt, sale_id: String?)
-        case mint(to: Account__1, from: Account__1, sale: UnnamedType8?, extensible: CandyShared)
+        case mint(to: Account__1, from: Account__1, sale: UnnamedType5?, extensible: CandyShared)
         case royalty_paid(tag: String, token: TokenSpec, seller: Account__1, extensible: CandyShared, buyer: Account__1, amount: BigUInt, receiver: Account__1, sale_id: String?)
         case extensible(CandyShared)
         case fee_deposit_withdraw(fee: BigUInt, token: TokenSpec, trx_id: TransactionID, extensible: CandyShared, account: Account__1, amount: BigUInt)
@@ -5025,6 +4579,34 @@ enum GoldNFT {
             case sale_withdraw = 3960506626
             case deposit_withdraw = 4163935563
         }
+    }
+    
+    enum UnnamedType7: Codable {
+        case day(BigUInt)
+        case hour(BigUInt)
+        case minute(BigUInt)
+        
+        enum CodingKeys: Int, CodingKey {
+            case day = 4994652
+            case hour = 1158861092
+            case minute = 1393025748
+        }
+    }
+    
+    enum UnnamedType8: Codable {
+        case flat(BigUInt)
+        case percent(Double)
+        
+        enum CodingKeys: Int, CodingKey {
+            case flat = 1136528313
+            case percent = 2027596485
+        }
+    }
+    
+    struct UnnamedType9: Codable {
+        let locked: BigInt?
+        let seller: CandidPrincipal
+        let price: UInt64
     }
     
     /// type UpdateModeShared = variant {
@@ -5098,7 +4680,7 @@ enum GoldNFT {
     /// };
     enum Value: Codable {
         case Int(BigInt)
-        case Map([UnnamedType12])
+        case Map([CandidTuple2<String, Value>])
         case Nat(BigUInt)
         case Blob(Data)
         case Text(String)
@@ -5124,7 +4706,7 @@ enum GoldNFT {
     /// };
     enum Value__1: Codable {
         case Int(BigInt)
-        case Map([UnnamedType47])
+        case Map([CandidTuple2<String, Value__1>])
         case Nat(BigUInt)
         case Blob(Data)
         case Text(String)
@@ -5195,7 +4777,7 @@ enum GoldNFT {
     ///   module_hash : opt vec nat8;
     /// };
     struct canister_status: Codable {
-        let status: UnnamedType48
+        let status: UnnamedType24
         let memory_size: BigUInt
         let cycles: BigUInt
         let settings: definite_canister_settings

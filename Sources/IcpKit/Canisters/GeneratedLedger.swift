@@ -1,6 +1,6 @@
 //
 // This file was generated using CandidCodeGenerator
-// created: 2024-08-05 08:59:45 +0000
+// created: 2024-08-05 13:01:43 +0000
 //
 // You can modify this file if needed
 //
@@ -324,9 +324,9 @@ enum Ledger {
         
         /// // Queries blocks in the specified range.
         ///   query_blocks : (GetBlocksArgs) -> (QueryBlocksResponse) query;
-        func query_blocks(_ args: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {
+        func query_blocks(_ arg0: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {
             let caller = ICPFunction<GetBlocksArgs, QueryBlocksResponse>(canister, "query_blocks", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
@@ -340,16 +340,16 @@ enum Ledger {
         
         /// // Get the amount of ICP on the specified account.
         ///   account_balance : (AccountBalanceArgs) -> (Tokens) query;
-        func account_balance(_ args: AccountBalanceArgs, sender: ICPSigningPrincipal? = nil) async throws -> Tokens {
+        func account_balance(_ arg0: AccountBalanceArgs, sender: ICPSigningPrincipal? = nil) async throws -> Tokens {
             let caller = ICPFunction<AccountBalanceArgs, Tokens>(canister, "account_balance", query: true)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// transfer : (TransferArgs) -> (TransferResult);
-        func transfer(_ args: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
+        func transfer(_ arg0: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
             let caller = ICPFunction<TransferArgs, TransferResult>(canister, "transfer", query: false)
-            let response = try await caller.callMethod(args, client, sender: sender)
+            let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         

@@ -21,10 +21,16 @@ final class CandidCodeGeneratorTests: XCTestCase {
                 "RepeatedRecord": .record([.vector(.option(.integer8)), .natural8]),
                 "Variant": .variant(["a": .null, "b": .text, "c": .record([.text, .integer]), "d": .record(["one": .bool, "two": .blob, "three": .record([.vector(.option(.integer8)), .natural8])])]),
                 "UnnamedVariant": .variant("spring", "winter", "summer", "fall"),
-                "Function1": .function([CandidType](),[]),
+                "Function00": .function([CandidType](),[]),
+                "Function01": .function([],[.bool]),
+                "Function02": .function([],[.bool, .text]),
+                "Function03": .function([],[.bool, .text, .option(.bool)]),
+                "Function10": .function([.bool], []),
+                "Function20": .function([.bool, .text], []),
+                "Function30": .function([.bool, .text, .option(.bool)], []),
                 "TestServiceDef": .service([
                     .init("foo", [.natural8], [.integer8]),
-                    .init(name: "ref", signatureReference: "Function1")
+                    .init(name: "ref", signatureReference: "Function01")
                 ]),
                 //"RecursiveRecord": .record(["recurse": .option(.named("RecursiveRecord"))])
             ],
@@ -40,7 +46,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
                     .init("multipleNamedArgsAndResults", 
                           [("name", .text), ("ids", .vector(.natural))],
                           [("out1", .option(.bool)), ("out2", .vector(.blob))]),
-                    .init(name: "functionReference", signatureReference: "Function1"),
+                    .init(name: "functionReference", signatureReference: "Function01"),
                 ]))
              )
             ),

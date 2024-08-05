@@ -109,12 +109,17 @@ class CodeGenerationContext {
         case .option(let optionalType): return .option(simplifyType(optionalType))
         case .vector(let containedType): return .vector(simplifyType(containedType))
         case .record(let keyedTypes):
-            let simplified = CandidType.record(simplifyRecordKeyedTypes(keyedTypes))
-            return addOrSimplify(simplified, isNamedType: isNamedType)
+            let simplifiedKeyedTypes = simplifyRecordKeyedTypes(keyedTypes)
+            let simplified = CandidType.record(simplifiedKeyedTypes)
+            if simplifiedKeyedTypes.isTuple {
+                // tuples are converted to known classes
+                return simplified
+            }
+            return addOrReference(simplified, isNamedType: isNamedType)
             
         case .variant(let keyedTypes):
             let simplified = CandidType.variant(simplifyVariantKeyedTypes(keyedTypes))
-            return addOrSimplify(simplified, isNamedType: isNamedType)
+            return addOrReference(simplified, isNamedType: isNamedType)
             
         case .function(let signature):
             return .function(simplifyFunctionSignature(signature))
@@ -126,7 +131,7 @@ class CodeGenerationContext {
         }
     }
     
-    private func addOrSimplify(_ type: CandidType, isNamedType: Bool) -> CandidType {
+    private func addOrReference(_ type: CandidType, isNamedType: Bool) -> CandidType {
         if isNamedType {
             if let existing = hasName(for: type) {
                 return .named(existing)
@@ -134,6 +139,7 @@ class CodeGenerationContext {
             return type
             
         } else {
+            
             let addedName = addUnnamedType(type)
             return .named(addedName)
         }
@@ -161,23 +167,24 @@ class CodeGenerationContext {
     }
     
     private func simplifyFunctionParameters(_ parameters: [CandidFunctionSignature.Parameter]) -> [CandidFunctionSignature.Parameter] {
-        guard parameters.count > 1 else {
-            return parameters.map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name ,type:  simplifyType($0.type)) }
-        }
-        var unnamedIndex = 0
-        let recordResults = CandidType.record(
-            parameters.map {
-                if let name = $0.name {
-                    return CandidKeyedType(name, $0.type)
-                } else {
-                    let item = CandidKeyedType(unnamedIndex, $0.type)
-                    unnamedIndex += 1
-                    return item
-                }
-            }
-        )
-        let simplifiedRecord = simplifyType(recordResults)
-        return [.init(index: 0, name: nil, type: simplifiedRecord)]
+        return parameters.map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name ,type:  simplifyType($0.type)) }
+//        guard parameters.count > 1 else {
+//            return parameters.map { CandidFunctionSignature.Parameter(index: $0.index, name: $0.name ,type:  simplifyType($0.type)) }
+//        }
+//        var unnamedIndex = 0
+//        let recordResults = CandidType.record(
+//            parameters.map {
+//                if let name = $0.name {
+//                    return CandidKeyedType(name, $0.type)
+//                } else {
+//                    let item = CandidKeyedType(unnamedIndex, $0.type)
+//                    unnamedIndex += 1
+//                    return item
+//                }
+//            }
+//        )
+//        let simplifiedRecord = simplifyType(recordResults)
+//        return [.init(index: 0, name: nil, type: simplifiedRecord)]
     }
     
     private func simplifyServiceSignature(_ signature: CandidServiceSignature) -> CandidServiceSignature {
@@ -238,7 +245,7 @@ struct CodeGeneratorCandidService {
     }
     
     static func functionOriginalDefinition(_ name: String, serviceDefinition: String?) throws -> String? {
-        let regex = try Regex(#"[{;]\s*(?'originalDefinition'[^;]*"# + name + #"\s*:\s*\([^)]*\)\s->\s\([^)]*\)[^;]*;)"#)
+        let regex = try Regex(#"[{;]\s*(?'originalDefinition'[^;]*"# + name + #"\s*:\s*\([^)]*\)\s*->\s*\([^)]*\)[^;]*;[^\n]*)"#)
         guard let serviceDefinition = serviceDefinition,
               let match = try regex.firstMatch(in: serviceDefinition),
               let functionDefinition = match["originalDefinition"]?.substring else {
@@ -334,4 +341,8 @@ private extension CandidInterfaceDefinition.ServiceDefinition {
             return .init(name: self.name, initialisationArguments: initialisationArguments, signature: signature.replacing(name, with: newName), originalDefinition: originalDefinition)
         }
     }
+}
+
+extension CandidKeyedTypes {
+    var isTuple: Bool { allSatisfy { !$0.key.hasString } }
 }
