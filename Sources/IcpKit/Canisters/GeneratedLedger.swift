@@ -1,6 +1,6 @@
 //
 // This file was generated using CandidCodeGenerator
-// created: 2024-08-02 12:01:10 +0000
+// created: 2024-08-05 07:46:13 +0000
 //
 // You can modify this file if needed
 //
@@ -322,74 +322,30 @@ enum Ledger {
             self.client = client
         }
         
-        func query_blocks(_ arg0: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "query_blocks",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
-        }
-        
-        func archives(sender: ICPSigningPrincipal? = nil) async throws -> Archives {
-            let method = ICPMethod(canister: canister,  methodName: "archives")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
-        }
-        
-        func account_balance(_ arg0: AccountBalanceArgs, sender: ICPSigningPrincipal? = nil) async throws -> Tokens {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "account_balance",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
-        }
-        
-        func transfer(_ arg0: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
-            let caller = ICPFunction<TransferArgs, TransferResult>(canister, "transfer", query: false)
-            let response = try await caller.callMethod(arg0, client, sender: sender)
-            return response
-        }
-        
-        func query_archive_fn(_ arg0: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryArchiveResult {
-            let caller = QueryArchiveFn(canister, "query_archive_fn", query: true)
-            let response = try await caller.callMethod(arg0, client, sender: sender)
-            return response
-        }
-        
-    }
-    
-}
-enum TestCodeGeneration {
-    typealias Function1 = ICPFunctionNoArgsNoResult
-    
-    
-    class TestServiceDef {
-        let canister: ICPPrincipal
-        let client: ICPRequestClient
-        
-        init(canister: ICPPrincipal, client: ICPRequestClient) {
-            self.canister = canister
-            self.client = client
-        }
-        
-        func foo(_ args: UInt8, sender: ICPSigningPrincipal? = nil) async throws -> Int8 {
-            let caller = ICPFunction<UInt8, Int8>(canister, "foo", query: false)
+        func query_blocks(_ args: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {
+            let caller = ICPFunction<GetBlocksArgs, QueryBlocksResponse>(canister, "query_blocks", query: true)
             let response = try await caller.callMethod(args, client, sender: sender)
             return response
         }
         
-        func ref(sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = Function1(canister, "ref", query: false)
-            let _ = try await caller.callMethod(client, sender: sender)
+        func archives(sender: ICPSigningPrincipal? = nil) async throws -> Archives {
+            let caller = ICPFunctionNoArgs<Archives>(canister, "archives", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
+        }
+        
+        func account_balance(_ args: AccountBalanceArgs, sender: ICPSigningPrincipal? = nil) async throws -> Tokens {
+            let caller = ICPFunction<AccountBalanceArgs, Tokens>(canister, "account_balance", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
+        }
+        
+        func transfer(_ args: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
+            let caller = ICPFunction<TransferArgs, TransferResult>(canister, "transfer", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
     }
-    
-    
-    typealias TestService = TestServiceDef
     
 }

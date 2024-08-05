@@ -105,6 +105,7 @@ public class CandidCodeGenerator {
             methodCaller = referencedName
         }
         let block = IndentedString()
+        block.addSwiftDocumentation(method.originalDefinition)
         block.addLine(buildFunctionDefinition(method.name, signature))
         block.increaseIndent()
         block.addLine("let caller = \(methodCaller)(canister, \"\(method.name)\", query: \(signature.annotations.query))")
@@ -174,7 +175,10 @@ public class CandidCodeGenerator {
     private func buildServiceType(_ name: String, _ signature: CandidServiceSignature, _ originalDefinition: String?, _ namedTypes: [CandidNamedType]) throws -> GeneratedCode {
         let service = CodeGeneratorCandidService(
             name: name,
-            type: .concrete(signature.methods.map { .init(name: $0.name, signature: $0.functionSignature) }),
+            type: .concrete(try signature.methods.map { .init(
+                name: $0.name,
+                originalDefinition: try CodeGeneratorCandidService.functionOriginalDefinition($0.name, serviceDefinition: originalDefinition),
+                signature: $0.functionSignature) }),
             originalDefinition: originalDefinition
         )
         let serviceBlock = try buildServiceBlock(service, namedTypes)

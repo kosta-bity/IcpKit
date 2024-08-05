@@ -62,7 +62,11 @@ class CodeGenerationContext {
         case .concrete(let serviceSignature):
             self.service = CodeGeneratorCandidService(
                 name: name,
-                type: .concrete(try serviceSignature.methods.map{ .init(name: $0.name, signature: try simplifyServiceMethod($0.functionSignature)) }),
+                type: .concrete(try serviceSignature.methods.map{ .init(
+                    name: $0.name,
+                    originalDefinition: try CodeGeneratorCandidService.functionOriginalDefinition($0.name, serviceDefinition: service.originalDefinition),
+                    signature: try simplifyServiceMethod($0.functionSignature))
+                }),
                 originalDefinition: service.originalDefinition
             )
         case .reference(let string):
@@ -229,7 +233,18 @@ struct CodeGeneratorCandidService {
     
     struct Method {
         let name: String
+        let originalDefinition: String?
         let signature: CandidServiceSignature.Method.FunctionSignatureType
+    }
+    
+    static func functionOriginalDefinition(_ name: String, serviceDefinition: String?) throws -> String? {
+        let regex = try Regex(#"[{;]\s*(?'originalDefinition'[^;]*"# + name + #"[^;]*;)"#)
+        guard let serviceDefinition = serviceDefinition,
+              let match = try regex.firstMatch(in: serviceDefinition),
+              let functionDefinition = match["originalDefinition"]?.substring else {
+            return nil
+        }
+        return String(functionDefinition)
     }
 }
 
