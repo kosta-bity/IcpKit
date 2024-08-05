@@ -29,7 +29,8 @@ public class CandidSerialiser {
     /// Serialises a list of Candid Values
     /// - Parameter values: The Candid Values to be serialised
     /// - Returns: The serialisation of the given Candid Values
-    public func encode(_ values: [CandidValue]) -> Data {
+    public func encode(_ values: [CandidValue]?) -> Data {
+        let values = values ?? []
         let typeTable = CandidTypeTable()
         let encodableValues = values.map { Self.buildTree($0, typeTable) }
         return Self.magicBytes +

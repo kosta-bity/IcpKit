@@ -107,7 +107,7 @@ public enum ICPLedgerCanister {
         let queryArchiveMethod = ICPMethod(
             canister: archivePrincipal,
             methodName: method.name,
-            args: .record([
+            arg: .record([
                 "start": .natural64(start),
                 "length": .natural64(length),
             ])
@@ -130,7 +130,7 @@ private extension ICPLedgerCanister {
         ICPMethod(
             canister: ICPSystemCanisters.ledger,
             methodName: "query_blocks",
-            args: .record([
+            arg: .record([
                 "start": .natural64(index),
                 "length": .natural64(length),
             ]))
@@ -143,7 +143,7 @@ private extension ICPLedgerCanister {
         ICPMethod(
             canister: ICPSystemCanisters.ledger,
             methodName: "account_balance",
-            args: .record([
+            arg: .record([
                 "account": .blob(account.accountId)
             ])
         )
@@ -167,7 +167,7 @@ private extension ICPLedgerCanister {
         ICPMethod(
             canister: ICPSystemCanisters.ledger,
             methodName: "transfer",
-            args: .record([
+            arg: .record([
                 "from_subaccount": .option(.blob(sendingAccount.subAccountId)),
                 "to": .blob(Data.fromHex(receivingAddress)!),
                 "amount": .ICPAmount(amount),

@@ -13,15 +13,31 @@ public enum CandidCodeGeneratorError: Error {
 }
 
 public class CandidCodeGenerator {
-    public init() {}
+    public struct Parameters {
+        public let generateHeader: Bool
+        
+        public init(generateHeader: Bool) {
+            self.generateHeader = generateHeader
+        }
+    }
+    let parameters: Parameters
+    
+    public init() {
+        self.parameters = Parameters(generateHeader: true)
+    }
+    
+    public init(_ parameters: Parameters) {
+        self.parameters = parameters
+    }
     
     public func generateSwiftCode(for interface: CandidInterfaceDefinition, nameSpace: String) throws -> String {
         let context = try CodeGenerationContext(from: interface)
-        let header = buildHeader()
         let types = try context.namedTypes.map { try buildType($0, context.namedTypes)}
         
         let output = IndentedString()
-        output.addBlock(header, newLine: true)
+        if parameters.generateHeader {
+            output.addBlock(buildHeader(), newLine: true)
+        }
         output.addLine("enum \(nameSpace) {")
         output.increaseIndent()
         output.addBlock(buildTypesBlock(types), newLine: true)
@@ -36,11 +52,12 @@ public class CandidCodeGenerator {
     
     public func generateSwiftCode(for value: CandidValue, valueName: String) throws -> String {
         let context = try CodeGenerationContext(from: value)
-        //let header = buildHeader()
         let types = try context.namedTypes.map { try buildType($0, context.namedTypes)}
         
         let output = IndentedString()
-        //output.addBlock(header, newLine: true)
+        if parameters.generateHeader {
+            output.addBlock(buildHeader(), newLine: true)
+        }
         output.addBlock(buildTypesBlock(types))
         output.addBlock(buildValueBlock(value, valueName, context.candidValueSimplifiedType!))
         return output.output

@@ -15,12 +15,18 @@ private let canisterBaseUrl: URL = "https://icp-api.io/api/v2/canister"
 public struct ICPMethod {
     public let canister: ICPPrincipal
     public let methodName: String
-    public let args: CandidValue?
+    public let args: [CandidValue]?
     
-    public init(canister: ICPPrincipal, methodName: String, args: CandidValue? = nil) {
+    public init(canister: ICPPrincipal, methodName: String, args: [CandidValue]) {
         self.canister = canister
         self.methodName = methodName
         self.args = args
+    }
+    
+    public init(canister: ICPPrincipal, methodName: String, arg: CandidValue? = nil) {
+        self.canister = canister
+        self.methodName = methodName
+        self.args = arg.map { [$0] }
     }
 }
 

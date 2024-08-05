@@ -7,9 +7,7 @@
 
 import Foundation
 
-public protocol CandidTupleProtocol {}
-
-public struct CandidTuple2<T0, T1>: CandidTupleProtocol {
+public struct CandidTuple2<T0, T1> {
     public let _0: T0
     public let _1: T1
     public var tuple: (T0, T1) { (_0, _1) }
@@ -25,7 +23,7 @@ public struct CandidTuple2<T0, T1>: CandidTupleProtocol {
     }
 }
 
-public struct CandidTuple3<T0, T1, T2>: CandidTupleProtocol {
+public struct CandidTuple3<T0, T1, T2> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -44,7 +42,7 @@ public struct CandidTuple3<T0, T1, T2>: CandidTupleProtocol {
     }
 }
 
-public struct CandidTuple4<T0, T1, T2, T3>: CandidTupleProtocol {
+public struct CandidTuple4<T0, T1, T2, T3> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -66,7 +64,7 @@ public struct CandidTuple4<T0, T1, T2, T3>: CandidTupleProtocol {
     }
 }
 
-public struct CandidTuple5<T0, T1, T2, T3, T4>: CandidTupleProtocol {
+public struct CandidTuple5<T0, T1, T2, T3, T4> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -91,7 +89,7 @@ public struct CandidTuple5<T0, T1, T2, T3, T4>: CandidTupleProtocol {
     }
 }
 
-public struct CandidTuple6<T0, T1, T2, T3, T4, T5>: CandidTupleProtocol {
+public struct CandidTuple6<T0, T1, T2, T3, T4, T5> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
