@@ -8,7 +8,6 @@
 import XCTest
 @testable import IcpKit
 import Candid
-import Utils
 
 final class ICPCryptographyTests: XCTestCase {
     // test vectors generated using https://pi7.org/hash/sha224

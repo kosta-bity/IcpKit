@@ -31,7 +31,6 @@ let package = Package(
         .target(
             name: "IcpKit",
             dependencies: [
-                "Utils",
                 "Candid",
                 "BigInt",
                 "RealHTTP",
@@ -45,14 +44,11 @@ let package = Package(
 //                          .unsafeFlags(["-ISources/bls12381/include/Bls12381.h"])]
         ),
         .target(
-            name: "Utils",
+            name: "Candid",
             dependencies: [
+                "PotentCodables",
                 .product(name: "Base32", package: "Bases"),
             ]
-        ),
-        .target(
-            name: "Candid",
-            dependencies: ["Utils", "PotentCodables",]
         ),
         .executableTarget(
             name: "CodeGenerator",

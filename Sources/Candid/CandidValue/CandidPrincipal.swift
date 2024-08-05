@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Utils
 
 public struct CandidPrincipal: Equatable, Codable {
     public let bytes: Data

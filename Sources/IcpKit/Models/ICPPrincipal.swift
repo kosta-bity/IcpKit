@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Utils
 import Candid
 
 /// from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal

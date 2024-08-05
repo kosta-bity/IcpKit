@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import Utils
+import Candid
 
 public extension ICPCryptography {
     enum ICPAccountError: Error {

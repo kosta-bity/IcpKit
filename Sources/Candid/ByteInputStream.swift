@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Utils
 
 class ByteInputStream {
     private enum ByteInputStreamError: Error {
