@@ -1,6 +1,6 @@
 //
 // This file was generated using CandidCodeGenerator
-// created: 2024-08-02 13:37:13 +0000
+// created: 2024-08-05 10:59:46 +0000
 //
 // You can modify this file if needed
 //
@@ -2812,1159 +2812,974 @@ enum GoldNFT {
             self.client = client
         }
         
-        func __advance_time(_ arg0: BigInt, sender: ICPSigningPrincipal? = nil) async throws -> BigInt {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "__advance_time",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// __advance_time : (int) -> (int);
+        func __advance_time(_ args: BigInt, sender: ICPSigningPrincipal? = nil) async throws -> BigInt {
+            let caller = ICPFunction<BigInt, BigInt>(canister, "__advance_time", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func __set_time_mode(_ arg0: UnnamedType26, sender: ICPSigningPrincipal? = nil) async throws -> Bool {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "__set_time_mode",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// __set_time_mode : (variant { test; standard }) -> (bool);
+        func __set_time_mode(_ args: UnnamedType26, sender: ICPSigningPrincipal? = nil) async throws -> Bool {
+            let caller = ICPFunction<UnnamedType26, Bool>(canister, "__set_time_mode", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// __supports : () -> (vec record { text; text }) query;
         func __supports(sender: ICPSigningPrincipal? = nil) async throws -> [HeaderField] {
-            let method = ICPMethod(canister: canister,  methodName: "__supports")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<[HeaderField]>(canister, "__supports", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// __version : () -> (text) query;
         func __version(sender: ICPSigningPrincipal? = nil) async throws -> String {
-            let method = ICPMethod(canister: canister,  methodName: "__version")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String>(canister, "__version", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func back_up(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType27 {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "back_up",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// back_up : (nat) -> (
+        ///       variant { eof : NFTBackupChunk; data : NFTBackupChunk },
+        ///     ) query;
+        func back_up(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType27 {
+            let caller = ICPFunction<BigUInt, UnnamedType27>(canister, "back_up", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func balance(_ arg0: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "balance",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// balance : (EXTBalanceRequest) -> (EXTBalanceResult) query;
+        func balance(_ args: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
+            let caller = ICPFunction<EXTBalanceRequest, EXTBalanceResult>(canister, "balance", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func balanceEXT(_ arg0: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "balanceEXT",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// balanceEXT : (EXTBalanceRequest) -> (EXTBalanceResult) query;
+        func balanceEXT(_ args: EXTBalanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTBalanceResult {
+            let caller = ICPFunction<EXTBalanceRequest, EXTBalanceResult>(canister, "balanceEXT", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func balance_of_batch_nft_origyn(_ arg0: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "balance_of_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// balance_of_batch_nft_origyn : (vec Account) -> (vec BalanceResult) query;
+        func balance_of_batch_nft_origyn(_ args: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
+            let caller = ICPFunction<[Account], [BalanceResult]>(canister, "balance_of_batch_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func balance_of_nft_origyn(_ arg0: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "balance_of_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// balance_of_nft_origyn : (Account) -> (BalanceResult) query;
+        func balance_of_nft_origyn(_ args: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
+            let caller = ICPFunction<Account, BalanceResult>(canister, "balance_of_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func balance_of_secure_batch_nft_origyn(_ arg0: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "balance_of_secure_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// balance_of_secure_batch_nft_origyn : (vec Account) -> (vec BalanceResult);
+        func balance_of_secure_batch_nft_origyn(_ args: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BalanceResult] {
+            let caller = ICPFunction<[Account], [BalanceResult]>(canister, "balance_of_secure_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func balance_of_secure_nft_origyn(_ arg0: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "balance_of_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// balance_of_secure_nft_origyn : (Account) -> (BalanceResult);
+        func balance_of_secure_nft_origyn(_ args: Account, sender: ICPSigningPrincipal? = nil) async throws -> BalanceResult {
+            let caller = ICPFunction<Account, BalanceResult>(canister, "balance_of_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func bearer(_ arg0: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "bearer",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// bearer : (EXTTokenIdentifier) -> (EXTBearerResult) query;
+        func bearer(_ args: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
+            let caller = ICPFunction<EXTTokenIdentifier, EXTBearerResult>(canister, "bearer", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func bearerEXT(_ arg0: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "bearerEXT",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// bearerEXT : (EXTTokenIdentifier) -> (EXTBearerResult) query;
+        func bearerEXT(_ args: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTBearerResult {
+            let caller = ICPFunction<EXTTokenIdentifier, EXTBearerResult>(canister, "bearerEXT", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func bearer_batch_nft_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "bearer_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// bearer_batch_nft_origyn : (vec text) -> (vec BearerResult) query;
+        func bearer_batch_nft_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
+            let caller = ICPFunction<[String], [BearerResult]>(canister, "bearer_batch_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func bearer_batch_secure_nft_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "bearer_batch_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// bearer_batch_secure_nft_origyn : (vec text) -> (vec BearerResult);
+        func bearer_batch_secure_nft_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [BearerResult] {
+            let caller = ICPFunction<[String], [BearerResult]>(canister, "bearer_batch_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func bearer_nft_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "bearer_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// bearer_nft_origyn : (text) -> (BearerResult) query;
+        func bearer_nft_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
+            let caller = ICPFunction<String, BearerResult>(canister, "bearer_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func bearer_secure_nft_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "bearer_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// bearer_secure_nft_origyn : (text) -> (BearerResult);
+        func bearer_secure_nft_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> BearerResult {
+            let caller = ICPFunction<String, BearerResult>(canister, "bearer_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func canister_status(_ arg0: UnnamedType28, sender: ICPSigningPrincipal? = nil) async throws -> canister_status {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "canister_status",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// canister_status : (record { canister_id : canister_id }) -> (canister_status);
+        func canister_status(_ args: UnnamedType28, sender: ICPSigningPrincipal? = nil) async throws -> canister_status {
+            let caller = ICPFunction<UnnamedType28, canister_status>(canister, "canister_status", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func chunk_nft_origyn(_ arg0: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "chunk_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// chunk_nft_origyn : (ChunkRequest) -> (ChunkResult) query;
+        func chunk_nft_origyn(_ args: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
+            let caller = ICPFunction<ChunkRequest, ChunkResult>(canister, "chunk_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func chunk_secure_nft_origyn(_ arg0: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "chunk_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// chunk_secure_nft_origyn : (ChunkRequest) -> (ChunkResult);
+        func chunk_secure_nft_origyn(_ args: ChunkRequest, sender: ICPSigningPrincipal? = nil) async throws -> ChunkResult {
+            let caller = ICPFunction<ChunkRequest, ChunkResult>(canister, "chunk_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// collectCanisterMetrics : () -> () query;
         func collectCanisterMetrics(sender: ICPSigningPrincipal? = nil) async throws {
-            let method = ICPMethod(canister: canister,  methodName: "collectCanisterMetrics")
-            _ = try await client.query(method, effectiveCanister: canister, sender: sender)
+            let caller = ICPFunctionNoArgsNoResult(canister, "collectCanisterMetrics", query: true)
+            let _ = try await caller.callMethod(client, sender: sender)
         }
         
-        func collection_nft_origyn(_ arg0: [UnnamedType11]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "collection_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// collection_nft_origyn : (opt vec record { text; opt nat; opt nat }) -> (
+        ///       CollectionResult,
+        ///     ) query;
+        func collection_nft_origyn(_ args: [UnnamedType11]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
+            let caller = ICPFunction<[UnnamedType11]?, CollectionResult>(canister, "collection_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func collection_secure_nft_origyn(_ arg0: [UnnamedType11]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "collection_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// collection_secure_nft_origyn : (
+        ///       opt vec record { text; opt nat; opt nat },
+        ///     ) -> (CollectionResult);
+        func collection_secure_nft_origyn(_ args: [UnnamedType11]?, sender: ICPSigningPrincipal? = nil) async throws -> CollectionResult {
+            let caller = ICPFunction<[UnnamedType11]?, CollectionResult>(canister, "collection_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func collection_update_batch_nft_origyn(_ arg0: [ManageCollectionCommand], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynBoolResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "collection_update_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// collection_update_batch_nft_origyn : (vec ManageCollectionCommand) -> (
+        ///       vec OrigynBoolResult,
+        ///     );
+        func collection_update_batch_nft_origyn(_ args: [ManageCollectionCommand], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynBoolResult] {
+            let caller = ICPFunction<[ManageCollectionCommand], [OrigynBoolResult]>(canister, "collection_update_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func collection_update_nft_origyn(_ arg0: ManageCollectionCommand, sender: ICPSigningPrincipal? = nil) async throws -> OrigynBoolResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "collection_update_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// collection_update_nft_origyn : (ManageCollectionCommand) -> (
+        ///       OrigynBoolResult,
+        ///     );
+        func collection_update_nft_origyn(_ args: ManageCollectionCommand, sender: ICPSigningPrincipal? = nil) async throws -> OrigynBoolResult {
+            let caller = ICPFunction<ManageCollectionCommand, OrigynBoolResult>(canister, "collection_update_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// cycles : () -> (nat) query;
         func cycles(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-            let method = ICPMethod(canister: canister,  methodName: "cycles")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt>(canister, "cycles", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func dip721_balance_of(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_balance_of",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_balance_of : (principal) -> (nat) query;
+        func dip721_balance_of(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
+            let caller = ICPFunction<CandidPrincipal, BigUInt>(canister, "dip721_balance_of", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// dip721_custodians : () -> (vec principal) query;
         func dip721_custodians(sender: ICPSigningPrincipal? = nil) async throws -> [CandidPrincipal] {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_custodians")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<[CandidPrincipal]>(canister, "dip721_custodians", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func dip721_is_approved_for_all(_ arg0: UnnamedType29, sender: ICPSigningPrincipal? = nil) async throws -> DIP721BoolResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_is_approved_for_all",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_is_approved_for_all : (principal, principal) -> (
+        ///       DIP721BoolResult,
+        ///     ) query;
+        func dip721_is_approved_for_all(_ args: UnnamedType29, sender: ICPSigningPrincipal? = nil) async throws -> DIP721BoolResult {
+            let caller = ICPFunction<UnnamedType29, DIP721BoolResult>(canister, "dip721_is_approved_for_all", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// dip721_logo : () -> (opt text) query;
         func dip721_logo(sender: ICPSigningPrincipal? = nil) async throws -> String? {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_logo")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String?>(canister, "dip721_logo", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// dip721_metadata : () -> (DIP721Metadata) query;
         func dip721_metadata(sender: ICPSigningPrincipal? = nil) async throws -> DIP721Metadata {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_metadata")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<DIP721Metadata>(canister, "dip721_metadata", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// dip721_name : () -> (opt text) query;
         func dip721_name(sender: ICPSigningPrincipal? = nil) async throws -> String? {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_name")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String?>(canister, "dip721_name", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func dip721_operator_token_identifiers(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_operator_token_identifiers",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_operator_token_identifiers : (principal) -> (
+        ///       DIP721TokensListMetadata,
+        ///     ) query;
+        func dip721_operator_token_identifiers(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
+            let caller = ICPFunction<CandidPrincipal, DIP721TokensListMetadata>(canister, "dip721_operator_token_identifiers", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func dip721_operator_token_metadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_operator_token_metadata",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_operator_token_metadata : (principal) -> (DIP721TokensMetadata) query;
+        func dip721_operator_token_metadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+            let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "dip721_operator_token_metadata", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func dip721_owner_of(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_owner_of",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_owner_of : (nat) -> (OwnerOfResponse) query;
+        func dip721_owner_of(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
+            let caller = ICPFunction<BigUInt, OwnerOfResponse>(canister, "dip721_owner_of", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func dip721_owner_token_identifiers(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_owner_token_identifiers",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_owner_token_identifiers : (principal) -> (
+        ///       DIP721TokensListMetadata,
+        ///     ) query;
+        func dip721_owner_token_identifiers(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
+            let caller = ICPFunction<CandidPrincipal, DIP721TokensListMetadata>(canister, "dip721_owner_token_identifiers", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func dip721_owner_token_metadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_owner_token_metadata",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_owner_token_metadata : (principal) -> (DIP721TokensMetadata) query;
+        func dip721_owner_token_metadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+            let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "dip721_owner_token_metadata", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// dip721_stats : () -> (DIP721Stats) query;
         func dip721_stats(sender: ICPSigningPrincipal? = nil) async throws -> DIP721Stats {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_stats")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<DIP721Stats>(canister, "dip721_stats", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// dip721_supported_interfaces : () -> (vec DIP721SupportedInterface) query;
         func dip721_supported_interfaces(sender: ICPSigningPrincipal? = nil) async throws -> [DIP721SupportedInterface] {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_supported_interfaces")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<[DIP721SupportedInterface]>(canister, "dip721_supported_interfaces", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// dip721_symbol : () -> (opt text) query;
         func dip721_symbol(sender: ICPSigningPrincipal? = nil) async throws -> String? {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_symbol")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String?>(canister, "dip721_symbol", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func dip721_token_metadata(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokenMetadata {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_token_metadata",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_token_metadata : (nat) -> (DIP721TokenMetadata) query;
+        func dip721_token_metadata(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokenMetadata {
+            let caller = ICPFunction<BigUInt, DIP721TokenMetadata>(canister, "dip721_token_metadata", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// dip721_total_supply : () -> (nat) query;
         func dip721_total_supply(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_total_supply")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt>(canister, "dip721_total_supply", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// dip721_total_transactions : () -> (nat) query;
         func dip721_total_transactions(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-            let method = ICPMethod(canister: canister,  methodName: "dip721_total_transactions")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt>(canister, "dip721_total_transactions", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func dip721_transfer(_ arg0: UnnamedType2, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_transfer",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_transfer : (principal, nat) -> (DIP721NatResult);
+        func dip721_transfer(_ args: UnnamedType2, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<UnnamedType2, DIP721NatResult>(canister, "dip721_transfer", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func dip721_transfer_from(_ arg0: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "dip721_transfer_from",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_transfer_from : (principal, principal, nat) -> (DIP721NatResult);
+        func dip721_transfer_from(_ args: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<UnnamedType30, DIP721NatResult>(canister, "dip721_transfer_from", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func getCanisterLog(_ arg0: CanisterLogRequest?, sender: ICPSigningPrincipal? = nil) async throws -> CanisterLogResponse? {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "getCanisterLog",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// getCanisterLog : (opt CanisterLogRequest) -> (opt CanisterLogResponse) query;
+        func getCanisterLog(_ args: CanisterLogRequest?, sender: ICPSigningPrincipal? = nil) async throws -> CanisterLogResponse? {
+            let caller = ICPFunction<CanisterLogRequest?, CanisterLogResponse?>(canister, "getCanisterLog", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func getCanisterMetrics(_ arg0: GetMetricsParameters, sender: ICPSigningPrincipal? = nil) async throws -> CanisterMetrics? {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "getCanisterMetrics",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// getCanisterMetrics : (GetMetricsParameters) -> (opt CanisterMetrics) query;
+        func getCanisterMetrics(_ args: GetMetricsParameters, sender: ICPSigningPrincipal? = nil) async throws -> CanisterMetrics? {
+            let caller = ICPFunction<GetMetricsParameters, CanisterMetrics?>(canister, "getCanisterMetrics", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func getEXTTokenIdentifier(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> String {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "getEXTTokenIdentifier",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// getEXTTokenIdentifier : (text) -> (text) query;
+        func getEXTTokenIdentifier(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> String {
+            let caller = ICPFunction<String, String>(canister, "getEXTTokenIdentifier", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// get_access_key : () -> (OrigynTextResult) query;
         func get_access_key(sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
-            let method = ICPMethod(canister: canister,  methodName: "get_access_key")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<OrigynTextResult>(canister, "get_access_key", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// get_halt : () -> (bool) query;
         func get_halt(sender: ICPSigningPrincipal? = nil) async throws -> Bool {
-            let method = ICPMethod(canister: canister,  methodName: "get_halt")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<Bool>(canister, "get_halt", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func get_nat_as_token_id_origyn(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> String {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "get_nat_as_token_id_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// get_nat_as_token_id_origyn : (nat) -> (text) query;
+        func get_nat_as_token_id_origyn(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> String {
+            let caller = ICPFunction<BigUInt, String>(canister, "get_nat_as_token_id_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// get_tip : () -> (Tip) query;
         func get_tip(sender: ICPSigningPrincipal? = nil) async throws -> Tip {
-            let method = ICPMethod(canister: canister,  methodName: "get_tip")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<Tip>(canister, "get_tip", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func get_token_id_as_nat(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "get_token_id_as_nat",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// get_token_id_as_nat : (text) -> (nat) query;
+        func get_token_id_as_nat(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
+            let caller = ICPFunction<String, BigUInt>(canister, "get_token_id_as_nat", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func governance_batch_nft_origyn(_ arg0: [GovernanceRequest], sender: ICPSigningPrincipal? = nil) async throws -> [GovernanceResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "governance_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// governance_batch_nft_origyn : (vec GovernanceRequest) -> (
+        ///       vec GovernanceResult,
+        ///     );
+        func governance_batch_nft_origyn(_ args: [GovernanceRequest], sender: ICPSigningPrincipal? = nil) async throws -> [GovernanceResult] {
+            let caller = ICPFunction<[GovernanceRequest], [GovernanceResult]>(canister, "governance_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func governance_nft_origyn(_ arg0: GovernanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> GovernanceResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "governance_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// governance_nft_origyn : (GovernanceRequest) -> (GovernanceResult);
+        func governance_nft_origyn(_ args: GovernanceRequest, sender: ICPSigningPrincipal? = nil) async throws -> GovernanceResult {
+            let caller = ICPFunction<GovernanceRequest, GovernanceResult>(canister, "governance_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func history_batch_nft_origyn(_ arg0: [UnnamedType11], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "history_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// history_batch_nft_origyn : (vec record { text; opt nat; opt nat }) -> (
+        ///       vec HistoryResult,
+        ///     ) query;
+        func history_batch_nft_origyn(_ args: [UnnamedType11], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
+            let caller = ICPFunction<[UnnamedType11], [HistoryResult]>(canister, "history_batch_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func history_batch_secure_nft_origyn(_ arg0: [UnnamedType11], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "history_batch_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// history_batch_secure_nft_origyn : (vec record { text; opt nat; opt nat }) -> (
+        ///       vec HistoryResult,
+        ///     );
+        func history_batch_secure_nft_origyn(_ args: [UnnamedType11], sender: ICPSigningPrincipal? = nil) async throws -> [HistoryResult] {
+            let caller = ICPFunction<[UnnamedType11], [HistoryResult]>(canister, "history_batch_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func history_nft_origyn(_ arg0: UnnamedType11, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "history_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// history_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult) query;
+        func history_nft_origyn(_ args: UnnamedType11, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
+            let caller = ICPFunction<UnnamedType11, HistoryResult>(canister, "history_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func history_secure_nft_origyn(_ arg0: UnnamedType11, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "history_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// history_secure_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult);
+        func history_secure_nft_origyn(_ args: UnnamedType11, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
+            let caller = ICPFunction<UnnamedType11, HistoryResult>(canister, "history_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// http_access_key : () -> (OrigynTextResult);
         func http_access_key(sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
-            let method = ICPMethod(canister: canister,  methodName: "http_access_key")
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<OrigynTextResult>(canister, "http_access_key", query: false)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func http_request(_ arg0: HttpRequest, sender: ICPSigningPrincipal? = nil) async throws -> HTTPResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "http_request",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// http_request : (HttpRequest) -> (HTTPResponse) query;
+        func http_request(_ args: HttpRequest, sender: ICPSigningPrincipal? = nil) async throws -> HTTPResponse {
+            let caller = ICPFunction<HttpRequest, HTTPResponse>(canister, "http_request", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func http_request_streaming_callback(_ arg0: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "http_request_streaming_callback",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// http_request_streaming_callback : (StreamingCallbackToken) -> (
+        ///       StreamingCallbackResponse,
+        ///     ) query;
+        func http_request_streaming_callback(_ args: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
+            let caller = ICPFunction<StreamingCallbackToken, StreamingCallbackResponse>(canister, "http_request_streaming_callback", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func icrc3_get_archives(_ arg0: GetArchivesArgs, sender: ICPSigningPrincipal? = nil) async throws -> GetArchivesResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc3_get_archives",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc3_get_archives : (GetArchivesArgs) -> (GetArchivesResult) query;
+        func icrc3_get_archives(_ args: GetArchivesArgs, sender: ICPSigningPrincipal? = nil) async throws -> GetArchivesResult {
+            let caller = ICPFunction<GetArchivesArgs, GetArchivesResult>(canister, "icrc3_get_archives", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func icrc3_get_blocks(_ arg0: [TransactionRange], sender: ICPSigningPrincipal? = nil) async throws -> GetTransactionsResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc3_get_blocks",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc3_get_blocks : (vec TransactionRange) -> (GetTransactionsResult) query;
+        func icrc3_get_blocks(_ args: [TransactionRange], sender: ICPSigningPrincipal? = nil) async throws -> GetTransactionsResult {
+            let caller = ICPFunction<[TransactionRange], GetTransactionsResult>(canister, "icrc3_get_blocks", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// icrc3_get_tip_certificate : () -> (opt DataCertificate) query;
         func icrc3_get_tip_certificate(sender: ICPSigningPrincipal? = nil) async throws -> DataCertificate? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc3_get_tip_certificate")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<DataCertificate?>(canister, "icrc3_get_tip_certificate", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc3_supported_block_types : () -> (vec BlockType) query;
         func icrc3_supported_block_types(sender: ICPSigningPrincipal? = nil) async throws -> [BlockType] {
-            let method = ICPMethod(canister: canister,  methodName: "icrc3_supported_block_types")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<[BlockType]>(canister, "icrc3_supported_block_types", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func icrc7_approve(_ arg0: ApprovalArgs, sender: ICPSigningPrincipal? = nil) async throws -> ApprovalResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_approve",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_approve : (ApprovalArgs) -> (ApprovalResult);
+        func icrc7_approve(_ args: ApprovalArgs, sender: ICPSigningPrincipal? = nil) async throws -> ApprovalResult {
+            let caller = ICPFunction<ApprovalArgs, ApprovalResult>(canister, "icrc7_approve", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// icrc7_atomic_batch_transfers : () -> (opt bool) query;
         func icrc7_atomic_batch_transfers(sender: ICPSigningPrincipal? = nil) async throws -> Bool? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_atomic_batch_transfers")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<Bool?>(canister, "icrc7_atomic_batch_transfers", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func icrc7_balance_of(_ arg0: [Account__3], sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_balance_of",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_balance_of : (vec Account__3) -> (vec nat) query;
+        func icrc7_balance_of(_ args: [Account__3], sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+            let caller = ICPFunction<[Account__3], [BigUInt]>(canister, "icrc7_balance_of", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// icrc7_collection_metadata : () -> (CollectionMetadata) query;
         func icrc7_collection_metadata(sender: ICPSigningPrincipal? = nil) async throws -> CollectionMetadata {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_collection_metadata")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<CollectionMetadata>(canister, "icrc7_collection_metadata", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_default_take_value : () -> (opt nat) query;
         func icrc7_default_take_value(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_default_take_value")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_default_take_value", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_description : () -> (opt text) query;
         func icrc7_description(sender: ICPSigningPrincipal? = nil) async throws -> String? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_description")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String?>(canister, "icrc7_description", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_logo : () -> (opt text) query;
         func icrc7_logo(sender: ICPSigningPrincipal? = nil) async throws -> String? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_logo")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String?>(canister, "icrc7_logo", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_max_approvals_per_token_or_collection : () -> (opt nat) query;
         func icrc7_max_approvals_per_token_or_collection(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_max_approvals_per_token_or_collection")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_approvals_per_token_or_collection", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_max_memo_size : () -> (opt nat) query;
         func icrc7_max_memo_size(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_max_memo_size")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_memo_size", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_max_query_batch_size : () -> (opt nat) query;
         func icrc7_max_query_batch_size(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_max_query_batch_size")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_query_batch_size", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_max_revoke_approvals : () -> (opt nat) query;
         func icrc7_max_revoke_approvals(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_max_revoke_approvals")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_revoke_approvals", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_max_take_value : () -> (opt nat) query;
         func icrc7_max_take_value(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_max_take_value")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_take_value", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_max_update_batch_size : () -> (opt nat) query;
         func icrc7_max_update_batch_size(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_max_update_batch_size")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_update_batch_size", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_name : () -> (text) query;
         func icrc7_name(sender: ICPSigningPrincipal? = nil) async throws -> String {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_name")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String>(canister, "icrc7_name", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func icrc7_owner_of(_ arg0: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [Account__3?] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_owner_of",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_owner_of : (vec nat) -> (vec opt Account__3) query;
+        func icrc7_owner_of(_ args: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [Account__3?] {
+            let caller = ICPFunction<[BigUInt], [Account__3?]>(canister, "icrc7_owner_of", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// icrc7_permitted_drift : () -> (opt nat) query;
         func icrc7_permitted_drift(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_permitted_drift")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_permitted_drift", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_supply_cap : () -> (opt nat) query;
         func icrc7_supply_cap(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_supply_cap")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_supply_cap", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_supported_standards : () -> (vec SupportedStandard) query;
         func icrc7_supported_standards(sender: ICPSigningPrincipal? = nil) async throws -> [SupportedStandard] {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_supported_standards")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<[SupportedStandard]>(canister, "icrc7_supported_standards", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// icrc7_symbol : () -> (text) query;
         func icrc7_symbol(sender: ICPSigningPrincipal? = nil) async throws -> String {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_symbol")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<String>(canister, "icrc7_symbol", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func icrc7_token_metadata(_ arg0: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[UnnamedType12]?] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_token_metadata",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_token_metadata : (vec nat) -> (
+        ///       vec opt vec record { text; Value },
+        ///     ) query;
+        func icrc7_token_metadata(_ args: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[UnnamedType12]?] {
+            let caller = ICPFunction<[BigUInt], [[UnnamedType12]?]>(canister, "icrc7_token_metadata", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func icrc7_tokens(_ arg0: UnnamedType31, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_tokens",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_tokens : (opt nat, opt nat32) -> (vec nat) query;
+        func icrc7_tokens(_ args: UnnamedType31, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+            let caller = ICPFunction<UnnamedType31, [BigUInt]>(canister, "icrc7_tokens", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func icrc7_tokens_of(_ arg0: UnnamedType32, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_tokens_of",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_tokens_of : (Account__3, opt nat, opt nat32) -> (vec nat) query;
+        func icrc7_tokens_of(_ args: UnnamedType32, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
+            let caller = ICPFunction<UnnamedType32, [BigUInt]>(canister, "icrc7_tokens_of", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// icrc7_total_supply : () -> (nat) query;
         func icrc7_total_supply(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_total_supply")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt>(canister, "icrc7_total_supply", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func icrc7_transfer(_ arg0: [TransferArgs], sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_transfer",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_transfer : (vec TransferArgs) -> (TransferResult);
+        func icrc7_transfer(_ args: [TransferArgs], sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
+            let caller = ICPFunction<[TransferArgs], TransferResult>(canister, "icrc7_transfer", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func icrc7_transfer_fee(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "icrc7_transfer_fee",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// icrc7_transfer_fee : (nat) -> (opt nat) query;
+        func icrc7_transfer_fee(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
+            let caller = ICPFunction<BigUInt, BigUInt?>(canister, "icrc7_transfer_fee", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// icrc7_tx_window : () -> (opt nat) query;
         func icrc7_tx_window(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-            let method = ICPMethod(canister: canister,  methodName: "icrc7_tx_window")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_tx_window", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func manage_storage_nft_origyn(_ arg0: ManageStorageRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageStorageResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "manage_storage_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// manage_storage_nft_origyn : (ManageStorageRequest) -> (ManageStorageResult);
+        func manage_storage_nft_origyn(_ args: ManageStorageRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageStorageResult {
+            let caller = ICPFunction<ManageStorageRequest, ManageStorageResult>(canister, "manage_storage_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func market_transfer_batch_nft_origyn(_ arg0: [MarketTransferRequest], sender: ICPSigningPrincipal? = nil) async throws -> [MarketTransferResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "market_transfer_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// market_transfer_batch_nft_origyn : (vec MarketTransferRequest) -> (
+        ///       vec MarketTransferResult,
+        ///     );
+        func market_transfer_batch_nft_origyn(_ args: [MarketTransferRequest], sender: ICPSigningPrincipal? = nil) async throws -> [MarketTransferResult] {
+            let caller = ICPFunction<[MarketTransferRequest], [MarketTransferResult]>(canister, "market_transfer_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func market_transfer_nft_origyn(_ arg0: MarketTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> MarketTransferResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "market_transfer_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// market_transfer_nft_origyn : (MarketTransferRequest) -> (
+        ///       MarketTransferResult,
+        ///     );
+        func market_transfer_nft_origyn(_ args: MarketTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> MarketTransferResult {
+            let caller = ICPFunction<MarketTransferRequest, MarketTransferResult>(canister, "market_transfer_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// dip721_metadata : () -> (DIP721Metadata) query;
         func metadata(sender: ICPSigningPrincipal? = nil) async throws -> DIP721Metadata {
-            let method = ICPMethod(canister: canister,  methodName: "metadata")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<DIP721Metadata>(canister, "metadata", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func metadataExt(_ arg0: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTMetadataResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "metadataExt",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// metadataExt : (EXTTokenIdentifier) -> (EXTMetadataResult) query;
+        func metadataExt(_ args: EXTTokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> EXTMetadataResult {
+            let caller = ICPFunction<EXTTokenIdentifier, EXTMetadataResult>(canister, "metadataExt", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func mint_batch_nft_origyn(_ arg0: [UnnamedType33], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "mint_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// mint_batch_nft_origyn : (vec record { text; Account }) -> (
+        ///       vec OrigynTextResult,
+        ///     );
+        func mint_batch_nft_origyn(_ args: [UnnamedType33], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
+            let caller = ICPFunction<[UnnamedType33], [OrigynTextResult]>(canister, "mint_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func mint_nft_origyn(_ arg0: UnnamedType33, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "mint_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// mint_nft_origyn : (text, Account) -> (OrigynTextResult);
+        func mint_nft_origyn(_ args: UnnamedType33, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
+            let caller = ICPFunction<UnnamedType33, OrigynTextResult>(canister, "mint_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func nftStreamingCallback(_ arg0: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "nftStreamingCallback",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// nftStreamingCallback : (StreamingCallbackToken) -> (
+        ///       StreamingCallbackResponse,
+        ///     ) query;
+        func nftStreamingCallback(_ args: StreamingCallbackToken, sender: ICPSigningPrincipal? = nil) async throws -> StreamingCallbackResponse {
+            let caller = ICPFunction<StreamingCallbackToken, StreamingCallbackResponse>(canister, "nftStreamingCallback", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func nft_batch_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "nft_batch_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// nft_batch_origyn : (vec text) -> (vec NFTInfoResult) query;
+        func nft_batch_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
+            let caller = ICPFunction<[String], [NFTInfoResult]>(canister, "nft_batch_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func nft_batch_secure_origyn(_ arg0: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "nft_batch_secure_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// nft_batch_secure_origyn : (vec text) -> (vec NFTInfoResult);
+        func nft_batch_secure_origyn(_ args: [String], sender: ICPSigningPrincipal? = nil) async throws -> [NFTInfoResult] {
+            let caller = ICPFunction<[String], [NFTInfoResult]>(canister, "nft_batch_secure_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func nft_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// balance_of_batch_nft_origyn : (vec Account) -> (vec BalanceResult) query;
+        func nft_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
+            let caller = ICPFunction<String, NFTInfoResult>(canister, "nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func nft_secure_origyn(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "nft_secure_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// nft_secure_origyn : (text) -> (NFTInfoResult);
+        func nft_secure_origyn(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> NFTInfoResult {
+            let caller = ICPFunction<String, NFTInfoResult>(canister, "nft_secure_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func operaterTokenMetadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "operaterTokenMetadata",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// operaterTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
+        func operaterTokenMetadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+            let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "operaterTokenMetadata", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func ownerOf(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "ownerOf",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// ownerOf : (nat) -> (OwnerOfResponse) query;
+        func ownerOf(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> OwnerOfResponse {
+            let caller = ICPFunction<BigUInt, OwnerOfResponse>(canister, "ownerOf", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func ownerTokenMetadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "ownerTokenMetadata",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// ownerTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
+        func ownerTokenMetadata(_ args: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+            let caller = ICPFunction<CandidPrincipal, DIP721TokensMetadata>(canister, "ownerTokenMetadata", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func sale_batch_nft_origyn(_ arg0: [ManageSaleRequest], sender: ICPSigningPrincipal? = nil) async throws -> [ManageSaleResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "sale_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// sale_batch_nft_origyn : (vec ManageSaleRequest) -> (vec ManageSaleResult);
+        func sale_batch_nft_origyn(_ args: [ManageSaleRequest], sender: ICPSigningPrincipal? = nil) async throws -> [ManageSaleResult] {
+            let caller = ICPFunction<[ManageSaleRequest], [ManageSaleResult]>(canister, "sale_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func sale_info_batch_nft_origyn(_ arg0: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "sale_info_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// sale_info_batch_nft_origyn : (vec SaleInfoRequest) -> (
+        ///       vec SaleInfoResult,
+        ///     ) query;
+        func sale_info_batch_nft_origyn(_ args: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
+            let caller = ICPFunction<[SaleInfoRequest], [SaleInfoResult]>(canister, "sale_info_batch_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func sale_info_batch_secure_nft_origyn(_ arg0: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "sale_info_batch_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// sale_info_batch_secure_nft_origyn : (vec SaleInfoRequest) -> (
+        ///       vec SaleInfoResult,
+        ///     );
+        func sale_info_batch_secure_nft_origyn(_ args: [SaleInfoRequest], sender: ICPSigningPrincipal? = nil) async throws -> [SaleInfoResult] {
+            let caller = ICPFunction<[SaleInfoRequest], [SaleInfoResult]>(canister, "sale_info_batch_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func sale_info_nft_origyn(_ arg0: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "sale_info_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// sale_info_nft_origyn : (SaleInfoRequest) -> (SaleInfoResult) query;
+        func sale_info_nft_origyn(_ args: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
+            let caller = ICPFunction<SaleInfoRequest, SaleInfoResult>(canister, "sale_info_nft_origyn", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func sale_info_secure_nft_origyn(_ arg0: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "sale_info_secure_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// sale_info_secure_nft_origyn : (SaleInfoRequest) -> (SaleInfoResult);
+        func sale_info_secure_nft_origyn(_ args: SaleInfoRequest, sender: ICPSigningPrincipal? = nil) async throws -> SaleInfoResult {
+            let caller = ICPFunction<SaleInfoRequest, SaleInfoResult>(canister, "sale_info_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func sale_nft_origyn(_ arg0: ManageSaleRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageSaleResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "sale_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// sale_nft_origyn : (ManageSaleRequest) -> (ManageSaleResult);
+        func sale_nft_origyn(_ args: ManageSaleRequest, sender: ICPSigningPrincipal? = nil) async throws -> ManageSaleResult {
+            let caller = ICPFunction<ManageSaleRequest, ManageSaleResult>(canister, "sale_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func set_data_harvester(_ arg0: BigUInt, sender: ICPSigningPrincipal? = nil) async throws {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "set_data_harvester",
-                args: try CandidEncoder().encode(arg0)
-            )
-            _ = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
+        /// set_data_harvester : (nat) -> ();
+        func set_data_harvester(_ args: BigUInt, sender: ICPSigningPrincipal? = nil) async throws {
+            let caller = ICPFunctionNoResult<BigUInt>(canister, "set_data_harvester", query: false)
+            let _ = try await caller.callMethod(args, client, sender: sender)
         }
         
-        func set_halt(_ arg0: Bool, sender: ICPSigningPrincipal? = nil) async throws {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "set_halt",
-                args: try CandidEncoder().encode(arg0)
-            )
-            _ = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
+        /// set_halt : (bool) -> ();
+        func set_halt(_ args: Bool, sender: ICPSigningPrincipal? = nil) async throws {
+            let caller = ICPFunctionNoResult<Bool>(canister, "set_halt", query: false)
+            let _ = try await caller.callMethod(args, client, sender: sender)
         }
         
-        func share_wallet_nft_origyn(_ arg0: ShareWalletRequest, sender: ICPSigningPrincipal? = nil) async throws -> OwnerUpdateResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "share_wallet_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// share_wallet_nft_origyn : (ShareWalletRequest) -> (OwnerUpdateResult);
+        func share_wallet_nft_origyn(_ args: ShareWalletRequest, sender: ICPSigningPrincipal? = nil) async throws -> OwnerUpdateResult {
+            let caller = ICPFunction<ShareWalletRequest, OwnerUpdateResult>(canister, "share_wallet_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func stage_batch_nft_origyn(_ arg0: [UnnamedType34], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "stage_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// stage_batch_nft_origyn : (vec record { metadata : CandyShared }) -> (
+        ///       vec OrigynTextResult,
+        ///     );
+        func stage_batch_nft_origyn(_ args: [UnnamedType34], sender: ICPSigningPrincipal? = nil) async throws -> [OrigynTextResult] {
+            let caller = ICPFunction<[UnnamedType34], [OrigynTextResult]>(canister, "stage_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func stage_library_batch_nft_origyn(_ arg0: [StageChunkArg], sender: ICPSigningPrincipal? = nil) async throws -> [StageLibraryResult] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "stage_library_batch_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// stage_library_batch_nft_origyn : (vec StageChunkArg) -> (
+        ///       vec StageLibraryResult,
+        ///     );
+        func stage_library_batch_nft_origyn(_ args: [StageChunkArg], sender: ICPSigningPrincipal? = nil) async throws -> [StageLibraryResult] {
+            let caller = ICPFunction<[StageChunkArg], [StageLibraryResult]>(canister, "stage_library_batch_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func stage_library_nft_origyn(_ arg0: StageChunkArg, sender: ICPSigningPrincipal? = nil) async throws -> StageLibraryResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "stage_library_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// stage_library_nft_origyn : (StageChunkArg) -> (StageLibraryResult);
+        func stage_library_nft_origyn(_ args: StageChunkArg, sender: ICPSigningPrincipal? = nil) async throws -> StageLibraryResult {
+            let caller = ICPFunction<StageChunkArg, StageLibraryResult>(canister, "stage_library_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func stage_nft_origyn(_ arg0: UnnamedType34, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "stage_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// stage_nft_origyn : (record { metadata : CandyShared }) -> (OrigynTextResult);
+        func stage_nft_origyn(_ args: UnnamedType34, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
+            let caller = ICPFunction<UnnamedType34, OrigynTextResult>(canister, "stage_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// state_size : () -> (StateSize) query;
         func state_size(sender: ICPSigningPrincipal? = nil) async throws -> StateSize {
-            let method = ICPMethod(canister: canister,  methodName: "state_size")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<StateSize>(canister, "state_size", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// storage_info_nft_origyn : () -> (StorageMetricsResult) query;
         func storage_info_nft_origyn(sender: ICPSigningPrincipal? = nil) async throws -> StorageMetricsResult {
-            let method = ICPMethod(canister: canister,  methodName: "storage_info_nft_origyn")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<StorageMetricsResult>(canister, "storage_info_nft_origyn", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// storage_info_secure_nft_origyn : () -> (StorageMetricsResult);
         func storage_info_secure_nft_origyn(sender: ICPSigningPrincipal? = nil) async throws -> StorageMetricsResult {
-            let method = ICPMethod(canister: canister,  methodName: "storage_info_secure_nft_origyn")
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<StorageMetricsResult>(canister, "storage_info_secure_nft_origyn", query: false)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
-        func tokens_ext(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws -> EXTTokensResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "tokens_ext",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// tokens_ext : (text) -> (EXTTokensResult) query;
+        func tokens_ext(_ args: String, sender: ICPSigningPrincipal? = nil) async throws -> EXTTokensResult {
+            let caller = ICPFunction<String, EXTTokensResult>(canister, "tokens_ext", query: true)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func transfer(_ arg0: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "transfer",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// dip721_transfer : (principal, nat) -> (DIP721NatResult);
+        func transfer(_ args: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
+            let caller = ICPFunction<EXTTransferRequest, EXTTransferResponse>(canister, "transfer", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func transferDip721(_ arg0: UnnamedType2, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "transferDip721",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// transferDip721 : (principal, nat) -> (DIP721NatResult);
+        func transferDip721(_ args: UnnamedType2, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<UnnamedType2, DIP721NatResult>(canister, "transferDip721", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func transferEXT(_ arg0: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "transferEXT",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// transferEXT : (EXTTransferRequest) -> (EXTTransferResponse);
+        func transferEXT(_ args: EXTTransferRequest, sender: ICPSigningPrincipal? = nil) async throws -> EXTTransferResponse {
+            let caller = ICPFunction<EXTTransferRequest, EXTTransferResponse>(canister, "transferEXT", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func transferFrom(_ arg0: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "transferFrom",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// transferFrom : (principal, principal, nat) -> (DIP721NatResult);
+        func transferFrom(_ args: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<UnnamedType30, DIP721NatResult>(canister, "transferFrom", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func transferFromDip721(_ arg0: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "transferFromDip721",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// transferFromDip721 : (principal, principal, nat) -> (DIP721NatResult);
+        func transferFromDip721(_ args: UnnamedType30, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+            let caller = ICPFunction<UnnamedType30, DIP721NatResult>(canister, "transferFromDip721", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func update_app_nft_origyn(_ arg0: NFTUpdateRequest, sender: ICPSigningPrincipal? = nil) async throws -> NFTUpdateResult {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "update_app_nft_origyn",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// update_app_nft_origyn : (NFTUpdateRequest) -> (NFTUpdateResult);
+        func update_app_nft_origyn(_ args: NFTUpdateRequest, sender: ICPSigningPrincipal? = nil) async throws -> NFTUpdateResult {
+            let caller = ICPFunction<NFTUpdateRequest, NFTUpdateResult>(canister, "update_app_nft_origyn", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
-        func update_icrc3(_ arg0: [UpdateSetting], sender: ICPSigningPrincipal? = nil) async throws -> [Bool] {
-            let method = ICPMethod(
-                canister: canister,
-                methodName: "update_icrc3",
-                args: try CandidEncoder().encode(arg0)
-            )
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+        /// update_icrc3 : (vec UpdateSetting) -> (vec bool);
+        func update_icrc3(_ args: [UpdateSetting], sender: ICPSigningPrincipal? = nil) async throws -> [Bool] {
+            let caller = ICPFunction<[UpdateSetting], [Bool]>(canister, "update_icrc3", query: false)
+            let response = try await caller.callMethod(args, client, sender: sender)
+            return response
         }
         
+        /// wallet_receive : () -> (nat);
         func wallet_receive(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-            let method = ICPMethod(canister: canister,  methodName: "wallet_receive")
-            let response = try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<BigUInt>(canister, "wallet_receive", query: false)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
+        /// whoami : () -> (principal) query;
         func whoami(sender: ICPSigningPrincipal? = nil) async throws -> CandidPrincipal {
-            let method = ICPMethod(canister: canister,  methodName: "whoami")
-            let response = try await client.query(method, effectiveCanister: canister, sender: sender)
-            return try CandidDecoder().decode(response)
+            let caller = ICPFunctionNoArgs<CandidPrincipal>(canister, "whoami", query: true)
+            let response = try await caller.callMethod(client, sender: sender)
+            return response
         }
         
     }

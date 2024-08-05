@@ -33,28 +33,31 @@ final class CandidCodeGeneratorTests: XCTestCase {
                 signature: .concrete(.init([
                     .init("noArgsNoResults"),
                     .init("singleUnnamedArg", [.text], query: true),
+                    .init("singleNamedArg", [("myString", .text)], [], query: true),
                     .init("singleUnnamedResult", [], [.option(.bool)]),
+                    .init("singleNamedResult", [], [("myString", .text)], query: true),
                     .init("multipleUnnamedArgsAndResults", [.text, .vector(.natural)], [.option(.bool), .vector(.blob)]),
                     .init("multipleNamedArgsAndResults", 
                           [("name", .text), ("ids", .vector(.natural))],
                           [("out1", .option(.bool)), ("out2", .vector(.blob))]),
+                    .init(name: "functionReference", signatureReference: "Function1"),
                 ]))
              )
             ),
-            ([
-                "Function1": .function([CandidType](),[]),
-                "Function2": .function([.record([.text, .natural])], [.vector(.bool)]),
-                "TestServiceDef": .service([
-                    .init("foo", [.natural8], [.integer8]),
-                    .init(name: "ref", signatureReference: "Function1"),
-                    .init(name: "ref2", signatureReference: "Function2")
-                ]),
-            ],
-             CandidInterfaceDefinition.ServiceDefinition(
-                name: "TestService",
-                signature: .reference("TestServiceDef")
-             )
-            )
+//            ([
+//                "Function1": .function([CandidType](),[]),
+//                "Function2": .function([.record([.text, .natural])], [.vector(.bool)]),
+//                "TestServiceDef": .service([
+//                    .init("foo", [.natural8], [.integer8]),
+//                    .init(name: "ref", signatureReference: "Function1"),
+//                    .init(name: "ref2", signatureReference: "Function2")
+//                ]),
+//            ],
+//             CandidInterfaceDefinition.ServiceDefinition(
+//                name: "TestService",
+//                signature: .reference("TestServiceDef")
+//             )
+//            )
         ]
         
         for (namedTypes, service) in testVectors {

@@ -1,6 +1,6 @@
 //
 // This file was generated using CandidCodeGenerator
-// created: 2024-08-05 07:46:13 +0000
+// created: 2024-08-05 08:59:45 +0000
 //
 // You can modify this file if needed
 //
@@ -322,24 +322,31 @@ enum Ledger {
             self.client = client
         }
         
+        /// // Queries blocks in the specified range.
+        ///   query_blocks : (GetBlocksArgs) -> (QueryBlocksResponse) query;
         func query_blocks(_ args: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {
             let caller = ICPFunction<GetBlocksArgs, QueryBlocksResponse>(canister, "query_blocks", query: true)
             let response = try await caller.callMethod(args, client, sender: sender)
             return response
         }
         
+        /// // Returns the existing archive canisters information.
+        ///   archives : () -> (Archives) query;
         func archives(sender: ICPSigningPrincipal? = nil) async throws -> Archives {
             let caller = ICPFunctionNoArgs<Archives>(canister, "archives", query: true)
             let response = try await caller.callMethod(client, sender: sender)
             return response
         }
         
+        /// // Get the amount of ICP on the specified account.
+        ///   account_balance : (AccountBalanceArgs) -> (Tokens) query;
         func account_balance(_ args: AccountBalanceArgs, sender: ICPSigningPrincipal? = nil) async throws -> Tokens {
             let caller = ICPFunction<AccountBalanceArgs, Tokens>(canister, "account_balance", query: true)
             let response = try await caller.callMethod(args, client, sender: sender)
             return response
         }
         
+        /// transfer : (TransferArgs) -> (TransferResult);
         func transfer(_ args: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
             let caller = ICPFunction<TransferArgs, TransferResult>(canister, "transfer", query: false)
             let response = try await caller.callMethod(args, client, sender: sender)

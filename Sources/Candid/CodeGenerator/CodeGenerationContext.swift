@@ -238,7 +238,7 @@ struct CodeGeneratorCandidService {
     }
     
     static func functionOriginalDefinition(_ name: String, serviceDefinition: String?) throws -> String? {
-        let regex = try Regex(#"[{;]\s*(?'originalDefinition'[^;]*"# + name + #"[^;]*;)"#)
+        let regex = try Regex(#"[{;]\s*(?'originalDefinition'[^;]*"# + name + #"\s*:\s*\([^)]*\)\s->\s\([^)]*\)[^;]*;)"#)
         guard let serviceDefinition = serviceDefinition,
               let match = try regex.firstMatch(in: serviceDefinition),
               let functionDefinition = match["originalDefinition"]?.substring else {

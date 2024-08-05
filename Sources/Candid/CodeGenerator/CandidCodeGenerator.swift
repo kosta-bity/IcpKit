@@ -104,12 +104,13 @@ public class CandidCodeGenerator {
             signature = try getConcreteFunctionSignature(referencedName, namedTypes)
             methodCaller = referencedName
         }
+        let simplifiedArgument = signature.arguments.first
         let block = IndentedString()
         block.addSwiftDocumentation(method.originalDefinition)
         block.addLine(buildFunctionDefinition(method.name, signature))
         block.increaseIndent()
         block.addLine("let caller = \(methodCaller)(canister, \"\(method.name)\", query: \(signature.annotations.query))")
-        let args = signature.arguments.isEmpty ? "" : "args, "
+        let args = simplifiedArgument.map { "\($0.name ?? "args"), " } ?? ""
         let varName = signature.results.isEmpty ? "_" : "response"
         block.addLine("let \(varName) = try await caller.callMethod(\(args)client, sender: sender)")
         if !signature.results.isEmpty {
