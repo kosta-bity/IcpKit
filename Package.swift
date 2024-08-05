@@ -73,6 +73,8 @@ let package = Package(
                 .process("DidFiles/GoldNFT.did"),
                 .process("DidFiles/EVMProviders.did"),
                 .process("DidFiles/LedgerCanister.did"),
+                .process("DidFiles/TestImports.did"),
+                .process("DidFiles/TestImports2.did"),
                 .process("Generated/LedgerCanister.generated_swift"),
                 .process("Generated/ICRC7.generated_swift"),
                 .process("Generated/TestCodeGeneration.generated_swift"),

@@ -65,13 +65,13 @@ extension CandidRecord: CustomStringConvertible {
 
 extension CandidKeyedType: CustomStringConvertible {
     public var description: String {
-        return "\(key.hash): \(type)"
+        return "\(key.stringValue ?? String(key.intValue)): \(type)"
     }
 }
 
 extension CandidKeyedValue: CustomStringConvertible {
     public var description: String {
-        return "\(key.hash) = \(value)"
+        return "\(key.stringValue ?? String(key.intValue)) = \(value)"
     }
 }
 

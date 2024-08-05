@@ -13,12 +13,8 @@ public protocol CandidInterfaceDefinitionProvider {
 }
 
 public class FileCandidInterfaceDefinitionProvider: CandidInterfaceDefinitionProvider {
-    enum Error: Swift.Error {
-        case fileNotFound
-    }
-    
-    let mainFile: URL
-    let workingPath: String
+    public let mainFile: URL
+    public let workingPath: String
     
     public init(workingPath: String, mainFile: String) {
         self.workingPath = workingPath
@@ -31,6 +27,8 @@ public class FileCandidInterfaceDefinitionProvider: CandidInterfaceDefinitionPro
     }
     
     public func read(contentsOf file: String) async throws -> String {
-        throw Error.fileNotFound
+        let path = mainFile.deletingLastPathComponent().appending(path: file)
+        let contents = try String(contentsOf: path)
+        return contents
     }
 }
