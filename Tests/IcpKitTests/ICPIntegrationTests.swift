@@ -64,10 +64,6 @@ final class ICPIntegrationTests: XCTestCase {
     }
 }
 
-let cValue: ICPFunctionNoArgs<[Bool]> = .init(try! CandidPrincipal("aaaaa-aa"), "foo", false)
-let c2Value: ICPFunctionNoResult<[Bool]> = .init(try! CandidPrincipal("aaaaa-aa"), "foo", false)
-let c3Value: ICPFunction<[Bool], [Bool]> = .init(try! CandidPrincipal("aaaaa-aa"), "foo", false)
-
 private let testWallet1PublicKey: Data = Data.fromHex("046acf4c93dd993cd736420302eb70da254532ec3179250a21eec4ce823ff289aaa382cb19576b2c6447db09cb45926ebd69ce288b1804580fe62c343d3252ec6e")!
 private let testWallet2PublicKey: Data = Data.fromHex("04723cdc9bd653014a501159fb89dcc6e2cf03f242955b987b53dd6193815d8a9d4a4f5b902b2819d270c28f0710ad96fea5b13f5fe30c6e244bf2941ebf4ec36e")!
 

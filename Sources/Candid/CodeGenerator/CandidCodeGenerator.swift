@@ -52,26 +52,32 @@ public class CandidCodeGenerator {
     }
     
     private func buildServiceBlock(_ service: CodeGeneratorCandidService) -> IndentedString {
-        let block = IndentedString()
-        block.addSwiftDocumentation(service.originalDefinition)
-        block.addLine("class \(service.name) {")
-        block.increaseIndent()
-        block.addLine("let canister: ICPPrincipal")
-        block.addLine("let client: ICPRequestClient")
-        block.addLine()
-        block.addLine("init(canister: ICPPrincipal, client: ICPRequestClient) {")
-        block.increaseIndent()
-        block.addLine("self.canister = canister")
-        block.addLine("self.client = client")
-        block.decreaseIndent()
-        block.addLine("}")
-        block.addLine()
-        for method in service.methods {
-            block.addBlock(buildServiceMethod(method), newLine: true)
+        switch service.type {
+        case .reference(let referencedService):
+            return IndentedString("typealias \(service.name) = \(referencedService)")
+            
+        case .concrete(let methods):
+            let block = IndentedString()
+            block.addSwiftDocumentation(service.originalDefinition)
+            block.addLine("class \(service.name) {")
+            block.increaseIndent()
+            block.addLine("let canister: ICPPrincipal")
+            block.addLine("let client: ICPRequestClient")
+            block.addLine()
+            block.addLine("init(canister: ICPPrincipal, client: ICPRequestClient) {")
+            block.increaseIndent()
+            block.addLine("self.canister = canister")
+            block.addLine("self.client = client")
+            block.decreaseIndent()
+            block.addLine("}")
+            block.addLine()
+            for method in methods {
+                block.addBlock(buildServiceMethod(method), newLine: true)
+            }
+            block.decreaseIndent()
+            block.addLine("}")
+            return block
         }
-        block.decreaseIndent()
-        block.addLine("}")
-        return block
     }
     
     private func buildServiceMethod(_ method: CodeGeneratorCandidService.Method) -> IndentedString {
@@ -159,9 +165,25 @@ public class CandidCodeGenerator {
         case .typealias(let candidType): return buildTypeAlias(namedType.name, candidType, namedType.originalDefinition)
         case .struct(let candidKeyedTypes): return buildStruct(namedType.name, candidKeyedTypes, namedType.originalDefinition)
         case .variant(let candidKeyedTypes): return buildVariant(namedType.name, candidKeyedTypes, namedType.originalDefinition, namedTypes)
+        case .service(let signature): return buildServiceType(namedType.name, signature, namedType.originalDefinition)
         }
     }
     
+    private func buildServiceType(_ name: String, _ signature: CandidServiceSignature, _ originalDefinition: String?) -> GeneratedCode {
+        let service = CodeGeneratorCandidService(
+            name: name,
+            type: .concrete(signature.methods.map {
+                guard case .concrete(let functionSignature) = $0.functionSignature else {
+                    fatalError("all functions should be concrete by now")
+                }
+                return .init(name: $0.name, signature: functionSignature)
+            }),
+            originalDefinition: originalDefinition
+        )
+        let serviceBlock = buildServiceBlock(service)
+        return GeneratedCode(name: name, output: serviceBlock, type: .namedType)
+    }
+        
     private func buildTypeAlias(_ name: String, _ type: CandidType, _ originalDefinition: String?) -> GeneratedCode {
         let output = IndentedString()
         output.addSwiftDocumentation(originalDefinition)
@@ -270,6 +292,7 @@ private enum CodeGenerationCandidType {
     case `typealias`(CandidType)
     case `struct`(CandidKeyedTypes)
     case variant(CandidKeyedTypes)
+    case service(CandidServiceSignature)
 }
 
 private extension CandidType {
@@ -277,6 +300,7 @@ private extension CandidType {
         switch self {
         case .variant(let keyedTypes): return .variant(keyedTypes)
         case .record(let keyedTypes): return .struct(keyedTypes)
+        case .service(let signature): return .service(signature)
         default: return .typealias(self)
         }
     }
@@ -492,7 +516,10 @@ private extension CandidValue {
             return IndentedString.inline(".init(\(method.principal.swiftValueInit), \"\(method.name)\", \(candidFunction.signature.annotations.query))")
             
         case .service(let candidService):
-            fatalError()
+            guard let principal = candidService.principal else {
+                return IndentedString.inline("nil")
+            }
+            return IndentedString.inline(".init(\(principal.swiftValueInit))")
         }
     }
 }

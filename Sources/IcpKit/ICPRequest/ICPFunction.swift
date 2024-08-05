@@ -56,7 +56,7 @@ public struct ICPFunctionNoArgsNoResult: CandidFunctionProtocol {
     
     public func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
         let method = ICPMethod(canister: icpPrincipal, methodName: method)
-        let response = try await callOrQuery(method, client, sender)
+        let _ = try await callOrQuery(method, client, sender)
     }
 }
 

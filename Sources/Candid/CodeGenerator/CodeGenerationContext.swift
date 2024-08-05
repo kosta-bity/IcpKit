@@ -58,12 +58,20 @@ class CodeGenerationContext {
     
     private func setService(_ name: String, _ service: CandidInterfaceDefinition.ServiceDefinition) throws {
         precondition(self.service == nil)
-        let signature = try getConcreteServiceSignature(service.signature)
-        self.service = CodeGeneratorCandidService(
-            name: name,
-            methods: try signature.methods.map{ .init(name: $0.name, signature: try simplifyServiceMethod($0.functionSignature)) },
-            originalDefinition: service.originalDefinition
-        )
+        switch service.signature {
+        case .concrete(let serviceSignature):
+            self.service = CodeGeneratorCandidService(
+                name: name,
+                type: .concrete(try serviceSignature.methods.map{ .init(name: $0.name, signature: try simplifyServiceMethod($0.functionSignature)) }),
+                originalDefinition: service.originalDefinition
+            )
+        case .reference(let string):
+            self.service = CodeGeneratorCandidService(
+                name: name,
+                type: .reference(string),
+                originalDefinition: service.originalDefinition
+            )
+        }
     }
     
     private func getConcreteServiceSignature(_ signatureType: CandidInterfaceDefinition.ServiceDefinition.SignatureType) throws -> CandidServiceSignature {
@@ -211,8 +219,13 @@ class CodeGenerationContext {
 
 struct CodeGeneratorCandidService {
     let name: String
-    let methods: [Method]
+    let type: ServiceType
     let originalDefinition: String?
+    
+    enum ServiceType {
+        case reference(String)
+        case concrete([Method])
+    }
     
     struct Method {
         let name: String

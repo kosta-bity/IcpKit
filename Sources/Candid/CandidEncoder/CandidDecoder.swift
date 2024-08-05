@@ -55,6 +55,14 @@ private class CandidValueDecoder: Decoder {
             }
             let functionProtocol = (T.self as! CandidFunctionProtocol.Type).init(method.principal, method.name, function.signature.annotations.query)
             return functionProtocol as! T
+            
+        } else if T.self is CandidServiceProtocol.Type {
+            let service = try input.service(codingPath)
+            guard let principal = service.principal else {
+                throw EncodingError.invalidValue(service, .init(codingPath: codingPath, debugDescription: "No principal defined in CandidService"))
+            }
+            let serviceProtocol = (T.self as! CandidServiceProtocol.Type).init(principal)
+            return serviceProtocol as! T
         }
         return try T.init(from: self)
     }
@@ -387,10 +395,17 @@ private extension CandidValue {
     }
     
     func function(_ codingPath: [CodingKey]) throws -> CandidFunction {
-        guard case .function(let signature) = self else {
+        guard case .function(let function) = self else {
             throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Function"))
         }
-        return signature
+        return function
+    }
+    
+    func service(_ codingPath: [CodingKey]) throws -> CandidService {
+        guard case .service(let service) = self else {
+            throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Function"))
+        }
+        return service
     }
 }
 

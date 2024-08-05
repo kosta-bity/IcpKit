@@ -21,6 +21,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
                 "RepeatedRecord": .record([.vector(.option(.integer8)), .natural8]),
                 "Variant": .variant(["a": .null, "b": .text, "c": .record([.text, .integer]), "d": .record(["one": .bool, "two": .blob, "three": .record([.vector(.option(.integer8)), .natural8])])]),
                 "UnnamedVariant": .variant("spring", "winter", "summer", "fall"),
+                "TestServiceDef": .service([.init("foo", [.natural8], [.integer8])]),
                 //"RecursiveRecord": .record(["recurse": .option(.named("RecursiveRecord"))])
             ],
              CandidInterfaceDefinition.ServiceDefinition(
@@ -34,6 +35,15 @@ final class CandidCodeGeneratorTests: XCTestCase {
                           [("name", .text), ("ids", .vector(.natural))],
                           [("out1", .option(.bool)), ("out2", .vector(.blob))]),
                 ]))
+             )
+            ),
+            ([
+                "TestServiceDef": .service([.init("foo", [.natural8], [.integer8])]),
+                //"RecursiveRecord": .record(["recurse": .option(.named("RecursiveRecord"))])
+            ],
+             CandidInterfaceDefinition.ServiceDefinition(
+                name: "TestService",
+                signature: .reference("TestServiceDef")
              )
             )
         ]
