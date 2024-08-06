@@ -4,6 +4,10 @@ IcpKit aims at facilitating the interaction between iOS apps and the ICP blockch
 
 For more information about ICP Development, we recommend starting from https://internetcomputer.org/docs/current/references/
 
+[![codecov](https://codecov.io/gh/kosta-bity/IcpKit/graphs/sunburst.svg?token=QL11UD2IXD)](https://codecov.io/gh/kosta-bity/IcpKit)
+
+[![codecov](https://codecov.io/gh/kosta-bity/IcpKit/graph/badge.svg?token=QL11UD2IXD)](https://codecov.io/gh/kosta-bity/IcpKit)
+
 ## Contributors
 This Package has been built by [Bity SA](https://bity.com) with the help of the [DFinity Foundation Developer Grant Program](https://dfinity.org/grants).
 
