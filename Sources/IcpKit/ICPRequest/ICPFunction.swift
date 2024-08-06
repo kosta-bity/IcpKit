@@ -9,28 +9,37 @@ import Foundation
 import Candid
 
 public extension CandidFunctionProtocol {
-    init(_ canister: ICPPrincipal, _ method: String, query: Bool) {
-        self.init(CandidPrincipal(canister.bytes), method, query)
+    init(_ canister: ICPPrincipal, _ method: String) {
+        self.init(CandidPrincipal(canister.bytes), method)
     }
     
     var icpPrincipal: ICPPrincipal { ICPPrincipal(canister) }
 }
 
-public class ICPFunction<Argument, Result>: CandidFunctionProtocol {
+public class ICPFunction<Argument, Result, Query: StaticBool>: CandidFunctionProtocol {
     public let canister: CandidPrincipal
     public let method: String
-    public let query: Bool
+    public var query: Bool { Query.value }
     
-    public required init(_ canister: CandidPrincipal, _ method: String, _ query: Bool) {
+    public required init(_ canister: CandidPrincipal, _ method: String) {
         self.canister = canister
         self.method = method
-        self.query = query
     }
 }
 
-public typealias ICPFunctionNoArgsNoResult = ICPFunction<Void, Void>
-public typealias ICPFunctionNoArgs<Result> = ICPFunction<Void, Result>
-public typealias ICPFunctionNoResult<Argument> = ICPFunction<Argument, Void>
+public typealias ICPFunctionNoArgsNoResult<Query: StaticBool> = ICPFunction<Void, Void, Query>
+public typealias ICPFunctionNoArgs<Result, Query: StaticBool> = ICPFunction<Void, Result, Query>
+public typealias ICPFunctionNoResult<Argument, Query: StaticBool> = ICPFunction<Argument, Void, Query>
+
+public typealias ICPQueryNoArgsNoResult = ICPFunctionNoArgsNoResult<StaticTrue>
+public typealias ICPQueryNoArgs<Result> = ICPFunctionNoArgs<Result, StaticTrue>
+public typealias ICPQueryNoResult<Argument> = ICPFunctionNoResult<Argument, StaticTrue>
+public typealias ICPQuery<Argument, Result> = ICPFunction<Argument, Result, StaticTrue>
+
+public typealias ICPCallNoArgsNoResult = ICPFunctionNoArgsNoResult<StaticFalse>
+public typealias ICPCallNoArgs<Result> = ICPFunctionNoArgs<Result, StaticFalse>
+public typealias ICPCallNoResult<Argument> = ICPFunctionNoResult<Argument, StaticFalse>
+public typealias ICPCall<Argument, Result> = ICPFunction<Argument, Result, StaticFalse>
 
 public extension ICPFunction where Argument: Encodable, Result: Decodable {
     func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {

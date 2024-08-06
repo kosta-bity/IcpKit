@@ -1,13 +1,6 @@
-//
-//  File.swift
-//  
-//
-//  Created by Konstantinos Gaitanis on 05.08.24.
-//
-
 import Foundation
-import Candid
 import BigInt
+import Candid
 
 enum Ledger {
     /// // Account identifier  is a 32-byte array.
@@ -30,7 +23,7 @@ enum Ledger {
     
     /// // A function that is used for fetching archived ledger blocks.
     /// type QueryArchiveFn = func (GetBlocksArgs) -> (QueryArchiveResult) query;
-    typealias QueryArchiveFn = ICPFunction<GetBlocksArgs, QueryArchiveResult>
+    typealias QueryArchiveFn = ICPQuery<GetBlocksArgs, QueryArchiveResult>
     
     /// type SubAccount = blob;
     typealias SubAccount = Data
@@ -317,7 +310,7 @@ enum Ledger {
         /// // Queries blocks in the specified range.
         ///   query_blocks : (GetBlocksArgs) -> (QueryBlocksResponse) query;
         func query_blocks(_ arg0: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {
-            let caller = ICPFunction<GetBlocksArgs, QueryBlocksResponse>(canister, "query_blocks", query: true)
+            let caller = ICPQuery<GetBlocksArgs, QueryBlocksResponse>(canister, "query_blocks")
             let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
@@ -325,7 +318,7 @@ enum Ledger {
         /// // Returns the existing archive canisters information.
         ///   archives : () -> (Archives) query;
         func archives(sender: ICPSigningPrincipal? = nil) async throws -> Archives {
-            let caller = ICPFunctionNoArgs<Archives>(canister, "archives", query: true)
+            let caller = ICPQueryNoArgs<Archives>(canister, "archives")
             let response = try await caller.callMethod(client, sender: sender)
             return response
         }
@@ -333,147 +326,15 @@ enum Ledger {
         /// // Get the amount of ICP on the specified account.
         ///   account_balance : (AccountBalanceArgs) -> (Tokens) query;
         func account_balance(_ arg0: AccountBalanceArgs, sender: ICPSigningPrincipal? = nil) async throws -> Tokens {
-            let caller = ICPFunction<AccountBalanceArgs, Tokens>(canister, "account_balance", query: true)
+            let caller = ICPQuery<AccountBalanceArgs, Tokens>(canister, "account_balance")
             let response = try await caller.callMethod(arg0, client, sender: sender)
             return response
         }
         
         /// transfer : (TransferArgs) -> (TransferResult);
         func transfer(_ arg0: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
-            let caller = ICPFunction<TransferArgs, TransferResult>(canister, "transfer", query: false)
+            let caller = ICPCall<TransferArgs, TransferResult>(canister, "transfer")
             let response = try await caller.callMethod(arg0, client, sender: sender)
-            return response
-        }
-        
-    }
-    
-}
-enum TestCodeGeneration {
-    typealias ABool = Bool
-    
-    typealias AData = Data
-    
-    typealias Function00 = ICPFunctionNoArgsNoResult
-    
-    typealias Function01 = ICPFunctionNoArgs<Bool>
-    
-    typealias Function02 = ICPFunctionNoArgs<CandidTuple2<Bool, String>>
-    
-    typealias Function03 = ICPFunctionNoArgs<CandidTuple3<Bool, String, Bool?>>
-    
-    typealias Function10 = ICPFunctionNoResult<Bool>
-    
-    typealias Function20 = ICPFunctionNoResult<CandidTuple2<Bool, String>>
-    
-    typealias Function30 = ICPFunctionNoResult<CandidTuple3<Bool, String, Bool?>>
-    
-    typealias RepeatedRecord = CandidTuple2<[Int8?], UInt8>
-    
-    typealias UnnamedType0 = CandidTuple2<[Int8?], UInt8>
-    
-    typealias VectorBool = [Bool]
-    
-    typealias VectorOptionalText = [String?]
-    
-    
-    struct Record: Codable {
-        let a: [BigInt?]
-        let b: BigUInt
-        let c: CandidTuple2<Bool, String>
-    }
-    
-    class TestServiceDef: ICPService {
-        func foo(_ arg0: UInt8, sender: ICPSigningPrincipal? = nil) async throws -> Int8 {
-            let caller = ICPFunction<UInt8, Int8>(canister, "foo", query: false)
-            let response = try await caller.callMethod(arg0, client, sender: sender)
-            return response
-        }
-        
-        func ref(sender: ICPSigningPrincipal? = nil) async throws -> Bool {
-            let caller = Function01(canister, "ref", query: false)
-            let response = try await caller.callMethod(client, sender: sender)
-            return response
-        }
-        
-    }
-    
-    enum UnnamedVariant: Codable {
-        case fall
-        case winter
-        case summer
-        case spring
-        
-        enum CodingKeys: Int, CodingKey {
-            case fall = 1135983739
-            case winter = 1385738053
-            case summer = 2706091375
-            case spring = 3281376973
-        }
-    }
-    
-    enum Variant: Codable {
-        case a
-        case b(String)
-        case c(String, BigInt)
-        case d(one: Bool, two: Data, three: CandidTuple2<[Int8?], UInt8>)
-        
-        enum CodingKeys: Int, CodingKey {
-            case a = 97
-            case b = 98
-            case c = 99
-            case d = 100
-        }
-    }
-    
-    
-    class TestService: ICPService {
-        func noArgsNoResults(sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = ICPFunctionNoArgsNoResult(canister, "noArgsNoResults", query: false)
-            let _ = try await caller.callMethod(client, sender: sender)
-        }
-        
-        func singleUnnamedArg(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = ICPFunctionNoResult<String>(canister, "singleUnnamedArg", query: true)
-            let _ = try await caller.callMethod(arg0, client, sender: sender)
-        }
-        
-        func singleUnnamedArgRecordWithUnnamedFields(_ arg0: CandidTuple2<Bool, String>, sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = ICPFunctionNoResult<CandidTuple2<Bool, String>>(canister, "singleUnnamedArgRecordWithUnnamedFields", query: false)
-            let _ = try await caller.callMethod(arg0, client, sender: sender)
-        }
-        
-        func singleNamedArg(myString: String, sender: ICPSigningPrincipal? = nil) async throws {
-            let caller = ICPFunctionNoResult<String>(canister, "singleNamedArg", query: true)
-            let _ = try await caller.callMethod(myString, client, sender: sender)
-        }
-        
-        func singleUnnamedResult(sender: ICPSigningPrincipal? = nil) async throws -> Bool? {
-            let caller = ICPFunctionNoArgs<Bool?>(canister, "singleUnnamedResult", query: false)
-            let response = try await caller.callMethod(client, sender: sender)
-            return response
-        }
-        
-        func singleNamedResult(sender: ICPSigningPrincipal? = nil) async throws -> String {
-            let caller = ICPFunctionNoArgs<String>(canister, "singleNamedResult", query: true)
-            let response = try await caller.callMethod(client, sender: sender)
-            return response
-        }
-        
-        func multipleUnnamedArgsAndResults(_ arg0: String, _ arg1: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> (Bool?, [Data]) {
-            let caller = ICPFunction<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleUnnamedArgsAndResults", query: false)
-            let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
-            return response.tuple
-        }
-        
-        func multipleNamedArgsAndResults(name: String, ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> (out1: Bool?, out2: [Data]) {
-            let caller = ICPFunction<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleNamedArgsAndResults", query: false)
-            let response = try await caller.callMethod(.init(name, ids), client, sender: sender)
-            return response.tuple
-        }
-        
-        func functionReference(sender: ICPSigningPrincipal? = nil) async throws -> Bool {
-            let caller = Function01(canister, "functionReference", query: false)
-            let response = try await caller.callMethod(client, sender: sender)
             return response
         }
         

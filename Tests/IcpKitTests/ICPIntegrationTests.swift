@@ -55,11 +55,14 @@ final class ICPIntegrationTests: XCTestCase {
     }
     
     func testGeneratedLedger() async throws {
+        let nBlocks: UInt64 = 3
         let ledger = Ledger.Service(canister: ICPSystemCanisters.ledger, client: client)
-        let blocks = try await ledger.query_blocks(.init(start: 100, length: 1))
+        let blocks = try await ledger.query_blocks(.init(start: 11268933, length: nBlocks))
+        XCTAssertEqual(blocks.archived_blocks.map { $0.length }.reduce(0, +) + UInt64(blocks.blocks.count), nBlocks)
         for archive in blocks.archived_blocks {
-            let archiveResponse = try await archive.callback.callMethod(.init(start: archive.start, length: 1), client)
+            let archiveResponse = try await archive.callback.callMethod(.init(start: archive.start, length: archive.length), client)
             print(archiveResponse)
+            guard case .Ok = archiveResponse else { XCTFail(); return }
         }
     }
 }

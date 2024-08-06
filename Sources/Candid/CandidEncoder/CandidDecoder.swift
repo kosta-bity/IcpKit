@@ -53,7 +53,7 @@ private class CandidValueDecoder: Decoder {
             guard let method = function.method else {
                 throw EncodingError.invalidValue(function, .init(codingPath: codingPath, debugDescription: "No method defined in CandidFunction"))
             }
-            let functionProtocol = (T.self as! CandidFunctionProtocol.Type).init(method.principal, method.name, function.signature.annotations.query)
+            let functionProtocol = (T.self as! CandidFunctionProtocol.Type).init(method.principal, method.name)
             return functionProtocol as! T
             
         } else if T.self is CandidServiceProtocol.Type {

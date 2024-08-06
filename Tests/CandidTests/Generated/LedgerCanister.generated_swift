@@ -19,7 +19,7 @@ enum Ledger {
 	
 	/// // A function that is used for fetching archived ledger blocks.
 	/// type QueryArchiveFn = func (GetBlocksArgs) -> (QueryArchiveResult) query;
-	typealias QueryArchiveFn = ICPFunction<GetBlocksArgs, QueryArchiveResult>
+	typealias QueryArchiveFn = ICPQuery<GetBlocksArgs, QueryArchiveResult>
 	
 	/// type SubAccount = blob;
 	typealias SubAccount = Data
@@ -306,7 +306,7 @@ enum Ledger {
 		/// // Queries blocks in the specified range.
 		///   query_blocks : (GetBlocksArgs) -> (QueryBlocksResponse) query;
 		func query_blocks(_ arg0: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {
-			let caller = ICPFunction<GetBlocksArgs, QueryBlocksResponse>(canister, "query_blocks", query: true)
+			let caller = ICPQuery<GetBlocksArgs, QueryBlocksResponse>(canister, "query_blocks")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
@@ -314,7 +314,7 @@ enum Ledger {
 		/// // Returns the existing archive canisters information.
 		///   archives : () -> (Archives) query;
 		func archives(sender: ICPSigningPrincipal? = nil) async throws -> Archives {
-			let caller = ICPFunctionNoArgs<Archives>(canister, "archives", query: true)
+			let caller = ICPQueryNoArgs<Archives>(canister, "archives")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
@@ -322,14 +322,14 @@ enum Ledger {
 		/// // Get the amount of ICP on the specified account.
 		///   account_balance : (AccountBalanceArgs) -> (Tokens) query;
 		func account_balance(_ arg0: AccountBalanceArgs, sender: ICPSigningPrincipal? = nil) async throws -> Tokens {
-			let caller = ICPFunction<AccountBalanceArgs, Tokens>(canister, "account_balance", query: true)
+			let caller = ICPQuery<AccountBalanceArgs, Tokens>(canister, "account_balance")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
 		/// transfer : (TransferArgs) -> (TransferResult);
 		func transfer(_ arg0: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
-			let caller = ICPFunction<TransferArgs, TransferResult>(canister, "transfer", query: false)
+			let caller = ICPCall<TransferArgs, TransferResult>(canister, "transfer")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}

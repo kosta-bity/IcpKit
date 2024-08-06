@@ -12,7 +12,7 @@ public protocol CandidFunctionProtocol: Codable {
     var method: String { get }
     var query: Bool { get }
     
-    init(_ canister: CandidPrincipal, _ method: String, _ query: Bool)
+    init(_ canister: CandidPrincipal, _ method: String)
 }
 
 public extension CandidFunctionProtocol {

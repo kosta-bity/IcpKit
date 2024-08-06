@@ -3,19 +3,19 @@ enum TestCodeGeneration {
 	
 	typealias AData = Data
 	
-	typealias Function00 = ICPFunctionNoArgsNoResult
+	typealias Function00 = ICPCallNoArgsNoResult
 	
-	typealias Function01 = ICPFunctionNoArgs<Bool>
+	typealias Function01q = ICPQueryNoArgs<Bool>
 	
-	typealias Function02 = ICPFunctionNoArgs<CandidTuple2<Bool, String>>
+	typealias Function02 = ICPCallNoArgs<CandidTuple2<Bool, String>>
 	
-	typealias Function03 = ICPFunctionNoArgs<CandidTuple3<Bool, String, Bool?>>
+	typealias Function03q = ICPQueryNoArgs<CandidTuple3<Bool, String, Bool?>>
 	
-	typealias Function10 = ICPFunctionNoResult<Bool>
+	typealias Function10 = ICPCallNoResult<Bool>
 	
-	typealias Function20 = ICPFunctionNoResult<CandidTuple2<Bool, String>>
+	typealias Function20 = ICPCallNoResult<CandidTuple2<Bool, String>>
 	
-	typealias Function30 = ICPFunctionNoResult<CandidTuple3<Bool, String, Bool?>>
+	typealias Function30q = ICPQueryNoResult<CandidTuple3<Bool, String, Bool?>>
 	
 	typealias RepeatedRecord = CandidTuple2<[Int8?], UInt8>
 	
@@ -34,13 +34,13 @@ enum TestCodeGeneration {
 	
 	class TestServiceDef: ICPService {
 		func foo(_ arg0: UInt8, sender: ICPSigningPrincipal? = nil) async throws -> Int8 {
-			let caller = ICPFunction<UInt8, Int8>(canister, "foo", query: false)
+			let caller = ICPCall<UInt8, Int8>(canister, "foo")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
 		func ref(sender: ICPSigningPrincipal? = nil) async throws -> Bool {
-			let caller = Function01(canister, "ref", query: false)
+			let caller = Function01q(canister, "ref")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
@@ -78,53 +78,52 @@ enum TestCodeGeneration {
 
 	class TestService: ICPService {
 		func noArgsNoResults(sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPFunctionNoArgsNoResult(canister, "noArgsNoResults", query: false)
+			let caller = ICPCallNoArgsNoResult(canister, "noArgsNoResults")
 			let _ = try await caller.callMethod(client, sender: sender)
 		}
 	
 		func singleUnnamedArg(_ arg0: String, sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPFunctionNoResult<String>(canister, "singleUnnamedArg", query: true)
+			let caller = ICPQueryNoResult<String>(canister, "singleUnnamedArg")
 			let _ = try await caller.callMethod(arg0, client, sender: sender)
 		}
 	
 		func singleUnnamedArgRecordWithUnnamedFields(_ arg0: CandidTuple2<Bool, String>, sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPFunctionNoResult<CandidTuple2<Bool, String>>(canister, "singleUnnamedArgRecordWithUnnamedFields", query: false)
+			let caller = ICPCallNoResult<CandidTuple2<Bool, String>>(canister, "singleUnnamedArgRecordWithUnnamedFields")
 			let _ = try await caller.callMethod(arg0, client, sender: sender)
 		}
 	
 		func singleNamedArg(myString: String, sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPFunctionNoResult<String>(canister, "singleNamedArg", query: true)
+			let caller = ICPQueryNoResult<String>(canister, "singleNamedArg")
 			let _ = try await caller.callMethod(myString, client, sender: sender)
 		}
 	
 		func singleUnnamedResult(sender: ICPSigningPrincipal? = nil) async throws -> Bool? {
-			let caller = ICPFunctionNoArgs<Bool?>(canister, "singleUnnamedResult", query: false)
+			let caller = ICPCallNoArgs<Bool?>(canister, "singleUnnamedResult")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		func singleNamedResult(sender: ICPSigningPrincipal? = nil) async throws -> String {
-			let caller = ICPFunctionNoArgs<String>(canister, "singleNamedResult", query: true)
+			let caller = ICPQueryNoArgs<String>(canister, "singleNamedResult")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		func multipleUnnamedArgsAndResults(_ arg0: String, _ arg1: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> (Bool?, [Data]) {
-			let caller = ICPFunction<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleUnnamedArgsAndResults", query: false)
+			let caller = ICPCall<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleUnnamedArgsAndResults")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response.tuple
 		}
 	
 		func multipleNamedArgsAndResults(name: String, ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> (out1: Bool?, out2: [Data]) {
-			let caller = ICPFunction<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleNamedArgsAndResults", query: false)
+			let caller = ICPCall<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleNamedArgsAndResults")
 			let response = try await caller.callMethod(.init(name, ids), client, sender: sender)
 			return response.tuple
 		}
 	
-		func functionReference(sender: ICPSigningPrincipal? = nil) async throws -> Bool {
-			let caller = Function01(canister, "functionReference", query: false)
-			let response = try await caller.callMethod(client, sender: sender)
-			return response
+		func functionReference(_ arg0: Bool, _ arg1: String, sender: ICPSigningPrincipal? = nil) async throws {
+			let caller = Function20(canister, "functionReference")
+			let _ = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 		}
 	
 	}

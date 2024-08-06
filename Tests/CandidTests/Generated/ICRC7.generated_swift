@@ -129,105 +129,105 @@ enum ICRC7 {
 	class Service: ICPService {
 		/// icrc7_collection_metadata : () -> (vec record { text; Value } ) query;
 		func icrc7_collection_metadata(sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<String, Value>] {
-			let caller = ICPFunctionNoArgs<[CandidTuple2<String, Value>]>(canister, "icrc7_collection_metadata", query: true)
+			let caller = ICPQueryNoArgs<[CandidTuple2<String, Value>]>(canister, "icrc7_collection_metadata")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_symbol : () -> (text) query;
 		func icrc7_symbol(sender: ICPSigningPrincipal? = nil) async throws -> String {
-			let caller = ICPFunctionNoArgs<String>(canister, "icrc7_symbol", query: true)
+			let caller = ICPQueryNoArgs<String>(canister, "icrc7_symbol")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_name : () -> (text) query;
 		func icrc7_name(sender: ICPSigningPrincipal? = nil) async throws -> String {
-			let caller = ICPFunctionNoArgs<String>(canister, "icrc7_name", query: true)
+			let caller = ICPQueryNoArgs<String>(canister, "icrc7_name")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_description : () -> (opt text) query;
 		func icrc7_description(sender: ICPSigningPrincipal? = nil) async throws -> String? {
-			let caller = ICPFunctionNoArgs<String?>(canister, "icrc7_description", query: true)
+			let caller = ICPQueryNoArgs<String?>(canister, "icrc7_description")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_logo : () -> (opt text) query;
 		func icrc7_logo(sender: ICPSigningPrincipal? = nil) async throws -> String? {
-			let caller = ICPFunctionNoArgs<String?>(canister, "icrc7_logo", query: true)
+			let caller = ICPQueryNoArgs<String?>(canister, "icrc7_logo")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_total_supply : () -> (nat) query;
 		func icrc7_total_supply(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-			let caller = ICPFunctionNoArgs<BigUInt>(canister, "icrc7_total_supply", query: true)
+			let caller = ICPQueryNoArgs<BigUInt>(canister, "icrc7_total_supply")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_supply_cap : () -> (opt nat) query;
 		func icrc7_supply_cap(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_supply_cap", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_supply_cap")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_max_query_batch_size : () -> (opt nat) query;
 		func icrc7_max_query_batch_size(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_query_batch_size", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_max_query_batch_size")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_max_update_batch_size : () -> (opt nat) query;
 		func icrc7_max_update_batch_size(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_update_batch_size", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_max_update_batch_size")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_default_take_value : () -> (opt nat) query;
 		func icrc7_default_take_value(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_default_take_value", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_default_take_value")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_max_take_value : () -> (opt nat) query;
 		func icrc7_max_take_value(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_take_value", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_max_take_value")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_max_memo_size : () -> (opt nat) query;
 		func icrc7_max_memo_size(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_max_memo_size", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_max_memo_size")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_atomic_batch_transfers : () -> (opt bool) query;
 		func icrc7_atomic_batch_transfers(sender: ICPSigningPrincipal? = nil) async throws -> Bool? {
-			let caller = ICPFunctionNoArgs<Bool?>(canister, "icrc7_atomic_batch_transfers", query: true)
+			let caller = ICPQueryNoArgs<Bool?>(canister, "icrc7_atomic_batch_transfers")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_tx_window : () -> (opt nat) query;
 		func icrc7_tx_window(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_tx_window", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_tx_window")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_permitted_drift : () -> (opt nat) query;
 		func icrc7_permitted_drift(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt? {
-			let caller = ICPFunctionNoArgs<BigUInt?>(canister, "icrc7_permitted_drift", query: true)
+			let caller = ICPQueryNoArgs<BigUInt?>(canister, "icrc7_permitted_drift")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
@@ -235,7 +235,7 @@ enum ICRC7 {
 		/// icrc7_token_metadata : (token_ids : vec nat)
 		///       -> (vec opt vec record { text; Value }) query;
 		func icrc7_token_metadata(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[CandidTuple2<String, Value>]?] {
-			let caller = ICPFunction<[BigUInt], [[CandidTuple2<String, Value>]?]>(canister, "icrc7_token_metadata", query: true)
+			let caller = ICPQuery<[BigUInt], [[CandidTuple2<String, Value>]?]>(canister, "icrc7_token_metadata")
 			let response = try await caller.callMethod(token_ids, client, sender: sender)
 			return response
 		}
@@ -243,14 +243,14 @@ enum ICRC7 {
 		/// icrc7_owner_of : (token_ids : vec nat)
 		///       -> (vec opt Account) query;
 		func icrc7_owner_of(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [Account?] {
-			let caller = ICPFunction<[BigUInt], [Account?]>(canister, "icrc7_owner_of", query: true)
+			let caller = ICPQuery<[BigUInt], [Account?]>(canister, "icrc7_owner_of")
 			let response = try await caller.callMethod(token_ids, client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_balance_of : (vec Account) -> (vec nat) query;
 		func icrc7_balance_of(_ arg0: [Account], sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPFunction<[Account], [BigUInt]>(canister, "icrc7_balance_of", query: true)
+			let caller = ICPQuery<[Account], [BigUInt]>(canister, "icrc7_balance_of")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
@@ -258,7 +258,7 @@ enum ICRC7 {
 		/// icrc7_tokens : (prev : opt nat, take : opt nat)
 		///       -> (vec nat) query;
 		func icrc7_tokens(prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPFunction<CandidTuple2<BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens", query: true)
+			let caller = ICPQuery<CandidTuple2<BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens")
 			let response = try await caller.callMethod(.init(prev, take), client, sender: sender)
 			return response
 		}
@@ -266,14 +266,14 @@ enum ICRC7 {
 		/// icrc7_tokens_of : (account : Account, prev : opt nat, take : opt nat)
 		///       -> (vec nat) query;
 		func icrc7_tokens_of(account: Account, prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPFunction<CandidTuple3<Account, BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens_of", query: true)
+			let caller = ICPQuery<CandidTuple3<Account, BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens_of")
 			let response = try await caller.callMethod(.init(account, prev, take), client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_transfer : (vec TransferArg) -> (vec opt TransferResult);
 		func icrc7_transfer(_ arg0: [TransferArg], sender: ICPSigningPrincipal? = nil) async throws -> [TransferResult?] {
-			let caller = ICPFunction<[TransferArg], [TransferResult?]>(canister, "icrc7_transfer", query: false)
+			let caller = ICPCall<[TransferArg], [TransferResult?]>(canister, "icrc7_transfer")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}

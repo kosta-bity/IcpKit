@@ -115,7 +115,7 @@ public class CandidCodeGenerator {
         block.addSwiftDocumentation(method.originalDefinition)
         block.addLine(buildFunctionDefinition(method.name, signature))
         block.increaseIndent()
-        block.addLine("let caller = \(methodCaller)(canister, \"\(method.name)\", query: \(signature.annotations.query))")
+        block.addLine("let caller = \(methodCaller)(canister, \"\(method.name)\")")
         let args = signature.arguments.swiftStringForCallerInit
         let varName = signature.results.isEmpty ? "_" : "response"
         block.addLine("let \(varName) = try await caller.callMethod(\(args)client, sender: sender)")
@@ -351,11 +351,15 @@ private extension CandidType {
 
 private extension CandidFunctionSignature {
     func swiftType() -> String {
-        switch (arguments.isEmpty, results.isEmpty) {
-        case (true, true): return "ICPFunctionNoArgsNoResult"
-        case (true, false): return "ICPFunctionNoArgs<\(results.swiftStringForFunctionType)>"
-        case (false, true): return "ICPFunctionNoResult<\(arguments.swiftStringForFunctionType)>"
-        case (false, false): return "ICPFunction<\(arguments.swiftStringForFunctionType), \(results.swiftStringForFunctionType)>"
+        switch (arguments.isEmpty, results.isEmpty, annotations.query) {
+        case (true, true, false): return "ICPCallNoArgsNoResult"
+        case (true, false, false): return "ICPCallNoArgs<\(results.swiftStringForFunctionType)>"
+        case (false, true, false): return "ICPCallNoResult<\(arguments.swiftStringForFunctionType)>"
+        case (false, false, false): return "ICPCall<\(arguments.swiftStringForFunctionType), \(results.swiftStringForFunctionType)>"
+        case (true, true, true): return "ICPQueryNoArgsNoResult"
+        case (true, false, true): return "ICPQueryNoArgs<\(results.swiftStringForFunctionType)>"
+        case (false, true, true): return "ICPQueryNoResult<\(arguments.swiftStringForFunctionType)>"
+        case (false, false, true): return "ICPQuery<\(arguments.swiftStringForFunctionType), \(results.swiftStringForFunctionType)>"
         }
     }
 }
@@ -576,7 +580,7 @@ private extension CandidValue {
             guard let method = candidFunction.method else {
                 return IndentedString.inline("nil")
             }
-            return IndentedString.inline(".init(\(method.principal.swiftValueInit), \"\(method.name)\", \(candidFunction.signature.annotations.query))")
+            return IndentedString.inline(".init(\(method.principal.swiftValueInit), \"\(method.name)\")")
             
         case .service(let candidService):
             guard let principal = candidService.principal else {

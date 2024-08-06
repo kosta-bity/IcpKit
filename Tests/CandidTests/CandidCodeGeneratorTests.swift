@@ -21,15 +21,15 @@ final class CandidCodeGeneratorTests: XCTestCase {
             "Variant": .variant(["a": .null, "b": .text, "c": .record([.text, .integer]), "d": .record(["one": .bool, "two": .blob, "three": .record([.vector(.option(.integer8)), .natural8])])]),
             "UnnamedVariant": .variant("spring", "winter", "summer", "fall"),
             "Function00": .function([CandidType](),[]),
-            "Function01": .function([],[.bool]),
+            "Function01q": .function([],[.bool], query: true),
             "Function02": .function([],[.bool, .text]),
-            "Function03": .function([],[.bool, .text, .option(.bool)]),
+            "Function03q": .function([],[.bool, .text, .option(.bool)], query: true),
             "Function10": .function([.bool], []),
             "Function20": .function([.bool, .text], []),
-            "Function30": .function([.bool, .text, .option(.bool)], []),
+            "Function30q": .function([.bool, .text, .option(.bool)], [], query: true),
             "TestServiceDef": .service([
                 .init("foo", [.natural8], [.integer8]),
-                .init(name: "ref", signatureReference: "Function01")
+                .init(name: "ref", signatureReference: "Function01q")
             ]),
             //"RecursiveRecord": .record(["recurse": .option(.named("RecursiveRecord"))])
         ]
@@ -46,7 +46,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
                 .init("multipleNamedArgsAndResults",
                       [("name", .text), ("ids", .vector(.natural))],
                       [("out1", .option(.bool)), ("out2", .vector(.blob))]),
-                .init(name: "functionReference", signatureReference: "Function01"),
+                .init(name: "functionReference", signatureReference: "Function20"),
             ]))
         )
         
@@ -153,9 +153,12 @@ enum UnnamedType0: Codable {
 
 let cValue: UnnamedType0 = .c(bool: true, int8: 7)
 """),
-            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPFunctionNoArgs<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\", false)"),
-            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPFunctionNoResult<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\", false)"),
-            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPFunction<[Bool], [Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\", false)"),
+            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCallNoArgs<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPCallNoResult<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCall<[Bool], [Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoArgs<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoResult<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQuery<[Bool], [Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
         ]
         for (input, expected) in testVectors {
             let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: input, valueName: "cValue")
