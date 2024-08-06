@@ -1,4 +1,4 @@
-enum Ledger {
+enum LedgerCanister {
 	/// // Account identifier  is a 32-byte array.
 	/// // The first 4 bytes is big-endian encoding of a CRC32 checksum of the last 28 bytes
 	/// type AccountIdentifier = blob;

@@ -1,1 +1,5 @@
 type A = vec bool;
+
+type S = service {
+    foo: (in1: int8) -> (bool) query;
+};

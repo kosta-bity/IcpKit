@@ -57,33 +57,26 @@ final class CandidCodeGeneratorTests: XCTestCase {
         XCTAssertEqual(generated, swiftFile)
     }
     
-    func testLedgerCanister() async throws {
-        let path = Bundle.module.url(forResource: "LedgerCanister", withExtension: "did")!
-        let didFile = try String(contentsOf: path)
-        let interface = try await CandidParser().parseInterfaceDescription(didFile)
-        let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: interface, nameSpace: "Ledger")
-        let swiftPath = Bundle.module.url(forResource: "LedgerCanister", withExtension: "generated_swift")!
-        let swiftFile = try String(contentsOf: swiftPath)
-        print(generated)
-        XCTAssertEqual(generated, swiftFile)
-    }
-    
-    func testICRC7() async throws {
-        let path = Bundle.module.url(forResource: "ICRC7", withExtension: "did")!
-        let didFile = try String(contentsOf: path)
-        let interface = try await CandidParser().parseInterfaceDescription(didFile)
-        let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: interface, nameSpace: "ICRC7")
-        let swiftPath = Bundle.module.url(forResource: "ICRC7", withExtension: "generated_swift")!
-        let swiftFile = try String(contentsOf: swiftPath)
-        XCTAssertEqual(generated, swiftFile)
-    }
-    
     func testGoldNFT() async throws {
         let path = Bundle.module.url(forResource: "GoldNFT", withExtension: "did")!
         let didFile = try String(contentsOf: path)
         let interface = try await CandidParser().parseInterfaceDescription(didFile)
         let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, nameSpace: "GoldNFT")
         print(generated)
+    }
+    
+    func testDidFiles() async throws {
+        let testFiles: [String] = ["LedgerCanister", "ICRC7", "GoldNFT"]
+        for file in testFiles {
+            let path = Bundle.module.url(forResource: file, withExtension: "did")!
+            let didFile = try String(contentsOf: path)
+            let interface = try await CandidParser().parseInterfaceDescription(didFile)
+            let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: interface, nameSpace: file)
+            let swiftPath = Bundle.module.url(forResource: file, withExtension: "generated_swift")!
+            let swiftFile = try String(contentsOf: swiftPath)
+            XCTAssertEqual(generated, swiftFile)
+        }
+        
     }
     
     func testGenerateValue() throws {
