@@ -15,12 +15,16 @@ public protocol CandidFunctionProtocol: Codable {
     init(_ canister: CandidPrincipal, _ method: String, _ query: Bool)
 }
 
-extension CandidFunctionProtocol {
-    public init(from decoder: Decoder) throws {
+public extension CandidFunctionProtocol {
+    init(from decoder: Decoder) throws {
         fatalError("not supported. Use CandidDecoder() instead.")
     }
     
-    public func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         fatalError("not supported. Use CandidEncoder() instead.")
     }
+}
+
+public protocol CandidFunctionSignatureProtocol {
+    static var signature: CandidFunctionSignature { get }
 }

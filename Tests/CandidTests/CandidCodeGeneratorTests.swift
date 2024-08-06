@@ -64,6 +64,7 @@ final class CandidCodeGeneratorTests: XCTestCase {
         let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: interface, nameSpace: "Ledger")
         let swiftPath = Bundle.module.url(forResource: "LedgerCanister", withExtension: "generated_swift")!
         let swiftFile = try String(contentsOf: swiftPath)
+        print(generated)
         XCTAssertEqual(generated, swiftFile)
     }
     

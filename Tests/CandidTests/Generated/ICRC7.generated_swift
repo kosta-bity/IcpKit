@@ -126,15 +126,7 @@ enum ICRC7 {
 	///       -> (vec nat) query;
 	///   icrc7_transfer : (vec TransferArg) -> (vec opt TransferResult);
 	/// }
-	class Service {
-		let canister: ICPPrincipal
-		let client: ICPRequestClient
-	
-		init(canister: ICPPrincipal, client: ICPRequestClient) {
-			self.canister = canister
-			self.client = client
-		}
-	
+	class Service: ICPService {
 		/// icrc7_collection_metadata : () -> (vec record { text; Value } ) query;
 		func icrc7_collection_metadata(sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<String, Value>] {
 			let caller = ICPFunctionNoArgs<[CandidTuple2<String, Value>]>(canister, "icrc7_collection_metadata", query: true)

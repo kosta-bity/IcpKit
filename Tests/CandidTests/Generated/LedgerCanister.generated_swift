@@ -302,15 +302,7 @@ enum Ledger {
 	///   account_balance : (AccountBalanceArgs) -> (Tokens) query;
 	///   transfer : (TransferArgs) -> (TransferResult);
 	/// }
-	class Service {
-		let canister: ICPPrincipal
-		let client: ICPRequestClient
-	
-		init(canister: ICPPrincipal, client: ICPRequestClient) {
-			self.canister = canister
-			self.client = client
-		}
-	
+	class Service: ICPService {
 		/// // Queries blocks in the specified range.
 		///   query_blocks : (GetBlocksArgs) -> (QueryBlocksResponse) query;
 		func query_blocks(_ arg0: GetBlocksArgs, sender: ICPSigningPrincipal? = nil) async throws -> QueryBlocksResponse {

@@ -77,18 +77,8 @@ public class CandidCodeGenerator {
         case .concrete(let methods):
             let block = IndentedString()
             block.addSwiftDocumentation(service.originalDefinition)
-            block.addLine("class \(service.name) {")
+            block.addLine("class \(service.name): ICPService {")
             block.increaseIndent()
-            block.addLine("let canister: ICPPrincipal")
-            block.addLine("let client: ICPRequestClient")
-            block.addLine()
-            block.addLine("init(canister: ICPPrincipal, client: ICPRequestClient) {")
-            block.increaseIndent()
-            block.addLine("self.canister = canister")
-            block.addLine("self.client = client")
-            block.decreaseIndent()
-            block.addLine("}")
-            block.addLine()
             for method in methods {
                 let methodBlock = try buildServiceMethod(method, namedTypes)
                 block.addBlock(methodBlock, newLine: true)
@@ -116,7 +106,7 @@ public class CandidCodeGenerator {
         switch method.signature {
         case .concrete(let concreteSignature):
             signature = concreteSignature
-            methodCaller = CandidType.function(signature).swiftType()
+            methodCaller = signature.swiftType()
         case .reference(let referencedName):
             signature = try getConcreteFunctionSignature(referencedName, namedTypes)
             methodCaller = referencedName
@@ -129,12 +119,10 @@ public class CandidCodeGenerator {
         let args = signature.arguments.swiftStringForCallerInit
         let varName = signature.results.isEmpty ? "_" : "response"
         block.addLine("let \(varName) = try await caller.callMethod(\(args)client, sender: sender)")
-        if !signature.results.isEmpty {
-            if signature.results.count == 1 {
-                block.addLine("return response")
-            } else {
-                block.addLine("return response.tuple")
-            }
+        switch signature.results.count {
+        case 0: break
+        case 1: block.addLine("return response")
+        default: block.addLine("return response.tuple")
         }
         block.decreaseIndent()
         block.addLine("}")
@@ -353,17 +341,21 @@ private extension CandidType {
             return "CandidTuple\(keyedTypes.count)<\(keyedTypes.map { $0.type.swiftType() }.joined(separator: ", "))>"
         case .variant:
             fatalError("all variants should be named by now")
-        case .function(let signature):
-            switch (signature.arguments.isEmpty, signature.results.isEmpty) {
-            case (true, true): return "ICPFunctionNoArgsNoResult"
-            case (true, false): return "ICPFunctionNoArgs<\(signature.results.swiftStringForFunctionType)>"
-            case (false, true): return "ICPFunctionNoResult<\(signature.arguments.swiftStringForFunctionType)>"
-            case (false, false): return "ICPFunction<\(signature.arguments.swiftStringForFunctionType), \(signature.results.swiftStringForFunctionType)>"
-            }
-            
+        case .function(let signature): return signature.swiftType()
         case .service: return "CandidServiceSignature"
         case .principal: return "CandidPrincipal"
         case .named(let name): return name
+        }
+    }
+}
+
+private extension CandidFunctionSignature {
+    func swiftType() -> String {
+        switch (arguments.isEmpty, results.isEmpty) {
+        case (true, true): return "ICPFunctionNoArgsNoResult"
+        case (true, false): return "ICPFunctionNoArgs<\(results.swiftStringForFunctionType)>"
+        case (false, true): return "ICPFunctionNoResult<\(arguments.swiftStringForFunctionType)>"
+        case (false, false): return "ICPFunction<\(arguments.swiftStringForFunctionType), \(results.swiftStringForFunctionType)>"
         }
     }
 }

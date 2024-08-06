@@ -54,14 +54,14 @@ final class ICPIntegrationTests: XCTestCase {
         }
     }
     
-//    func testGeneratedLedger() async throws {
-//        let ledger = Ledger.Service(canister: ICPSystemCanisters.ledger, client: client)
-//        let blocks = try await ledger.query_blocks(.init(start: 100, length: 1))
-//        for archive in blocks.archived_blocks {
-//            let archiveResponse = try await archive.callback.callMethod(.init(start: archive.start, length: 1), client)
-//            print(archiveResponse)
-//        }
-//    }
+    func testGeneratedLedger() async throws {
+        let ledger = Ledger.Service(canister: ICPSystemCanisters.ledger, client: client)
+        let blocks = try await ledger.query_blocks(.init(start: 100, length: 1))
+        for archive in blocks.archived_blocks {
+            let archiveResponse = try await archive.callback.callMethod(.init(start: archive.start, length: 1), client)
+            print(archiveResponse)
+        }
+    }
 }
 
 private let testWallet1PublicKey: Data = Data.fromHex("046acf4c93dd993cd736420302eb70da254532ec3179250a21eec4ce823ff289aaa382cb19576b2c6447db09cb45926ebd69ce288b1804580fe62c343d3252ec6e")!
