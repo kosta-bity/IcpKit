@@ -13,4 +13,4 @@ jobs:
       - name: Test
         uses: actions/checkout@v1
       - name: Build and Test
-        run:  xcodebuild test -scheme IcpKit-Package -showsdks
+        run:  xcodebuild test -scheme IcpKit-Package -sdk iphonesimulator17.5 -showdestinations
