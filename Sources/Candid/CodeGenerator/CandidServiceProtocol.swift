@@ -14,6 +14,10 @@ public protocol CandidServiceProtocol: Codable {
 }
 
 public extension CandidServiceProtocol {
+    init(_ principal: String) throws {
+        self.init(try CandidPrincipal(principal))
+    }
+    
     init(from decoder: Decoder) throws {
         fatalError("not supported. Use CandidDecoder instead")
     }

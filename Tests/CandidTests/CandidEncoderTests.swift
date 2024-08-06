@@ -133,8 +133,8 @@ private let encodingTestVectors: [(any Encodable, CandidValue)] = [
     (Optional(Optional(8)), .option(.option(.integer64(8)))),
     (Optional(Int?.none), .option(CandidValue.option(.integer64))),
     // The following fails because we can not identify the wrapped type of wrapped optionals with nil value...
-    //(Int??.none, .option(CandidType.option(.integer64))),
-    //(TestRecord?.none, .option(.record(["a": .natural8, "b":.integer64]))),
+    //(Int??.none, .option(CandidType.option(.integer64))),   // returns opt opt empty
+    //(TestRecord?.none, .option(.record(["a": .natural8, "b":.integer64]))), // returns opt empty
     
     ([String](), .vector(.text)),
     ([UInt8]([8, 2]), try! .vector([.natural8(8), .natural8(2)])),
