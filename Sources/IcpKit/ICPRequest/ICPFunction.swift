@@ -16,7 +16,7 @@ public extension CandidFunctionProtocol {
     var icpPrincipal: ICPPrincipal { ICPPrincipal(canister) }
 }
 
-public class ICPFunction<Argument, Result>: CandidFunctionProtocol where Argument: Encodable, Result: Decodable {
+public class ICPFunction<Argument, Result>: CandidFunctionProtocol {
     public let canister: CandidPrincipal
     public let method: String
     public let query: Bool
@@ -26,8 +26,14 @@ public class ICPFunction<Argument, Result>: CandidFunctionProtocol where Argumen
         self.method = method
         self.query = query
     }
-    
-    public func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
+}
+
+public typealias ICPFunctionNoArgsNoResult = ICPFunction<Void, Void>
+public typealias ICPFunctionNoArgs<Result> = ICPFunction<Void, Result>
+public typealias ICPFunctionNoResult<Argument> = ICPFunction<Argument, Void>
+
+public extension ICPFunction where Argument: Encodable, Result: Decodable {
+    func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
         let method = ICPMethod(
             canister: icpPrincipal,
             methodName: method,
@@ -39,35 +45,19 @@ public class ICPFunction<Argument, Result>: CandidFunctionProtocol where Argumen
     }
 }
 
-public class ICPFunctionNoArgsNoResult: CandidFunctionProtocol {
-    public let canister: CandidPrincipal
-    public let method: String
-    public let query: Bool
-    
-    public required init(_ canister: CandidPrincipal, _ method: String, _ query: Bool) {
-        self.canister = canister
-        self.method = method
-        self.query = query
-    }
-    
-    public func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
-        let method = ICPMethod(canister: icpPrincipal, methodName: method)
+public extension ICPFunctionNoResult where Argument: Encodable {
+    func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
+        let method = ICPMethod(
+            canister: icpPrincipal,
+            methodName: method,
+            args: try encodeArguments(argument)
+        )
         let _ = try await callOrQuery(method, client, sender)
     }
 }
 
-public class ICPFunctionNoArgs<Result>: CandidFunctionProtocol where Result: Decodable {
-    public let canister: CandidPrincipal
-    public let method: String
-    public let query: Bool
-    
-    public required init(_ canister: CandidPrincipal, _ method: String, _ query: Bool) {
-        self.canister = canister
-        self.method = method
-        self.query = query
-    }
-    
-    public func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
+public extension ICPFunctionNoArgs where Result: Decodable {
+    func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
         let method = ICPMethod(canister: icpPrincipal, methodName: method)
         let response = try await callOrQuery(method, client, sender)
         let decoded: Result = try CandidDecoder().decode(response)
@@ -75,23 +65,9 @@ public class ICPFunctionNoArgs<Result>: CandidFunctionProtocol where Result: Dec
     }
 }
 
-public class ICPFunctionNoResult<Argument>: CandidFunctionProtocol where Argument: Encodable {
-    public let canister: CandidPrincipal
-    public let method: String
-    public let query: Bool
-   
-    public required init(_ canister: CandidPrincipal, _ method: String, _ query: Bool) {
-        self.canister = canister
-        self.method = method
-        self.query = query
-    }
-    
-    public func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
-        let method = ICPMethod(
-            canister: icpPrincipal,
-            methodName: method,
-            args: try encodeArguments(argument)
-        )
+public extension ICPFunctionNoArgsNoResult {
+    func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
+        let method = ICPMethod(canister: icpPrincipal, methodName: method)
         let _ = try await callOrQuery(method, client, sender)
     }
 }
