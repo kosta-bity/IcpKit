@@ -1,6 +1,5 @@
 //
 //  ICPRequestEnvelope.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 02.05.23.
 //

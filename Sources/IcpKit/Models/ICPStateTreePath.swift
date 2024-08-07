@@ -1,6 +1,5 @@
 //
 //  ICPStateTreePath.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 06.05.23.
 //

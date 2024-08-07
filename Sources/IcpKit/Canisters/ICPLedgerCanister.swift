@@ -1,6 +1,5 @@
 //
 //  ICPLedgerCanister.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 26.04.23.
 //

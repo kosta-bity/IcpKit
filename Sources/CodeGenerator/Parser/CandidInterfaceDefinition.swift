@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Candid
 
 /// Represents a Candid Interface Definition:
 ///  - a set of composite `CandidType`s identified by a name
@@ -16,7 +17,7 @@ public struct CandidInterfaceDefinition: Equatable {
         self.service = service
     }
     
-    init(_ namedTypes: [CandidNamedType], service: ServiceDefinition? = nil) {
+    public init(_ namedTypes: [CandidNamedType], service: ServiceDefinition? = nil) {
         self.namedTypes = namedTypes.sorted()
         self.service = service
     }
@@ -80,18 +81,18 @@ public struct CandidNamedType: Equatable, Comparable {
         return lhs.name == rhs.name && lhs.type == rhs.type
     }
     
-    let name: String
-    let type: CandidType
-    let originalDefinition: String?
+    public let name: String
+    public let type: CandidType
+    public let originalDefinition: String?
     
-    init(name: String, type: CandidType, originalDefinition: String? = nil) {
+    public init(name: String, type: CandidType, originalDefinition: String? = nil) {
         self.name = name
         self.type = type
         self.originalDefinition = originalDefinition
     }
 }
 
-extension Array where Element == CandidNamedType {
+public extension Array where Element == CandidNamedType {
     subscript (_ name: String) -> CandidType? {
         get { first { $0.name == name }?.type }
     }

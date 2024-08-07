@@ -1,6 +1,5 @@
 //
 //  CandidSerialiser.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 27.04.23.
 //

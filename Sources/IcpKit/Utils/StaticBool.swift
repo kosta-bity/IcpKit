@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  StaticBool.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 06.08.24.

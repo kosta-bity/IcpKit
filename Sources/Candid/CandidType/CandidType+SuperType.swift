@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CandidType+SuperType.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 24.07.24.

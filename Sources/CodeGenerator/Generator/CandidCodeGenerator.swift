@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Candid
 
 public enum CandidCodeGeneratorError: Error {
     case invalidServiceReference
@@ -301,7 +302,7 @@ private enum CodeGenerationCandidType {
     case service(CandidServiceSignature)
 }
 
-private extension CandidType {
+fileprivate extension CandidType {
     var codeGenerationType: CodeGenerationCandidType {
         switch self {
         case .variant(let keyedTypes): return .variant(keyedTypes)

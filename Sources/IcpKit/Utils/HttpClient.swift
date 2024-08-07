@@ -1,6 +1,5 @@
 //
 //  HttpClient.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 23.02.23.
 //

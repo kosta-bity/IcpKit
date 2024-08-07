@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CandidFunctionProtocol.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 02.08.24.

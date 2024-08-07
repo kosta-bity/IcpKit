@@ -1,6 +1,5 @@
 //
 //  ICPBlock.Transaction+Hash.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 16.11.23.
 //

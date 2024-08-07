@@ -7,6 +7,7 @@
 
 import Foundation
 import BigInt
+import Candid
 
 /// https://github.com/dfinity/candid/blob/master/spec/Candid.md#values
 /// <val> ::=

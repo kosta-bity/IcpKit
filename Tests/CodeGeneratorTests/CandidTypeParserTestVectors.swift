@@ -6,7 +6,8 @@
 //
 
 import Foundation
-@testable import Candid
+@testable import CodeGenerator
+import Candid
 
 enum CandidTypeParserTestVectors {
     static let passingSingleTypes: [(String, CandidType)] = [

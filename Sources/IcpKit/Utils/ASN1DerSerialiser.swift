@@ -1,6 +1,5 @@
 //
 //  ASN1DerSerializer.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 20.04.23.
 //

@@ -1,6 +1,5 @@
 //
 //  ICPDomainSeparator.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 04.05.23.
 //

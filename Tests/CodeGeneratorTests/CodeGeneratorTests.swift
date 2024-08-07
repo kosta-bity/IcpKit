@@ -1,5 +1,5 @@
 //
-//  CandidCodeGeneratorTests.swift
+//  CodeGeneratorTests.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 25.07.24.
@@ -7,8 +7,9 @@
 
 import XCTest
 import Candid
+import CodeGenerator
 
-final class CandidCodeGeneratorTests: XCTestCase {
+final class CodeGeneratorTests: XCTestCase {
     func testCodeGeneration() throws {
         let namedTypes: [String: CandidType] = [
             "ABool": .bool,

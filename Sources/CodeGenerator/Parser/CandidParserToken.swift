@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  CandidParserToken.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 28.06.24.

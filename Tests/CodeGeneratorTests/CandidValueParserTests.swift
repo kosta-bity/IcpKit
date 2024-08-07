@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import Candid
+@testable import CodeGenerator
 
 final class CandidValueParserTests: XCTestCase {
     private let parser = CandidValueParser()

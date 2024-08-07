@@ -1,6 +1,5 @@
 //
 //  CandidVariant.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 08.05.23.
 //

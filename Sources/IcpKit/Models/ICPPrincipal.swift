@@ -1,6 +1,5 @@
 //
 //  ICPPrincipal.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 19.04.23.
 //

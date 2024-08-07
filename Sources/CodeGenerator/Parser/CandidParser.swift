@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Candid
 
 /// Parses a `.did` file and returns a String containing Swift code
 public class CandidParser {
