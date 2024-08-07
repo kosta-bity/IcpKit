@@ -57,14 +57,6 @@ final class CandidCodeGeneratorTests: XCTestCase {
         XCTAssertEqual(generated, swiftFile)
     }
     
-    func testGoldNFT() async throws {
-        let path = Bundle.module.url(forResource: "GoldNFT", withExtension: "did")!
-        let didFile = try String(contentsOf: path)
-        let interface = try await CandidParser().parseInterfaceDescription(didFile)
-        let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, nameSpace: "GoldNFT")
-        print(generated)
-    }
-    
     func testDidFiles() async throws {
         let testFiles: [String] = ["LedgerCanister", "ICRC7", "GoldNFT"]
         for file in testFiles {
@@ -146,12 +138,12 @@ enum UnnamedType0: Codable {
 
 let cValue: UnnamedType0 = .c(bool: true, int8: 7)
 """),
-            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCallNoArgs<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPCallNoResult<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCall<[Bool], [Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoArgs<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoResult<[Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQuery<[Bool], [Bool]> = .init(try! CandidPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCallNoArgs<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPCallNoResult<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCall<[Bool], [Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoArgs<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoResult<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQuery<[Bool], [Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
         ]
         for (input, expected) in testVectors {
             let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: input, valueName: "cValue")

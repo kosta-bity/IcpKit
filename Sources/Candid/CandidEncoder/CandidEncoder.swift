@@ -59,8 +59,8 @@ private class CandidValueEncoder: Encoder {
         } else if let candidFunction = value as? CandidFunction {
             encodingValue = CandidSingleEncodingValue(.function(candidFunction))
             
-        } else if let candidPrincipal = value as? CandidPrincipal {
-            encodingValue = CandidSingleEncodingValue(.principal(candidPrincipal))
+        } else if let candidPrincipal = value as? any CandidPrincipalProtocol {
+            encodingValue = CandidSingleEncodingValue(.principal(.init(candidPrincipal)))
             
         } else if let candidService = value as? CandidService {
             encodingValue = CandidSingleEncodingValue(.service(candidService))

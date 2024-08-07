@@ -6,7 +6,7 @@ enum ICRC7 {
 	
 	/// type Account = record { owner : principal; subaccount : opt Subaccount };
 	struct Account: Codable {
-		let owner: CandidPrincipal
+		let owner: ICPPrincipal
 		let subaccount: Subaccount?
 	}
 	

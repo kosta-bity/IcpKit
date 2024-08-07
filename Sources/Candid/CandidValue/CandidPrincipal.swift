@@ -7,7 +7,21 @@
 
 import Foundation
 
-public struct CandidPrincipal: Equatable, Codable {
+public protocol CandidPrincipalProtocol: Equatable, Codable {
+    var bytes: Data { get }
+    var string: String { get }
+    
+    init(_ string: String) throws
+    init(_ bytes: Data)
+}
+
+public extension CandidPrincipalProtocol {
+    init(_ other: any CandidPrincipalProtocol) {
+        self.init(other.bytes)
+    }
+}
+
+public struct CandidPrincipal: CandidPrincipalProtocol {
     public let bytes: Data
     public let string: String
     

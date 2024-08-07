@@ -34,7 +34,7 @@ enum GoldNFT {
 	typealias BidConfigShared = [BidFeature]?
 	
 	/// type Caller = opt principal;
-	typealias Caller = CandidPrincipal?
+	typealias Caller = ICPPrincipal?
 	
 	/// type CandyShared = variant {
 	///   Int : int;
@@ -710,7 +710,7 @@ enum GoldNFT {
 	typealias WithdrawResponse = BidResponse
 	
 	/// type canister_id = principal;
-	typealias canister_id = CandidPrincipal
+	typealias canister_id = ICPPrincipal
 	
 	
 	/// type Account = variant {
@@ -721,9 +721,9 @@ enum GoldNFT {
 	/// };
 	enum Account: Codable {
 		case account_id(String)
-		case principal(CandidPrincipal)
+		case principal(ICPPrincipal)
 		case extensible(CandyShared)
-		case account(owner: CandidPrincipal, sub_account: Data?)
+		case account(owner: ICPPrincipal, sub_account: Data?)
 	
 		enum CodingKeys: Int, CodingKey {
 			case account_id = 11394925
@@ -735,7 +735,7 @@ enum GoldNFT {
 	
 	/// type Account__3 = record { owner : principal; subaccount : opt Subaccount };
 	struct Account__3: Codable {
-		let owner: CandidPrincipal
+		let owner: ICPPrincipal
 		let subaccount: Subaccount?
 	}
 	
@@ -751,7 +751,7 @@ enum GoldNFT {
 		let allocated_space: BigUInt
 		let token_id: String
 		let available_space: BigUInt
-		let canister: CandidPrincipal
+		let canister: ICPPrincipal
 		let chunks: [BigUInt]
 		let library_id: String
 	}
@@ -822,16 +822,16 @@ enum GoldNFT {
 	///   ending : EndingType;
 	/// };
 	enum AskFeature: Codable {
-		case kyc(CandidPrincipal)
+		case kyc(ICPPrincipal)
 		case start_price(BigUInt)
 		case token(TokenSpec)
 		case fee_schema(String)
-		case notify([CandidPrincipal])
+		case notify([ICPPrincipal])
 		case wait_for_quiet(WaitForQuietType)
 		case reserve(BigUInt)
 		case start_date(BigInt)
 		case min_increase(MinIncreaseType)
-		case allow_list([CandidPrincipal])
+		case allow_list([ICPPrincipal])
 		case buy_now(BigUInt)
 		case fee_accounts(FeeAccountsParams)
 		case nifty_settlement(NiftySettlementType)
@@ -870,8 +870,8 @@ enum GoldNFT {
 	///   unsubscribe : record { principal; nat };
 	/// };
 	enum AskSubscribeRequest: Codable {
-		case subscribe(stake: CandidTuple2<CandidPrincipal, BigUInt>, filter: UnnamedType2?)
-		case unsubscribe(CandidPrincipal, BigUInt)
+		case subscribe(stake: CandidTuple2<ICPPrincipal, BigUInt>, filter: UnnamedType2?)
+		case unsubscribe(ICPPrincipal, BigUInt)
 	
 		enum CodingKeys: Int, CodingKey {
 			case subscribe = 421006154
@@ -903,7 +903,7 @@ enum GoldNFT {
 		let reserve: BigUInt?
 		let start_date: BigInt
 		let min_increase: MinIncreaseType
-		let allow_list: [CandidPrincipal]?
+		let allow_list: [ICPPrincipal]?
 		let buy_now: BigUInt?
 		let ending: UnnamedType3
 	}
@@ -925,7 +925,7 @@ enum GoldNFT {
 	/// };
 	struct AuctionStateShared: Codable {
 		let status: UnnamedType4
-		let participants: [CandidTuple2<CandidPrincipal, BigInt>]
+		let participants: [CandidTuple2<ICPPrincipal, BigInt>]
 		let token: TokenSpec__1
 		let current_bid_amount: BigUInt
 		let winner: Account?
@@ -934,7 +934,7 @@ enum GoldNFT {
 		let start_date: BigInt
 		let wait_for_quiet_count: BigUInt?
 		let current_escrow: EscrowReceipt?
-		let allow_list: [CandidTuple2<CandidPrincipal, Bool>]?
+		let allow_list: [CandidTuple2<ICPPrincipal, Bool>]?
 		let min_next_bid: BigUInt
 		let config: PricingConfigShared__1
 	}
@@ -952,7 +952,7 @@ enum GoldNFT {
 		let offers: [EscrowRecord__1]
 		let sales: [EscrowRecord__1]
 		let stake: [StakeRecord]
-		let multi_canister: [CandidPrincipal]?
+		let multi_canister: [ICPPrincipal]?
 		let escrow: [EscrowRecord__1]
 	}
 	
@@ -1184,7 +1184,7 @@ enum GoldNFT {
 		case Option(CandyShared?)
 		case Floats([Double])
 		case Float(Double)
-		case Principal(CandidPrincipal)
+		case Principal(ICPPrincipal)
 		case Array([CandyShared])
 		case Class([PropertyShared])
 	
@@ -1312,7 +1312,7 @@ enum GoldNFT {
 	///   };
 	/// };
 	enum ChunkContent: Codable {
-		case remote(args: ChunkRequest, canister: CandidPrincipal)
+		case remote(args: ChunkRequest, canister: ICPPrincipal)
 		case chunk(total_chunks: BigUInt, content: Data, storage_allocation: AllocationRecordStable, current_chunk: BigUInt?)
 	
 		enum CodingKeys: Int, CodingKey {
@@ -1366,18 +1366,18 @@ enum GoldNFT {
 	/// };
 	struct CollectionInfo: Codable {
 		let multi_canister_count: BigUInt?
-		let managers: [CandidPrincipal]?
-		let owner: CandidPrincipal?
+		let managers: [ICPPrincipal]?
+		let owner: ICPPrincipal?
 		let metadata: CandyShared?
 		let logo: String?
 		let name: String?
-		let network: CandidPrincipal?
+		let network: ICPPrincipal?
 		let created_at: UInt64?
 		let fields: [CandidTuple3<String, BigUInt?, BigUInt?>]?
 		let upgraded_at: UInt64?
 		let token_ids_count: BigUInt?
 		let available_space: BigUInt?
-		let multi_canister: [CandidPrincipal]?
+		let multi_canister: [ICPPrincipal]?
 		let token_ids: [String]?
 		let transaction_count: BigUInt?
 		let unique_holders: BigUInt?
@@ -1421,7 +1421,7 @@ enum GoldNFT {
 		let name: String?
 		let created_at: UInt64
 		let upgraded_at: UInt64
-		let custodians: [CandidPrincipal]
+		let custodians: [ICPPrincipal]
 		let symbol: String?
 	}
 	
@@ -1698,7 +1698,7 @@ enum GoldNFT {
 	
 	/// type EXTUser = variant { "principal" : principal; address : text };
 	enum EXTUser: Codable {
-		case principal(CandidPrincipal)
+		case principal(ICPPrincipal)
 		case address(String)
 	
 		enum CodingKeys: Int, CodingKey {
@@ -2018,7 +2018,7 @@ enum GoldNFT {
 		case Int16Content(Int16)
 		case BlobContent(Data)
 		case NestedContent(Vec)
-		case Principal(CandidPrincipal)
+		case Principal(ICPPrincipal)
 		case TextContent(String)
 	
 		enum CodingKeys: Int, CodingKey {
@@ -2043,7 +2043,7 @@ enum GoldNFT {
 	
 	/// type GetArchivesArgs = record { from : opt principal };
 	struct GetArchivesArgs: Codable {
-		let from: CandidPrincipal?
+		let from: ICPPrincipal?
 	}
 	
 	/// type GetArchivesResultItem = record {
@@ -2053,7 +2053,7 @@ enum GoldNFT {
 	/// };
 	struct GetArchivesResultItem: Codable {
 		let end: BigUInt
-		let canister_id: CandidPrincipal
+		let canister_id: ICPPrincipal
 		let start: BigUInt
 	}
 	
@@ -2215,7 +2215,7 @@ enum GoldNFT {
 		let id: BigUInt?
 		let fee: BigUInt?
 		let decimals: BigUInt
-		let canister: CandidPrincipal
+		let canister: ICPPrincipal
 		let standard: UnnamedType13
 		let symbol: String
 	}
@@ -2271,11 +2271,11 @@ enum GoldNFT {
 	///   UpdateName : opt text;
 	/// };
 	enum ManageCollectionCommand: Codable {
-		case UpdateOwner(CandidPrincipal)
-		case UpdateManagers([CandidPrincipal])
+		case UpdateOwner(ICPPrincipal)
+		case UpdateManagers([ICPPrincipal])
 		case UpdateMetadata(String, CandyShared?, Bool)
-		case UpdateAnnounceCanister(CandidPrincipal?)
-		case UpdateNetwork(CandidPrincipal?)
+		case UpdateAnnounceCanister(ICPPrincipal?)
+		case UpdateNetwork(ICPPrincipal?)
 		case UpdateSymbol(String?)
 		case UpdateLogo(String?)
 		case UpdateName(String?)
@@ -2388,7 +2388,7 @@ enum GoldNFT {
 	///   configure_storage : variant { stableBtree : opt nat; heap : opt nat };
 	/// };
 	enum ManageStorageRequest: Codable {
-		case add_storage_canisters([CandidTuple3<CandidPrincipal, BigUInt, CandidTuple3<BigUInt, BigUInt, BigUInt>>])
+		case add_storage_canisters([CandidTuple3<ICPPrincipal, BigUInt, CandidTuple3<BigUInt, BigUInt, BigUInt>>])
 		case configure_storage(UnnamedType14)
 	
 		enum CodingKeys: Int, CodingKey {
@@ -2486,10 +2486,10 @@ enum GoldNFT {
 		let offers: StableOffers
 		let collection_data: StableCollectionData
 		let nft_ledgers: StableNftLedger
-		let canister: CandidPrincipal
+		let canister: ICPPrincipal
 		let allocations: [CandidTuple2<CandidTuple2<String, String>, AllocationRecordStable>]
 		let nft_sales: [CandidTuple2<String, SaleStatusShared>]
-		let buckets: [CandidTuple2<CandidPrincipal, StableBucketData>]
+		let buckets: [CandidTuple2<ICPPrincipal, StableBucketData>]
 		let escrow_balances: StableEscrowBalances
 	}
 	
@@ -2950,15 +2950,15 @@ enum GoldNFT {
 		}
 	
 		/// dip721_balance_of : (principal) -> (nat) query;
-		func dip721_balance_of(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-			let caller = ICPQuery<CandidPrincipal, BigUInt>(canister, "dip721_balance_of")
+		func dip721_balance_of(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
+			let caller = ICPQuery<ICPPrincipal, BigUInt>(canister, "dip721_balance_of")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
 		/// dip721_custodians : () -> (vec principal) query;
-		func dip721_custodians(sender: ICPSigningPrincipal? = nil) async throws -> [CandidPrincipal] {
-			let caller = ICPQueryNoArgs<[CandidPrincipal]>(canister, "dip721_custodians")
+		func dip721_custodians(sender: ICPSigningPrincipal? = nil) async throws -> [ICPPrincipal] {
+			let caller = ICPQueryNoArgs<[ICPPrincipal]>(canister, "dip721_custodians")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
@@ -2966,8 +2966,8 @@ enum GoldNFT {
 		/// dip721_is_approved_for_all : (principal, principal) -> (
 		///       DIP721BoolResult,
 		///     ) query;
-		func dip721_is_approved_for_all(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721BoolResult {
-			let caller = ICPQuery<CandidTuple2<CandidPrincipal, CandidPrincipal>, DIP721BoolResult>(canister, "dip721_is_approved_for_all")
+		func dip721_is_approved_for_all(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721BoolResult {
+			let caller = ICPQuery<CandidTuple2<ICPPrincipal, ICPPrincipal>, DIP721BoolResult>(canister, "dip721_is_approved_for_all")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -2996,15 +2996,15 @@ enum GoldNFT {
 		/// dip721_operator_token_identifiers : (principal) -> (
 		///       DIP721TokensListMetadata,
 		///     ) query;
-		func dip721_operator_token_identifiers(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
-			let caller = ICPQuery<CandidPrincipal, DIP721TokensListMetadata>(canister, "dip721_operator_token_identifiers")
+		func dip721_operator_token_identifiers(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
+			let caller = ICPQuery<ICPPrincipal, DIP721TokensListMetadata>(canister, "dip721_operator_token_identifiers")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
 		/// dip721_operator_token_metadata : (principal) -> (DIP721TokensMetadata) query;
-		func dip721_operator_token_metadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-			let caller = ICPQuery<CandidPrincipal, DIP721TokensMetadata>(canister, "dip721_operator_token_metadata")
+		func dip721_operator_token_metadata(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+			let caller = ICPQuery<ICPPrincipal, DIP721TokensMetadata>(canister, "dip721_operator_token_metadata")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
@@ -3019,15 +3019,15 @@ enum GoldNFT {
 		/// dip721_owner_token_identifiers : (principal) -> (
 		///       DIP721TokensListMetadata,
 		///     ) query;
-		func dip721_owner_token_identifiers(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
-			let caller = ICPQuery<CandidPrincipal, DIP721TokensListMetadata>(canister, "dip721_owner_token_identifiers")
+		func dip721_owner_token_identifiers(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensListMetadata {
+			let caller = ICPQuery<ICPPrincipal, DIP721TokensListMetadata>(canister, "dip721_owner_token_identifiers")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
 		/// dip721_owner_token_metadata : (principal) -> (DIP721TokensMetadata) query;
-		func dip721_owner_token_metadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-			let caller = ICPQuery<CandidPrincipal, DIP721TokensMetadata>(canister, "dip721_owner_token_metadata")
+		func dip721_owner_token_metadata(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+			let caller = ICPQuery<ICPPrincipal, DIP721TokensMetadata>(canister, "dip721_owner_token_metadata")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
@@ -3075,15 +3075,15 @@ enum GoldNFT {
 		}
 	
 		/// dip721_transfer : (principal, nat) -> (DIP721NatResult);
-		func dip721_transfer(_ arg0: CandidPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple2<CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer")
+		func dip721_transfer(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
 	
 		/// dip721_transfer_from : (principal, principal, nat) -> (DIP721NatResult);
-		func dip721_transfer_from(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple3<CandidPrincipal, CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer_from")
+		func dip721_transfer_from(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer_from")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -3520,8 +3520,8 @@ enum GoldNFT {
 		}
 	
 		/// operaterTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
-		func operaterTokenMetadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-			let caller = ICPQuery<CandidPrincipal, DIP721TokensMetadata>(canister, "operaterTokenMetadata")
+		func operaterTokenMetadata(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+			let caller = ICPQuery<ICPPrincipal, DIP721TokensMetadata>(canister, "operaterTokenMetadata")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
@@ -3534,8 +3534,8 @@ enum GoldNFT {
 		}
 	
 		/// ownerTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
-		func ownerTokenMetadata(_ arg0: CandidPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
-			let caller = ICPQuery<CandidPrincipal, DIP721TokensMetadata>(canister, "ownerTokenMetadata")
+		func ownerTokenMetadata(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721TokensMetadata {
+			let caller = ICPQuery<ICPPrincipal, DIP721TokensMetadata>(canister, "ownerTokenMetadata")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
@@ -3673,8 +3673,8 @@ enum GoldNFT {
 		}
 	
 		/// transferDip721 : (principal, nat) -> (DIP721NatResult);
-		func transferDip721(_ arg0: CandidPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple2<CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "transferDip721")
+		func transferDip721(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferDip721")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -3687,15 +3687,15 @@ enum GoldNFT {
 		}
 	
 		/// transferFrom : (principal, principal, nat) -> (DIP721NatResult);
-		func transferFrom(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple3<CandidPrincipal, CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFrom")
+		func transferFrom(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFrom")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
 	
 		/// transferFromDip721 : (principal, principal, nat) -> (DIP721NatResult);
-		func transferFromDip721(_ arg0: CandidPrincipal, _ arg1: CandidPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple3<CandidPrincipal, CandidPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFromDip721")
+		func transferFromDip721(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
+			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFromDip721")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -3722,8 +3722,8 @@ enum GoldNFT {
 		}
 	
 		/// whoami : () -> (principal) query;
-		func whoami(sender: ICPSigningPrincipal? = nil) async throws -> CandidPrincipal {
-			let caller = ICPQueryNoArgs<CandidPrincipal>(canister, "whoami")
+		func whoami(sender: ICPSigningPrincipal? = nil) async throws -> ICPPrincipal {
+			let caller = ICPQueryNoArgs<ICPPrincipal>(canister, "whoami")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
@@ -3797,7 +3797,7 @@ enum GoldNFT {
 	
 	/// type OwnerOfResponse = variant { Ok : opt principal; Err : NftError };
 	enum OwnerOfResponse: Codable {
-		case Ok(CandidPrincipal?)
+		case Ok(ICPPrincipal?)
 		case Err(NftError)
 	
 		enum CodingKeys: Int, CodingKey {
@@ -3965,8 +3965,8 @@ enum GoldNFT {
 	struct SaleStatusShared: Codable {
 		let token_id: String
 		let sale_type: UnnamedType19
-		let broker_id: CandidPrincipal?
-		let original_broker_id: CandidPrincipal?
+		let broker_id: ICPPrincipal?
+		let original_broker_id: ICPPrincipal?
 		let sale_id: String
 	}
 	
@@ -4002,7 +4002,7 @@ enum GoldNFT {
 	///   allocations : vec record { record { text; text }; int };
 	/// };
 	struct StableBucketData: Codable {
-		let principal: CandidPrincipal
+		let principal: ICPPrincipal
 		let allocated_space: BigUInt
 		let date_added: BigInt
 		let version: CandidTuple3<BigUInt, BigUInt, BigUInt>
@@ -4024,13 +4024,13 @@ enum GoldNFT {
 	///   allocated_storage : nat;
 	/// };
 	struct StableCollectionData: Codable {
-		let active_bucket: CandidPrincipal?
-		let managers: [CandidPrincipal]
-		let owner: CandidPrincipal
+		let active_bucket: ICPPrincipal?
+		let managers: [ICPPrincipal]
+		let owner: ICPPrincipal
 		let metadata: CandyShared?
 		let logo: String?
 		let name: String?
-		let network: CandidPrincipal?
+		let network: ICPPrincipal?
 		let available_space: BigUInt
 		let symbol: String?
 		let allocated_storage: BigUInt
@@ -4053,7 +4053,7 @@ enum GoldNFT {
 	
 	/// type StageLibraryResponse = record { canister : principal };
 	struct StageLibraryResponse: Codable {
-		let canister: CandidPrincipal
+		let canister: ICPPrincipal
 	}
 	
 	/// type StageLibraryResult = variant {
@@ -4103,7 +4103,7 @@ enum GoldNFT {
 	///   allocated_storage : nat;
 	/// };
 	struct StorageMetrics: Codable {
-		let gateway: CandidPrincipal
+		let gateway: ICPPrincipal
 		let available_space: BigUInt
 		let allocations: [AllocationRecordStable]
 		let allocated_storage: BigUInt
@@ -4162,7 +4162,7 @@ enum GoldNFT {
 	/// };
 	struct SubAccountInfo: Codable {
 		let account_id: Data
-		let principal: CandidPrincipal
+		let principal: ICPPrincipal
 		let account_id_text: String
 		let account: UnnamedType20
 	}
@@ -4216,18 +4216,18 @@ enum GoldNFT {
 	/// };
 	struct TokenMetadata: Codable {
 		let transferred_at: UInt64?
-		let transferred_by: CandidPrincipal?
-		let owner: CandidPrincipal?
-		let `operator`: CandidPrincipal?
+		let transferred_by: ICPPrincipal?
+		let owner: ICPPrincipal?
+		let `operator`: ICPPrincipal?
 		let approved_at: UInt64?
-		let approved_by: CandidPrincipal?
+		let approved_by: ICPPrincipal?
 		let properties: [CandidTuple2<String, GenericValue>]
 		let is_burned: Bool
 		let token_identifier: BigUInt
 		let burned_at: UInt64?
-		let burned_by: CandidPrincipal?
+		let burned_by: ICPPrincipal?
 		let minted_at: UInt64
-		let minted_by: CandidPrincipal
+		let minted_by: ICPPrincipal
 	}
 	
 	/// type TokenSpec = variant { ic : ICTokenSpec; extensible : CandyShared };
@@ -4450,7 +4450,7 @@ enum GoldNFT {
 	}
 	
 	struct UnnamedType20: Codable {
-		let principal: CandidPrincipal
+		let principal: ICPPrincipal
 		let sub_account: Data
 	}
 	
@@ -4522,9 +4522,9 @@ enum GoldNFT {
 	enum UnnamedType6: Codable {
 		case escrow_deposit(token: TokenSpec, token_id: String, trx_id: TransactionID, seller: Account__1, extensible: CandyShared, buyer: Account__1, amount: BigUInt)
 		case fee_deposit(token: TokenSpec, extensible: CandyShared, account: Account__1, amount: BigUInt)
-		case canister_network_updated(network: CandidPrincipal, extensible: CandyShared)
+		case canister_network_updated(network: ICPPrincipal, extensible: CandyShared)
 		case escrow_withdraw(fee: BigUInt, token: TokenSpec, token_id: String, trx_id: TransactionID, seller: Account__1, extensible: CandyShared, buyer: Account__1, amount: BigUInt)
-		case canister_managers_updated(managers: [CandidPrincipal], extensible: CandyShared)
+		case canister_managers_updated(managers: [ICPPrincipal], extensible: CandyShared)
 		case auction_bid(token: TokenSpec, extensible: CandyShared, buyer: Account__1, amount: BigUInt, sale_id: String)
 		case burn(from: Account__1?, extensible: CandyShared)
 		case data(hash: Data?, extensible: CandyShared, data_dapp: String?, data_path: String?)
@@ -4535,7 +4535,7 @@ enum GoldNFT {
 		case fee_deposit_withdraw(fee: BigUInt, token: TokenSpec, trx_id: TransactionID, extensible: CandyShared, account: Account__1, amount: BigUInt)
 		case owner_transfer(to: Account__1, from: Account__1, extensible: CandyShared)
 		case sale_opened(pricing: PricingConfigShared, extensible: CandyShared, sale_id: String)
-		case canister_owner_updated(owner: CandidPrincipal, extensible: CandyShared)
+		case canister_owner_updated(owner: ICPPrincipal, extensible: CandyShared)
 		case sale_withdraw(fee: BigUInt, token: TokenSpec, token_id: String, trx_id: TransactionID, seller: Account__1, extensible: CandyShared, buyer: Account__1, amount: BigUInt)
 		case deposit_withdraw(fee: BigUInt, token: TokenSpec, trx_id: TransactionID, extensible: CandyShared, buyer: Account__1, amount: BigUInt)
 	
@@ -4585,7 +4585,7 @@ enum GoldNFT {
 	
 	struct UnnamedType9: Codable {
 		let locked: BigInt?
-		let seller: CandidPrincipal
+		let seller: ICPPrincipal
 		let price: UInt64
 	}
 	
@@ -4630,7 +4630,7 @@ enum GoldNFT {
 		case archiveCycles(BigUInt)
 		case maxActiveRecords(BigUInt)
 		case maxRecordsInArchiveInstance(BigUInt)
-		case archiveControllers([CandidPrincipal]??)
+		case archiveControllers([ICPPrincipal]??)
 	
 		enum CodingKeys: Int, CodingKey {
 			case maxRecordsToArchive = 166783273
@@ -4772,7 +4772,7 @@ enum GoldNFT {
 	/// };
 	struct definite_canister_settings: Codable {
 		let freezing_threshold: BigUInt
-		let controllers: [CandidPrincipal]?
+		let controllers: [ICPPrincipal]?
 		let memory_allocation: BigUInt
 		let compute_allocation: BigUInt
 	}

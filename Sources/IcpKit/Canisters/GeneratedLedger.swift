@@ -1,8 +1,7 @@
 import Foundation
 import BigInt
-import Candid
 
-enum Ledger {
+enum LedgerCanister {
     /// // Account identifier  is a 32-byte array.
     /// // The first 4 bytes is big-endian encoding of a CRC32 checksum of the last 28 bytes
     /// type AccountIdentifier = blob;
@@ -40,7 +39,7 @@ enum Ledger {
     ///     canister_id: principal;
     /// };
     struct Archive: Codable {
-        let canister_id: CandidPrincipal
+        let canister_id: ICPPrincipal
     }
     
     /// type Archives = record {

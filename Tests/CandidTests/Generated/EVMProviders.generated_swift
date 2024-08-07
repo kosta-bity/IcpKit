@@ -1,6 +1,6 @@
 struct UnnamedType0: Codable {
 	let cyclesPerCall: UInt64
-	let owner: CandidPrincipal
+	let owner: ICPPrincipal
 	let hostname: String
 	let primary: Bool
 	let chainId: UInt64
@@ -11,7 +11,7 @@ struct UnnamedType0: Codable {
 let cValue: [UnnamedType0] = [
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "cloudflare-eth.com",
 		primary: false,
 		chainId: 1,
@@ -20,7 +20,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "rpc.ankr.com",
 		primary: false,
 		chainId: 1,
@@ -29,7 +29,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "ethereum-rpc.publicnode.com",
 		primary: false,
 		chainId: 1,
@@ -38,7 +38,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "ethereum.blockpi.network",
 		primary: false,
 		chainId: 1,
@@ -47,7 +47,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "rpc.sepolia.org",
 		primary: false,
 		chainId: 11155111,
@@ -56,7 +56,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "rpc.ankr.com",
 		primary: false,
 		chainId: 11155111,
@@ -65,7 +65,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "ethereum-sepolia.blockpi.network",
 		primary: false,
 		chainId: 11155111,
@@ -74,7 +74,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "ethereum-sepolia-rpc.publicnode.com",
 		primary: false,
 		chainId: 11155111,
@@ -83,7 +83,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "eth-mainnet.g.alchemy.com",
 		primary: false,
 		chainId: 1,
@@ -92,7 +92,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "eth-sepolia.g.alchemy.com",
 		primary: false,
 		chainId: 11155111,
@@ -101,7 +101,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "arb-mainnet.g.alchemy.com",
 		primary: false,
 		chainId: 42161,
@@ -110,7 +110,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "rpc.ankr.com",
 		primary: false,
 		chainId: 42161,
@@ -119,7 +119,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "arbitrum.blockpi.network",
 		primary: false,
 		chainId: 42161,
@@ -128,7 +128,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "arbitrum-one-rpc.publicnode.com",
 		primary: false,
 		chainId: 42161,
@@ -137,7 +137,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "base-mainnet.g.alchemy.com",
 		primary: false,
 		chainId: 42161,
@@ -146,7 +146,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "rpc.ankr.com",
 		primary: false,
 		chainId: 42161,
@@ -155,7 +155,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "base.blockpi.network",
 		primary: false,
 		chainId: 42161,
@@ -164,7 +164,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "base-rpc.publicnode.com",
 		primary: false,
 		chainId: 8453,
@@ -173,7 +173,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "opt-mainnet.g.alchemy.com",
 		primary: false,
 		chainId: 10,
@@ -182,7 +182,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "rpc.ankr.com",
 		primary: false,
 		chainId: 10,
@@ -191,7 +191,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "optimism.blockpi.network",
 		primary: false,
 		chainId: 10,
@@ -200,7 +200,7 @@ let cValue: [UnnamedType0] = [
 	),
 	.init(
 		cyclesPerCall: 0,
-		owner: try! CandidPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
+		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
 		hostname: "optimism-rpc.publicnode.com\n",
 		primary: false,
 		chainId: 10,

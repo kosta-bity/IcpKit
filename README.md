@@ -4,8 +4,6 @@ IcpKit aims at facilitating the interaction between iOS apps and the ICP blockch
 
 For more information about ICP Development, we recommend starting from https://internetcomputer.org/docs/current/references/
 
-[![codecov](https://codecov.io/gh/kosta-bity/IcpKit/graphs/sunburst.svg?token=QL11UD2IXD)](https://codecov.io/gh/kosta-bity/IcpKit)
-
 [![codecov](https://codecov.io/gh/kosta-bity/IcpKit/graph/badge.svg?token=QL11UD2IXD)](https://codecov.io/gh/kosta-bity/IcpKit)
 
 ## Contributors
@@ -18,7 +16,7 @@ The BLS12381 Rust Library is licensed by Levi Feldman (see [LICENSE](Sources/bls
 
 ## Installation
 ### Swift Package Manager
-Adding IcpKit as a dependency is as easy as adding it to the `dependencies` value of your `Package.swift`.
+Adding IcpKit as a dependency to your Xcode project is as easy as adding it to the `dependencies` value of your `Package.swift`.
 
 ```swift
 ...
@@ -28,32 +26,75 @@ dependencies: [
 ...
 ```
 
-The `IcpKit` package defines two libraries `Candid` and `IcpKit`. `Candid` implements the Candid specification and `IcpKit` implements the communication with canisters. To use in your code `import Candid` and/or `import IcpKit`.
+The `IcpKit` package defines two libraries `Candid` and `IcpKit`. `Candid` implements the Candid specification and `IcpKit` implements the communication with canisters. To use in your code
+
+```swift
+import Candid
+import IcpKit
+```
 
 ### CodeGenerator Command Line Tool
 
-To use the `CodeGenerator`, you must first clone the project  `git clone https://github.com/kosta-bity/IcpKit` and then you can either use Swift to compile and run or build the executable yourself.
+To use the `CodeGenerator`, you must first clone the project 
+
+```shell
+git clone https://github.com/kosta-bity/IcpKit
+cd IcpKit
+```
+
+and then you can either use Swift to compile and run or build the executable yourself.
+
 #### Build the executable
 
-from the `IcpKit` root folder :
+From the `IcpKit` root folder :
 
-`./compile_code_generator.sh`
+```shell
+./compile_code_generator.sh
+```
 
-You will find the executable inside the folder `.build/release/CodeGenerator`
+You will find the executable inside the folder `.build/release/CodeGenerator`. Running the `CodeGenerator` without any arguments will display the help.
 
 #### Use Swift to execute
 
 Alternatively you can use swift to run it from the `IcpKit` root folder :
 
-`swift run CodeGenerator`
+```shell
+swift run CodeGenerator
+```
 
 ## What does it do?
 
-IcpKit will take care of all the encoding and serialisation required to communicate with ICP allowing to developers to focus on
-the real functionality of their app and bootstrapping their development cycle.
+IcpKit will take care of all the encoding, serialisation and cryptography required to communicate with ICP allowing developers to focus on the real functionality of their app and bootstrapping their development cycle.
 
-The [ICPRequestClient](Sources/IcpKit/ICPRequest/ICPRequestClient.swift) class is the main interaction point allowing to create
-and process requests to any canister.
+IcpKit is split in 2 libraries : Candid and IcpKit
+
+### Candid Library Overview
+
+[Candid](https://github.com/dfinity/candid/blob/master/spec/Candid.md) is the language used to communicate with any ICP canister. It describes the data types used by the canister, and the methods one can call on the canister. Candid is essentially a textual and a binary representation of these types. The binary representation is what is actually being sent/received to/from the canister while the textual representation is used in the Candid Interface Definition files ( `.did`) to describe the interface of a canister.
+
+The main classes of the Candid Library are the following :
+
+| Class                                       | Description                                                  |
+| ------------------------------------------- | ------------------------------------------------------------ |
+| `CandidValue`                               | Represents a `CandidValue` in `Swift`. Eg. `.bool(true)`     |
+| `CandidType`                                | Represent the type of a `CandidValue`. Eg. `.option(.integer)` |
+| `CandidSerialiser` and `CandidDeserialiser` | Convert any `CandidValue` to/from its binary representation which can be directly sent/received to/from a canister. |
+| `CandidEncoder` and `CandidDecoder`         | Convert any `Encodable`/ `Decodable` Swift object to/from a `CandidValue`. See [Swift/Candid Encoding Rules](#swiftcandid-encoding-rules) |
+| `CandidParser`                              | Parses the contents of an interface definition`.did` file and generates the contents of a `.swift` file with executable code representing the interface that can be inserted in your project.<br />The `CandidParser` is mostly meant to be used with the provided Command Line Tool |
+
+### IcpKit Library Overview
+
+The `IcpKit` Library is built on top of `Candid` and is responsible for the actual communication with the canisters. 
+
+The main classes of the `IcpKit` Library are the following : 
+
+| Class                                                        | Description                                                  |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [`ICPRequestClient`](Sources/IcpKit/ICPRequest/ICPRequestClient.swift) | Responsible for making the `HTTP` requests to the methods of canisters. It receives the arguments of the method as a `CandidValue` and will return the result of the canister as a `CandidValue`. Internally, it will serialise the candid arguments using the `CandidSerialiser`,  sign the request when a `SigningPrincipal` is provided and finally wrap everything in `CBOR`. When a response is received the opposite process is performed to return the `CandidValue`. |
+| `ICPFunction<T,R>`                                           | Wraps the `CandidEncoder` around the `ICPRequestClient` so that a canister method can be called using `Swift` objects instead of a `CandidValue`. Similarly the canister's response is decoded with `CandidDecoder` to return a `Swift` object. |
+| [`LedgerCanister`](Sources/IcpKit/Canisters/ICPLedgerCanister.swift) | Is provided as sample code and is the code generated using `CodeGenerator` from the `Ledger.did` file. It allows to query the ICP balance of any ICP account and to fetch the details of any ICP Block. |
+
+The [ICPRequestClient](Sources/IcpKit/ICPRequest/ICPRequestClient.swift) class is the communication workhorse of the library allowing to make method calls to any canister.
 
 The [Ledger Canister](Sources/IcpKit/Canisters/ICPLedgerCanister.swift) is provided as a sample implementation which also allows for easy creation of ICP Wallet apps.
 

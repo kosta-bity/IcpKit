@@ -48,6 +48,11 @@ private class CandidValueDecoder: Decoder {
             let bigInt = try input.integer(codingPath)
             return bigInt as! T
             
+        } else if T.self is any CandidPrincipalProtocol.Type {
+            let principal = try input.principal(codingPath)
+            let principalProtocol = (T.self as! any CandidPrincipalProtocol.Type).init(principal)
+            return principalProtocol as! T
+            
         } else if T.self is CandidFunctionProtocol.Type {
             let function = try input.function(codingPath)
             guard let method = function.method else {
@@ -392,6 +397,14 @@ private extension CandidValue {
             throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a String"))
          }
         return string
+    }
+    
+    func principal(_ codingPath: [CodingKey]) throws -> CandidPrincipal {
+        guard case .principal(let principal) = self,
+              let principal = principal else {
+            throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Principal"))
+        }
+        return principal
     }
     
     func function(_ codingPath: [CodingKey]) throws -> CandidFunction {

@@ -343,7 +343,7 @@ private extension CandidType {
             fatalError("all variants should be named by now")
         case .function(let signature): return signature.swiftType()
         case .service: return "CandidServiceSignature"
-        case .principal: return "CandidPrincipal"
+        case .principal: return "ICPPrincipal"
         case .named(let name): return name
         }
     }
@@ -592,5 +592,5 @@ private extension CandidValue {
 }
 
 private extension CandidPrincipal {
-    var swiftValueInit: String { "try! CandidPrincipal(\"\(string)\")" }
+    var swiftValueInit: String { "try! ICPPrincipal(\"\(string)\")" }
 }

@@ -36,7 +36,7 @@ enum LedgerCanister {
 	///     canister_id: principal;
 	/// };
 	struct Archive: Codable {
-		let canister_id: CandidPrincipal
+		let canister_id: ICPPrincipal
 	}
 	
 	/// type Archives = record {
