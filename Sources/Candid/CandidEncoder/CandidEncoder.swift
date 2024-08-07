@@ -9,8 +9,22 @@ import Foundation
 import BigInt
 import Combine
 
+/// `TopLevelEncoder` for encoding any `Encodable` to a `CandidValue`
+/// The encoding rules are the following:
+///  - `Bool`, `String`, `BigInt`, `BigUInt`, `Int<n>`,`UInt<n>`, `Float`, `Double`, `Data` are encoded to the equivalent `bool`, `text`, `nat`,`int`,`nat<n>`,`int<n>`,`float32`,`float64`,`blob`
+///  - `Optionals` are encoded to `option`
+///  - `Collections` are encoded to `vector`
+///  - `structs` are encoded to `record`
+///  - `enums` are encoded to variants. Due to limitations in the Swift Type system, we can not deduce all the cases of the enum and so the resulting variant has a single case corresponding to the current value.
+///  - `CandidPrincipalProtocols` are encoded to a principal
+///  - `CandidFunctionProtocols` can NOT be encoded to a function because we can not deduce the signature from the Swift type...
+///  - `CandidServiceProtocols` can NOT be encoded to a service because functions can not be encoded
 public class CandidEncoder: TopLevelEncoder {
     public init() { }
+    
+    /// Encodes `value` into a `CandidValue`
+    /// - Parameter value: The value to encode
+    /// - Returns: A `CandidValue` representing that value
     public func encode<T>(_ value: T) throws -> CandidValue where T: Encodable {
         let encoder = CandidValueEncoder()
         try encoder.candidEncode(value)

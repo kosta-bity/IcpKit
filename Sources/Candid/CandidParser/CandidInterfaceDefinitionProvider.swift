@@ -7,8 +7,14 @@
 
 import Foundation
 
+/// Used by the `CandidParser` to process `import` statements.
 public protocol CandidInterfaceDefinitionProvider {
+    /// - Returns: The contents of the main `.did` file to parse
     func readMain() async throws -> String
+    
+    /// Returns the contents of a `.did` file
+    /// - Parameter file: The filename.
+    /// - Returns: The contents of the filename
     func read(contentsOf file: String) async throws -> String
 }
 

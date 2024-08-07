@@ -9,13 +9,39 @@ import Foundation
 import BigInt
 import Combine
 
+
+/// `TopLevelDecoder` for decoding a `CandidValue` into a `Decodable`
+/// The decoding rules are the following:
+///  - bool -> Bool
+///  - text -> String (utf8)
+///  - int -> BigInt
+///  - nat -> BigUInt
+///  - int<n> -> Int<n>
+///  - nat<n> -> UInt<n>
+///  - blob -> Data
+///  - vec <type> -> [<swift_type>]
+///  - opt <type> -> <swift_type>?
+///  - record -> struct with same keys. Keys with only a number `n` are converted to "_n"
+///  - variant -> enum
+///  - principal -> `CandidPrincipalProtocol`
+///  - function -> `CandidFunctionProtocol`
+///  - service -> `CandidServiceProtocol`
+///  - null, empty, reservec -> nil
 public class CandidDecoder: TopLevelDecoder {
     public init() {}
     
+    /// Decodes the given `CandidValue` into the given `Decodable` type
+    /// - Parameter value: The `CandidValue` to decode
+    /// - Returns: The input value encoded into type `T`
     public func decode<T>(_ value: CandidValue) throws -> T where T: Decodable {
         return try decode(T.self, from: value)
     }
     
+    /// Decodes the given `CandidValue` into the given `Decodable` type
+    /// - Parameters:
+    ///   - type: The type into which the value will be decoded
+    ///   - value: The `CandidValue` to decode
+    /// - Returns: The input value encoded into type `T`
     public func decode<T>(_ type: T.Type, from value: CandidValue) throws -> T where T: Decodable {
         let decoder = CandidValueDecoder(value)
         let decoded: T = try decoder.candidDecode()

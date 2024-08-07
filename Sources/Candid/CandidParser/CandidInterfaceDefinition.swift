@@ -7,6 +7,9 @@
 
 import Foundation
 
+/// Represents a Candid Interface Definition:
+///  - a set of composite `CandidType`s identified by a name
+///  - an optional service definition including all it's methods
 public struct CandidInterfaceDefinition: Equatable {
     public init(namedTypes: [String : CandidType], service: ServiceDefinition? = nil) {
         self.namedTypes = namedTypes.map { .init(name: $0.key, type: $0.value) }.sorted()
