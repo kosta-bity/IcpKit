@@ -15,6 +15,10 @@ This Package has been built by [Bity SA](https://bity.com) with the help of the 
 The BLS12381 Rust Library is licensed by Levi Feldman (see [LICENSE](Sources/bls12381/LICENSE)).
 
 ## Installation
+
+min iOS version : v16
+min macOs version: v13 
+
 ### Swift Package Manager
 Adding IcpKit as a dependency to your Xcode project is as easy as adding it to the `dependencies` value of your `Package.swift`.
 
@@ -33,35 +37,6 @@ import Candid
 import IcpKit
 ```
 
-### CodeGenerator Command Line Tool
-
-To use the `CodeGenerator`, you must first clone the project 
-
-```shell
-git clone https://github.com/kosta-bity/IcpKit
-cd IcpKit
-```
-
-and then you can either use Swift to compile and run or build the executable yourself.
-
-#### Build the executable
-
-From the `IcpKit` root folder :
-
-```shell
-./compile_code_generator.sh
-```
-
-You will find the executable inside the folder `.build/release/CodeGenerator`. Running the `CodeGenerator` without any arguments will display the help.
-
-#### Use Swift to execute
-
-Alternatively you can use swift to run it from the `IcpKit` root folder :
-
-```shell
-swift run CodeGenerator
-```
-
 ## What does it do?
 
 IcpKit will take care of all the encoding, serialisation and cryptography required to communicate with ICP allowing developers to focus on the real functionality of their app and bootstrapping their development cycle.
@@ -76,7 +51,11 @@ IcpKit will take care of all the encoding, serialisation and cryptography requir
 - Basic ICP Models for transactions, accounts, self-authenticating principals etc.
 - Ledger and Archive Canister implementation as sample code.
 
-IcpKit is split in 2 libraries : Candid and IcpKit
+`IcpKit` package is split in 3 products : 
+
+- `Candid` Library
+- `IcpKit` Library
+- `CodeGenerator` command line executable
 
 ### Candid Library Overview
 
@@ -111,19 +90,54 @@ The [ICPRequestClient](Sources/IcpKit/ICPRequest/ICPRequestClient.swift) class i
 
 The [Ledger Canister](Sources/IcpKit/Canisters/ICPLedgerCanister.swift) is provided as a sample implementation which also allows for easy creation of ICP Wallet apps.
 
+### `CodeGenerator` Command Line Tool Overview
+
+To use the `CodeGenerator`, you must first clone the project 
+
+```shell
+git clone https://github.com/kosta-bity/IcpKit
+cd IcpKit
+```
+
+and then you can either use Swift to compile and run or build the executable yourself.
+
+#### Build the executable
+
+From the `IcpKit` root folder :
+
+```shell
+./compile_code_generator.sh
+```
+
+You will find the executable inside the folder `.build/release/CodeGenerator`. Running the `CodeGenerator` without any arguments will display the help.
+
+#### Use Swift to execute
+
+Alternatively you can use swift to run it from the `IcpKit` root folder :
+
+```shell
+swift run CodeGenerator
+```
+
 ## Candid Interface Definition files (.did)
+
 A canister is defined by all the types and methods used to interact with it. Most canisters publish their definition in the `.did` format defined [here](https://github.com/dfinity/candid/blob/master/spec/Candid.md#candid-specification). 
 
 IcpKit can parse these files and generate Swift code that can be included in your iOS/Mac Project to interact with the canister. This effectively abstracts away all technical details regarding the communication.
 
-### A short example
+The `.did` files can be one of two types  :
+
+- A Service Interface definition including type definitions and service methods. These are called interface `.did` files.
+- A single candid value. These are called value `.did` files.
+
+### Generating code for interface `.did` files
 Here is a simple interface `MyDid.did`:
 
 ```candid
 type MyVector = vec opt bool;
-
+type FooResult = record { name: text; count: int8 };
 service: { 
-    foo: (input: MyVector; sorted: bool) -> (record { name: text; count: int8 }) query
+    foo: (input: MyVector; sorted: bool) -> (FooResult) query
 };
 
 ```
@@ -142,13 +156,14 @@ import IcpKit
 enum SimpleExample {
 	typealias MyVector = [Bool?]
     
-	struct UnnamedType0: Codable {
+	struct FooResult: Codable {
 		let name: String
 		let count: Int8
 	}  
+  
 	class Service: ICPService {
-		func foo(input: MyVector, sorted: Bool) async throws -> UnnamedType0 {
-			let caller = ICPQuery<CandidTuple2<MyVector, Bool>, Bool>(canister, "foo")
+		func foo(input: MyVector, sorted: Bool) async throws -> FooResult {
+			let caller = ICPQuery<CandidTuple2<MyVector, Bool>, FooResult>(canister, "foo")
 			let response = try await caller.callMethod(.init(input, sorted), client, sender: sender)
 			return response
 		}
@@ -168,6 +183,41 @@ print(record.count)
 ```
 
 The code generated is completely type safe and avoids common mistakes such as wrong number types etc...
+
+### Generating Code for value `.did` files
+
+An example of a value `.did` file is the following `phone_book.did`:
+
+```candid
+(
+	vec {
+	   record { name = "MyName"; phone = 1234 : nat; };
+	   record { name = "AnotherName"; phone = 4321 : nat; };
+	}
+)
+```
+
+These types of files can be parsed using the following command :
+
+```shell
+./CodeGenerator value -n PhoneBook phone_book.did
+```
+
+This will generate `PhoneBook.swift` with the following contents :
+
+```swift
+enum PhoneBook {
+   struct UnnamedType0: Codable {
+      let name: String
+      let phone: BigUInt
+   }
+   
+   let cValue: [UnnamedType0] = [
+   		.init(name: "MyName", phone: 1234),
+      .init(name: "AnotherName", phone: 4321),
+   ]
+}
+```
 
 ### Swift/Candid Encoding Rules
 
@@ -232,7 +282,7 @@ All these have the exact same result.
 
 ### Hot to use `ICPFunction`
 
-The same can be achieved with the following code, only this time by using the `ICPFunction` we don't have to deal with `CandidValues` any more, we can just feed an `Encodable` to the function and receive back a `Decodable`.
+The same can be achieved with the following code, only this time by using the `ICPFunction`. This allows us to directly feed an `Encodable` to the function and receive back a `Decodable`. `ICPFunction` will make sure the input is correctly encoded from the input Swift type to a `CandidValue` and the output is decoded from the `CandidValue` to the output Swift type.
 
 ```swift
 struct Result: Decodable {
@@ -260,6 +310,8 @@ The public key must be in uncompressed form.
 #### Implementing a simple `ICPSigningPrincipal`
 
 Here is a minimal `ICPSigningPrincipal`implementation. This is given as an example only. Do not use this code in production as keeping private keys in memory is generally not a good practice.
+
+The `sign` method is purposely `async` to allow for any type of delayed fetching of the private keys (eg. remote access or access to iOS Secure Enclave).
 
 ```swift
 class SimpleSigningPrincipal: ICPSigningPrincipal {
