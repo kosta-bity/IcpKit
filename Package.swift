@@ -13,7 +13,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(name: "IcpKit", targets: ["IcpKit"]),
         .library(name: "Candid", targets: ["Candid"]),
-        .executable(name: "CodeGenerator", targets: ["CodeGenerator"])
+        .executable(name: "CodeGenerator", targets: ["CodeGenerator"]),
         //.library(name: "Bls12381", targets: ["bls12381"])
     ],
     dependencies: [

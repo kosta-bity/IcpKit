@@ -53,9 +53,9 @@ IcpKit will take care of all the encoding, serialisation and cryptography requir
 
 `IcpKit` package is split in 3 products : 
 
-- `Candid` Library
-- `IcpKit` Library
-- `CodeGenerator` command line executable
+- [`Candid` Library](#candid-library-overview)
+- [`IcpKit` Library](#icpkit-library-overview)
+- [`CodeGenerator` command line executable](#codegenerator-command-line-tool-overview)
 
 ### Candid Library Overview
 
@@ -68,10 +68,10 @@ The main classes of the Candid Library are the following :
 | Class                                                        | Description                                                  |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | [`CandidValue`](Sources/Candid/CandidValue/CandidValue.swift) | Represents a `CandidValue` in `Swift`. Eg. `.bool(true)`     |
-| [`CandidType`](Sources/Candid/CandidValue/CandidType.swift)  | Represent the type of a `CandidValue`. Eg. `.option(.integer)` |
-| [`CandidSerialiser`](Sources/Candid/CandidSerialiser/CandidSerialiser.swift) and [`CandidDeserialiser`](Sources/Candid/CandidSerialiser/CandidDeserialiser.swift) | Convert any `CandidValue` to/from its binary representation which can be directly sent/received to/from a canister. |
-| [`CandidEncoder`](Sources/Candid/CandidEncoder/CandidEncoder.swift) and [`CandidDecoder`](Sources/Candid/CandidEncoder/CandidDecoder.swift) | Convert any `Encodable`/ `Decodable` Swift object to/from a `CandidValue`. See [Swift/Candid Encoding Rules](#swiftcandid-encoding-rules) |
-| [`CandidParser`](Sources/Candid/CandidParser/CandidParser.swift) | Parses the contents of an interface definition`.did` file and generates the contents of a `.swift` file with executable code representing the interface that can be inserted in your project.<br />The `CandidParser` is mostly meant to be used with the provided Command Line Tool |
+| [`CandidType`](Sources/Candid/CandidType/CandidType.swift)   | Represent the type of a `CandidValue`. Eg. `.option(.integer)` |
+| [`CandidSerialiser`](Sources/Candid/Serialisation/CandidSerialiser.swift) and [`CandidDeserialiser`](Sources/Candid/Serialisation/CandidDeserialiser.swift) | Convert any `CandidValue` to/from its binary representation which can be directly sent/received to/from a canister.<br />*NOTE:* Serialising recursive candid values is not supported. |
+| [`CandidEncoder`](Sources/Candid/Encoding/CandidEncoder.swift) and [`CandidDecoder`](Sources/Candid/Encoding/CandidDecoder.swift) | Convert any `Encodable`/ `Decodable` Swift object to/from a `CandidValue`. See [Swift/Candid Encoding Rules](#swiftcandid-encoding-rules) |
+| [`CandidParser`](Sources/Candid/Parser/CandidParser.swift)   | Parses the contents of a `.did` file and returns a `CandidInterfaceDefinition`, a `CandidType` or a `CandidValue` depending on the type of file parsed (see [Candid Interface Definition files](#candid-interface-definition-files-did)). <br />The `CandidParser` is mostly meant to be used with the provided Command Line Tool but it can be directly called from the your app for cases such as reading values from an online `.did` file, or similar. |
 
 ### IcpKit Library Overview
 
@@ -119,7 +119,7 @@ Alternatively you can use swift to run it from the `IcpKit` root folder :
 swift run CodeGenerator
 ```
 
-## Candid Interface Definition files (.did)
+## Candid Interface Definition files (`.did`)
 
 A canister is defined by all the types and methods used to interact with it. Most canisters publish their definition in the `.did` format defined [here](https://github.com/dfinity/candid/blob/master/spec/Candid.md#candid-specification). 
 
@@ -129,6 +129,19 @@ The `.did` files can be one of two types  :
 
 - A Service Interface definition including type definitions and service methods. These are called interface `.did` files.
 - A single candid value. These are called value `.did` files.
+
+#### Development Process for integrating canisters in your app
+
+Assuming that you have a `.did` service interface definition file, the steps to interact with a canister are the following :
+
+- Generate Swift code for the `.did` file using the `CodeGeneratorTool`.
+- Add the generated Swift files in your project.
+- Modify the generated Swift files as necessary. The kind of modifications that are allowed are :
+  - Renaming of types and methods. 
+    - Candid naming standards are not the same as Swift naming standards. You might want to respect naming conventions
+    - Not all generated types have an assigned name. These are generated as `UnnamedType<n>` and can be renamed to a more readable name.
+  - Adding/Modifying documentation.
+- Write code that calls the methods of the canister.
 
 ### Generating code for interface `.did` files
 Here is a simple interface `MyDid.did`:
@@ -218,6 +231,27 @@ enum PhoneBook {
    ]
 }
 ```
+
+#### Parsing `.did` files during runtime
+
+Your app might require to download a `.did` file, parse it and extract some values from it. This can be done using the `CandidParser`. For example, if we wanted to download and read the above `phone_book.did`
+
+```swift
+let phoneBookDidContents: String = try await downloadDid() // download phone_book.did file and read it 
+let phoneBookCandidValue: CandidValue = try CandidParser().parseValue(phoneBookContents)
+```
+
+We can go one step further and decode the parsed `CandidValue` into a `Swift struct` :
+
+```swift
+struct PhoneBookEntry: Decodable {
+  let name: String
+	let phone: BigUInt
+}
+let phoneBook: [PhoneBookEntry] = try CandidDecoder().decode(phoneBookCandidValue)
+```
+
+
 
 ### Swift/Candid Encoding Rules
 
@@ -331,3 +365,9 @@ class SimpleSigningPrincipal: ICPSigningPrincipal {
 }
 ```
 
+## Known Limitations
+
+- Serialisation of recursive candid values leads to infinite loop.
+- Encoding of `CandidFunctionProtocol` is not supported as there is no easy way to infer the `CandidTypes` used in the arguments and results of the function. This means that the automatic code generation will fail when calling a canister method that expects another function as input.
+- Encoding of `CandidServiceProtocol` is not supported because functions can not be encoded. 
+- Encoding of chained optionals loses the type after one optionality level.

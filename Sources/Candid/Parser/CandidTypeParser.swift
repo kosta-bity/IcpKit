@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Candid
 
 /// https://internetcomputer.org/docs/current/references/candid-ref#supported-types
 /// https://github.com/dfinity/candid/blob/master/spec/Candid.md

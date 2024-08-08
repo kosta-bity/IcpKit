@@ -6,10 +6,10 @@
 //
 
 import XCTest
-@testable import CodeGenerator
+import Candid
 
 final class CandidValueParserTests: XCTestCase {
-    private let parser = CandidValueParser()
+    private let parser = CandidParser()
     
     func testParsePrimValue() throws {
         for (string, expected) in CandidValueParserTestVectors.singleValueTests {

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-@testable import CodeGenerator
 import Candid
 
 enum CandidTypeParserTestVectors {

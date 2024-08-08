@@ -13,7 +13,7 @@ final class ICPIntegrationTests: XCTestCase {
     private let client = ICPRequestClient()
     
     func testAccountBalance() async throws {
-        let balance = try await ICPLedgerCanister.accountBalance(.uncertified, of: mainAccount1, client)
+        let balance = try await ICPLedgerCanister.accountBalance(of: mainAccount1, client)
         print("Test Wallet 1 - Main Account Balance: \(balance)")
     }
 

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Candid
 
 /// Represents a Candid Interface Definition:
 ///  - a set of composite `CandidType`s identified by a name

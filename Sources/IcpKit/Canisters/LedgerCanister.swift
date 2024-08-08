@@ -1,24 +1,28 @@
+//
+// This file was generated using CandidCodeGenerator
+//
+
 import Foundation
 import BigInt
 
-enum LedgerCanister {
+public enum LedgerCanister {
     /// // Account identifier  is a 32-byte array.
     /// // The first 4 bytes is big-endian encoding of a CRC32 checksum of the last 28 bytes
     /// type AccountIdentifier = blob;
-    typealias AccountIdentifier = Data
+    public typealias AccountIdentifier = Data
     
     /// type BlockIndex = nat64;
-    typealias BlockIndex = UInt64
+    public typealias BlockIndex = UInt64
     
     /// type Hash = blob;
-    typealias Hash = Data
+    public typealias Hash = Data
     
     /// // The ledger is a list of blocks
     /// type Ledger = vec Block;
     typealias Ledger = [Block]
     
     /// type Memo = nat64;
-    typealias Memo = UInt64
+    public typealias Memo = UInt64
     
     /// // A function that is used for fetching archived ledger blocks.
     /// type QueryArchiveFn = func (GetBlocksArgs) -> (QueryArchiveResult) query;
@@ -54,10 +58,10 @@ enum LedgerCanister {
     ///     transaction: Transaction;
     ///     timestamp: TimeStamp;
     /// };
-    struct Block: Codable {
-        let transaction: Transaction
-        let timestamp: TimeStamp
-        let parent_hash: Hash?
+    public struct Block: Codable {
+        public let transaction: Transaction
+        public let timestamp: TimeStamp
+        public let parent_hash: Hash?
     }
     
     /// // A prefix of the block range specified in the [GetBlocksArgs] request.
@@ -153,23 +157,27 @@ enum LedgerCanister {
         let blocks: [Block]
         let chain_length: UInt64
         let first_block_index: BlockIndex
-        let archived_blocks: [UnnamedType0]
+        let archived_blocks: [ArchivedBlock]
     }
     
     /// // Timestamps are represented as nanoseconds from the UNIX epoch in UTC timezone
     /// type TimeStamp = record {
     ///     timestamp_nanos: nat64;
     /// };
-    struct TimeStamp: Codable {
-        let timestamp_nanos: UInt64
+    public struct TimeStamp: Codable {
+        public let timestamp_nanos: UInt64
+        
+        public static var now: TimeStamp {
+            return TimeStamp(timestamp_nanos: UInt64(Date.now.timeIntervalSince1970) * 1_000_000_000)
+        }
     }
     
     /// // https://internetcomputer.org/docs/current/references/ledger/
     /// type Tokens = record {
     ///      e8s : nat64;
     /// };
-    struct Tokens: Codable {
-        let e8s: UInt64
+    public struct Tokens: Codable {
+        public let e8s: UInt64
     }
     
     /// type Transaction = record {
@@ -177,10 +185,10 @@ enum LedgerCanister {
     ///     memo: Memo;
     ///     created_at_time: TimeStamp;
     /// };
-    struct Transaction: Codable {
-        let memo: Memo
-        let operation: Transfer?
-        let created_at_time: TimeStamp
+    public struct Transaction: Codable {
+        public let memo: Memo
+        public let operation: Transfer?
+        public let created_at_time: TimeStamp
     }
     
     /// //There are three types of operations: minting tokens, burning tokens & transferring tokens
@@ -199,7 +207,7 @@ enum LedgerCanister {
     ///         amount: Tokens;
     ///     };
     /// };
-    enum Transfer: Codable {
+    public enum Transfer: Codable {
         case Burn(from: AccountIdentifier, amount: Tokens)
         case Mint(to: AccountIdentifier, amount: Tokens)
         case Send(to: AccountIdentifier, from: AccountIdentifier, amount: Tokens)
@@ -258,7 +266,7 @@ enum LedgerCanister {
     ///     // `duplicate_of` field is equal to the index of the block containing the original transaction.
     ///     TxDuplicate : record { duplicate_of: BlockIndex; }
     /// };
-    enum TransferError: Codable {
+    public enum TransferError: Codable {
         case TxTooOld(allowed_window_nanos: UInt64)
         case BadFee(expected_fee: Tokens)
         case TxDuplicate(duplicate_of: BlockIndex)
@@ -288,7 +296,7 @@ enum LedgerCanister {
         }
     }
     
-    struct UnnamedType0: Codable {
+    struct ArchivedBlock: Codable {
         let callback: QueryArchiveFn
         let start: BlockIndex
         let length: UInt64
