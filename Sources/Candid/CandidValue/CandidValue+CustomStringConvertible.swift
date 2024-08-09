@@ -76,7 +76,7 @@ extension CandidKeyedValue: CustomStringConvertible {
 
 extension CandidVariant: CustomStringConvertible {
     public var description: String {
-        return "\(value)"
+        return "\(key.stringValue ?? String(key.intValue)): \(value)"
     }
 }
 

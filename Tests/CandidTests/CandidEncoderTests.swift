@@ -81,6 +81,7 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
     (TestDataRecord3(data: Data([1])), .record(["data": .option(.option(.blob(Data([1]))))]), TestDataRecord3.self),
     (TestDataRecord(vector: [.init(data: Data([1]))]), .record(["vector": try! .vector([.record(["data": .option(.blob(Data([1])))])])]), TestDataRecord.self),
     (TestRecord(a: 1, b: 2), .record([97: .natural8(1), 98: .integer64(2)]), TestRecord.self),
+    (TestDataRecord2(data: nil), .record(["data": .option(.blob)]), TestDataRecord2.self),
     
     (TestEnum.a, .variant(.init("a", .null)), TestEnum.self),
     (TestEnum.b(2), .variant(.init("b", .option(.natural8(2)))), TestEnum.self),
@@ -90,6 +91,7 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
     (TestEnum.e(a: 1, b: 2), .variant(.init(101, .record([97:.option(.natural8(1)), 98: .natural16(2)]))), TestEnum.self),
     (TestEnum.f(1, 2), .variant(.init("f", .record([0: .option(.natural8(1)), 1: .natural16(2)]))), TestEnum.self),
     (TestEnum.g(SingleValueRecord(value: 2)), .variant(.init("g", .record(["value": .integer8(2)]))), TestEnum.self),
+    (TestEnum.h(a: 2), .variant(.init("h", .record(["a": .option(.natural8(2))]))), TestEnum.self),
     
 ]
 
@@ -150,8 +152,8 @@ private let encodingTestVectors: [(any Encodable, CandidValue)] = [
     ([UInt8]([8, 2]), try! .vector([.natural8(8), .natural8(2)])),
     ([UInt8?]([8, nil, 9]), try! .vector([.option(.natural8(8)), .option(.natural8), .option(.natural8(9))])),
     
-    (["a":0], .record(["a": .integer64(0)])),
-    (["a":0, "b": UInt8(8)], .record(["a": .natural8(0), "b": .natural8(8)])),
+    (["a": 0], .record(["a": .integer64(0)])),
+    (["a": 0, "b": UInt8(8)], .record(["a": .natural8(0), "b": .natural8(8)])),
     (TestRecord(a: 1, b: 2), .record(["a": .natural8(1), "b": .integer64(2)])),
     (TestRecord2(a: [1, nil]), .record(["a": try! .vector([.option(.natural8(1)), .option(.natural8)])])),
     (TestRecord3(record: TestRecord(a: 1, b: 2), records2: [TestRecord2(a: [1, nil])]), .record([
@@ -164,18 +166,23 @@ private let encodingTestVectors: [(any Encodable, CandidValue)] = [
     (TestDataRecord(vector: [.init(data: Data([1]))]), .record(["vector": try! .vector([.record(["data": .option(.blob(Data([1])))])])])),
     // this fails because we don't correctly identify the recursive type.
     //(TestRecursiveRecord(a: []), .record(["a": .vector(.record())])),
-    
+    (TestDataRecord2(data: nil), .record(["data": .option(.blob)])),
+
     (TestEnum.a, .variant(.init("a", .null))),
     (TestEnum.b(2), .variant(.init("b", .option(.natural8(2))))),
+    (TestEnum.b(nil), .variant(.init("b", .option(.natural8)))),
     (TestEnum.c(.a), .variant(.init("c", .variant(.init("a"))))),
     (TestEnum.d([1,2]), .variant(.init("d", try! .vector([.natural8(1), .natural8(2)])))),
     (TestEnum.e(a: 1, b: 2), .variant(.init("e", .record(["a":.option(.natural8(1)), "b": .natural16(2)])))),
+    (TestEnum.e(a: nil, b: 2), .variant(.init("e", .record(["a":.option(.natural8), "b": .natural16(2)])))),
     (TestEnum.f(1, 2), .variant(.init("f", .record([0: .option(.natural8(1)), 1: .natural16(2)])))),
     (TestEnum.g(SingleValueRecord(value: 2)), .variant(.init("g", .record(["value": .integer8(2)])))),
-    
-    (CandidFunction(signature: .init([CandidType](), []), method: nil), .function(CandidFunction(signature: .init([CandidType](), []), method: nil))),
-    (try! CandidPrincipal("aaaaa-aa"), try! .principal("aaaaa-aa")),
-    (CandidService(principal: nil, signature: .init([])), .service(CandidService(principal: nil, signature: .init([])))),
+    (TestEnum.h(a: 2), .variant(.init("h", .record(["a": .option(.natural8(2))])))),
+    (TestEnum.h(a: nil), .variant(.init("h", .record(["a": .option(.natural8)])))),
+//    
+//    (CandidFunction(signature: .init([CandidType](), []), method: nil), .function(CandidFunction(signature: .init([CandidType](), []), method: nil))),
+//    (try! CandidPrincipal("aaaaa-aa"), try! .principal("aaaaa-aa")),
+//    (CandidService(principal: nil, signature: .init([])), .service(CandidService(principal: nil, signature: .init([])))),
 ]
 
 private struct TestRecord: Codable {
@@ -226,6 +233,7 @@ private indirect enum TestEnum: Codable {
     case e(a: UInt8?, b: UInt16)
     case f(UInt8?, UInt16)
     case g(SingleValueRecord)
+    case h(a: UInt8?)
     
     enum CodingKeys: Int, CodingKey {
         case a = 97
@@ -235,6 +243,7 @@ private indirect enum TestEnum: Codable {
         case e = 101
         case f = 102
         case g = 103
+        case h = 104
     }
     
     enum ECodingKeys: Int, CodingKey {

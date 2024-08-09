@@ -87,37 +87,54 @@ private class CandidValueEncoder: Encoder {
                 guard let record = candidValue.recordValue else {
                     throw EncodingError.invalidValue(T.self, .init(codingPath: codingPath, debugDescription: "Enums should be encoded to records"))
                 }
-                let variant = try convertRecordToVariant(record)
+                let variant = try convertRecordToVariant(record, using: mirror)
                 encodingValue = CandidSingleEncodingValue(variant)
             }
-            addOptionals(using: mirror)
+            encodingValue = CandidSingleEncodingValue(addOptionals(to: encodingValue.candidValue, using: mirror))
         }
     }
     
-    private func addOptionals(using mirror: Mirror) {
+    private func addOptionals(to value: CandidValue, using mirror: Mirror) -> CandidValue {
         // The Swift encoding system skips the optional wrapper when a value is present, trying to directly encode the contained value
         // We add optional wrappers where needed according to the Type defined in the mirror
-        if let record = encodingValue.candidValue.recordValue {
+        switch value {
+        case .record(let record):
             let newRecordItems = addOptionals(in: record.candidSortedItems, using: mirror, intMarker: "_")
-            encodingValue = CandidSingleEncodingValue(.record(newRecordItems))
+            return .record(newRecordItems)
             
-        } else if let variant = encodingValue.candidValue.variantValue,
-                  let child = mirror.children.first {
-            if variant.value != .null && variant.value.candidType.primitiveType != .record {
-                // single value enum case
-                if let _ = child.value as? any CandidOptionalMarker {
-                    encodingValue = CandidSingleEncodingValue(.variant(.init(variant.key, .option(variant.value))))
-                }
-                
-            } else if let associatedValues = variant.value.recordValue {
+        case .variant(let variant):
+            if let child = mirror.children.first {
                 let associatedMirror = Mirror(reflecting: child.value)
-                let newRecordItems = addOptionals(in: associatedValues.candidSortedItems, using: associatedMirror, intMarker: ".")
-                encodingValue = CandidSingleEncodingValue(.variant(.init(variant.key, .record(newRecordItems))))
+                if let associatedValues = variant.value.recordValue {
+                    let newRecordItems = addOptionals(in: associatedValues.candidSortedItems, using: associatedMirror, intMarker: ".")
+                    return .variant(.init(variant.key, .record(newRecordItems)))
+                } else if associatedMirror.displayStyle == .tuple {
+                    // case of single named argument in an enum
+                    let tupleMirror = Mirror(reflecting: associatedMirror.children.first!)
+                    if tupleMirror.children.count == 2,
+                       let label = tupleMirror.descendant("label") as? String,
+                       let value = tupleMirror.descendant("value"),
+                       let optional = value as? any CandidOptionalMarker {
+                        if let _ = optional.value {
+                            return .variant(.init(variant.key, .record([label: .option(variant.value)])))
+                        }
+                        return .variant(.init(variant.key, .record([label: .option(candidType(optional.wrappedType))])))
+                    }
+                    
+                } else if let optional = child.value as? any CandidOptionalMarker {
+                    // single value enum case
+                    if let _ = optional.value {
+                        return .variant(.init(variant.key, .option(variant.value)))
+                    }
+                    return .variant(.init(variant.key, .option(candidType(optional.wrappedType))))
+                }
             }
+        default: break
         }
+        return value
     }
     
-    private func convertRecordToVariant(_ record: CandidRecord) throws -> CandidValue {
+    private func convertRecordToVariant(_ record: CandidRecord, using mirror: Mirror) throws -> CandidValue {
         guard record.candidSortedItems.count == 1,
               let value = record.candidSortedItems.first,
               let associatedValues = value.value.recordValue else {
@@ -125,10 +142,17 @@ private class CandidValueEncoder: Encoder {
         }
         let variantValueKey = value.key
         if associatedValues.candidSortedItems.isEmpty {
+//            if let child = mirror.children.first,
+//               let optional = child.value as? any CandidOptionalMarker {
+//                return .variant(.init(variantValueKey, .option(candidType(optional.wrappedType))))
+//            }
             return .variant(CandidKeyedValue(variantValueKey))
+            
         } else if associatedValues.candidSortedItems.count == 1,
-               let associatedValue = associatedValues.candidSortedItems.first {
+               let associatedValue = associatedValues.candidSortedItems.first,
+                  associatedValue.key.stringValue == "_0" {
             return .variant(CandidKeyedValue(variantValueKey, associatedValue.value))
+            
         } else {
             let variantValues = try associatedValues.candidSortedItems.map {
                 return CandidKeyedValue(try $0.key.toVariantKey(), $0.value)
@@ -138,13 +162,21 @@ private class CandidValueEncoder: Encoder {
     }
     
     private func addOptionals(in keyedValues: [CandidKeyedValue], using mirror: Mirror, intMarker: String) -> [CandidKeyedValue] {
-        var newRecordItems: [CandidKeyedValue] = []
-        for keyedItem in keyedValues {
-            if let child = mirror.children.first(where: { $0.label == keyedItem.key.stringValue ?? "\(intMarker)\(keyedItem.key.intValue)" || CandidKey.candidHash($0.label ?? "?") == keyedItem.key.intValue }),
-               let _ = child.value as? any CandidOptionalMarker {
-                newRecordItems.append(.init(keyedItem.key, .option(keyedItem.value)))
+        var newRecordItems = keyedValues
+        for child in mirror.children {
+            if let existing = keyedValues.first(where: {
+                $0.key.stringValue == child.label ||
+                "\(intMarker)\($0.key.intValue)" == child.label ||
+                $0.key.intValue == CandidKey.candidHash(child.label ?? "?")
+            }) {
+                if child.value is any CandidOptionalMarker {
+                    newRecordItems.replace(existing.key, with: .option(existing.value))
+                }
             } else {
-                newRecordItems.append(keyedItem)
+                if let optional = child.value as? any CandidOptionalMarker,
+                   let label = child.label {
+                    newRecordItems.append(.init(label, .option(candidType(optional.wrappedType))))
+                }
             }
         }
         return newRecordItems
@@ -259,7 +291,7 @@ private class CandidKeyedEncodingValue<Key>: CandidEncodingValue where Key: Codi
     func set(_ value: CandidValue, for key: Key) { set(CandidSingleEncodingValue(value), for: key) }
     
     private func candidKey(for key: Key) -> CandidKey {
-        if let int = key.intValue {
+        if let int = key.intValue, int != CandidKey.candidHash(key.stringValue) {
             return CandidKey(int)
         }
         return CandidKey(key.stringValue)
@@ -432,4 +464,23 @@ private extension CandidKey {
     }
     
     static let unnamedEnumRegex = try! Regex(#"_(?'number'\d+)"#)
+}
+
+private extension Array<CandidKeyedValue> {
+    mutating func replace(_ key: CandidKey, with newValue: CandidValue) {
+        replace(key.intValue, with: newValue)
+    }
+    
+    mutating func replace(_ stringKey: String, with newValue: CandidValue) {
+        replace(CandidKey.candidHash(stringKey), with: newValue)
+    }
+    
+    mutating func replace(_ intKey: Int, with newValue: CandidValue) {
+        guard let index = firstIndex(where: { $0.key.intValue == intKey }) else {
+            return
+        }
+        let key = self[index].key
+        remove(at: index)
+        insert(.init(key, newValue), at: index)
+    }
 }
