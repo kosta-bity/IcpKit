@@ -12,7 +12,16 @@ public enum ICPLedgerCanisterError: Error {
     case invalidAddress
     case invalidResponse
     case blockNotFound
-    case transferFailed(LedgerCanister.TransferError)
+    case invalidBlock
+    case transferFailed(ICPLedgerCanisterTransferError)
+}
+
+public enum ICPLedgerCanisterTransferError: Error {
+    case txTooOld(allowedWindowNanos: UInt64)
+    case badFee(expectedFee: UInt64)
+    case txDuplicate(duplicateOf: UInt64)
+    case txCreatedInFuture
+    case insufficientFunds(balance: UInt64)
 }
 
 public enum ICPLedgerCanister {
@@ -63,7 +72,7 @@ public enum ICPLedgerCanister {
         let response = try await service(client).transfer(args, sender: signingPrincipal)
         switch response {
         case .Err(let transferError):
-            throw ICPLedgerCanisterError.transferFailed(transferError)
+            throw ICPLedgerCanisterError.transferFailed(ICPLedgerCanisterTransferError(transferError))
         case .Ok(let blockIndex):
             return blockIndex
         }
@@ -78,10 +87,10 @@ public enum ICPLedgerCanister {
     ///   - index: The block index to query
     ///   - client: The client to use
     /// - Returns: The `ICPBlock` instance corresponding to the block index
-    public static func queryBlock(index: UInt64, _ client: ICPRequestClient) async throws -> LedgerCanister.Block {
+    public static func queryBlock(index: UInt64, _ client: ICPRequestClient) async throws -> ICPBlock {
         let response = try await service(client).query_blocks(.init(start: index, length: 1))
         if let block = response.blocks.first {
-            return block
+            return try ICPBlock(block)
         }
         if let archivedBlock = response.archived_blocks.first {
             let archiveResponse = try await archivedBlock.callback.callMethod(.init(start: archivedBlock.start, length: archivedBlock.length), client)
@@ -90,11 +99,54 @@ public enum ICPLedgerCanister {
                 guard let block = blocks.blocks.first else {
                     throw ICPLedgerCanisterError.blockNotFound
                 }
-                return block
+                return try ICPBlock(block)
             case .Err:
                 throw ICPLedgerCanisterError.blockNotFound
             }
         }
         throw ICPLedgerCanisterError.blockNotFound
+    }
+}
+
+private extension ICPBlock {
+    init(_ ledgerBlock: LedgerCanister.Block) throws {
+        guard let parentHash = ledgerBlock.parent_hash,
+              let operation = ledgerBlock.transaction.operation  else {
+            throw ICPLedgerCanisterError.invalidBlock
+        }
+        self.parentHash = parentHash
+        self.timestamp = ledgerBlock.timestamp.timestamp_nanos
+        self.transaction = ICPBlock.Transaction(
+            memo: ledgerBlock.transaction.memo,
+            createdNanos: ledgerBlock.transaction.created_at_time.timestamp_nanos,
+            operation: .init(operation)
+        )
+    }
+}
+
+private extension ICPBlock.Transaction.Operation {
+    init(_ operation: LedgerCanister.Operation) {
+        switch operation {
+        case .Burn(let from, let amount): self = .burn(from: from, amount: amount.e8s)
+        case .Mint(let to, let amount): self = .mint(to: to, amount: amount.e8s)
+        case .Transfer(let to, let from, let amount, let fee): self = .transfer(from: from, to: to, amount: amount.e8s, fee: fee.e8s)
+        }
+    }
+}
+
+private extension ICPLedgerCanisterTransferError {
+    init(_ ledgerError: LedgerCanister.TransferError) {
+        switch ledgerError {
+        case .TxTooOld(allowed_window_nanos: let allowed_window_nanos):
+            self = .txTooOld(allowedWindowNanos: allowed_window_nanos)
+        case .BadFee(expected_fee: let expected_fee):
+            self = .badFee(expectedFee: expected_fee.e8s)
+        case .TxDuplicate(duplicate_of: let duplicate_of):
+            self = .txDuplicate(duplicateOf: duplicate_of)
+        case .TxCreatedInFuture:
+            self = .txCreatedInFuture
+        case .InsufficientFunds(balance: let balance):
+            self = .insufficientFunds(balance: balance.e8s)
+        }
     }
 }

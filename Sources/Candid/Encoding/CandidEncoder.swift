@@ -47,16 +47,7 @@ private class CandidValueEncoder: Encoder {
     }
     
     func candidEncode<T>(_ value: T) throws where T: Encodable {
-        if let bigUInt = value as? BigUInt {
-            encodingValue = CandidSingleEncodingValue(bigUInt)
-            
-        } else if let bigInt = value as? BigInt {
-            encodingValue = CandidSingleEncodingValue(bigInt)
-            
-        } else if let data = value as? Data {
-            encodingValue = CandidSingleEncodingValue(data)
-            
-        } else if let optional = value as? any CandidOptionalMarker {
+        if let optional = value as? any CandidOptionalMarker {
             if let concreteValue = optional.value {
                 let encoder = CandidValueEncoder(codingPath)
                 try encoder.candidEncode(concreteValue)
@@ -65,6 +56,15 @@ private class CandidValueEncoder: Encoder {
                 let wrappedType = candidType(optional.wrappedType)
                 encodingValue = CandidSingleEncodingValue(.option(wrappedType))
             }
+            
+        } else if let bigUInt = value as? BigUInt {
+            encodingValue = CandidSingleEncodingValue(bigUInt)
+            
+        } else if let bigInt = value as? BigInt {
+            encodingValue = CandidSingleEncodingValue(bigInt)
+            
+        } else if let data = value as? Data {
+            encodingValue = CandidSingleEncodingValue(data)
             
         } else if let collection = value as? any Collection, collection.isEmpty {
             let wrappedType = candidType(collection.wrappedType)
@@ -81,7 +81,6 @@ private class CandidValueEncoder: Encoder {
             
         } else {
             try value.encode(to: self)
-            
             let mirror = Mirror(reflecting: value)
             if .enum == mirror.displayStyle {
                 // TODO: CaseIterable can define all the variant cases
@@ -90,6 +89,30 @@ private class CandidValueEncoder: Encoder {
                 }
                 let variant = try convertRecordToVariant(record)
                 encodingValue = CandidSingleEncodingValue(variant)
+            }
+            addOptionals(using: mirror)
+        }
+    }
+    
+    private func addOptionals(using mirror: Mirror) {
+        // The Swift encoding system skips the optional wrapper when a value is present, trying to directly encode the contained value
+        // We add optional wrappers where needed according to the Type defined in the mirror
+        if let record = encodingValue.candidValue.recordValue {
+            let newRecordItems = addOptionals(in: record.candidSortedItems, using: mirror, intMarker: "_")
+            encodingValue = CandidSingleEncodingValue(.record(newRecordItems))
+            
+        } else if let variant = encodingValue.candidValue.variantValue,
+                  let child = mirror.children.first {
+            if variant.value != .null && variant.value.candidType.primitiveType != .record {
+                // single value enum case
+                if let _ = child.value as? any CandidOptionalMarker {
+                    encodingValue = CandidSingleEncodingValue(.variant(.init(variant.key, .option(variant.value))))
+                }
+                
+            } else if let associatedValues = variant.value.recordValue {
+                let associatedMirror = Mirror(reflecting: child.value)
+                let newRecordItems = addOptionals(in: associatedValues.candidSortedItems, using: associatedMirror, intMarker: ".")
+                encodingValue = CandidSingleEncodingValue(.variant(.init(variant.key, .record(newRecordItems))))
             }
         }
     }
@@ -112,6 +135,19 @@ private class CandidValueEncoder: Encoder {
             }
             return .variant(CandidKeyedValue(value.key, .record(variantValues)))
         }
+    }
+    
+    private func addOptionals(in keyedValues: [CandidKeyedValue], using mirror: Mirror, intMarker: String) -> [CandidKeyedValue] {
+        var newRecordItems: [CandidKeyedValue] = []
+        for keyedItem in keyedValues {
+            if let child = mirror.children.first(where: { $0.label == keyedItem.key.stringValue ?? "\(intMarker)\(keyedItem.key.intValue)" || CandidKey.candidHash($0.label ?? "?") == keyedItem.key.intValue }),
+               let _ = child.value as? any CandidOptionalMarker {
+                newRecordItems.append(.init(keyedItem.key, .option(keyedItem.value)))
+            } else {
+                newRecordItems.append(keyedItem)
+            }
+        }
+        return newRecordItems
     }
         
     private func candidType(_ type: Any.Type) -> CandidType {

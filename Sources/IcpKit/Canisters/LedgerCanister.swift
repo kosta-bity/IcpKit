@@ -5,24 +5,24 @@
 import Foundation
 import BigInt
 
-public enum LedgerCanister {
+enum LedgerCanister {
     /// // Account identifier  is a 32-byte array.
     /// // The first 4 bytes is big-endian encoding of a CRC32 checksum of the last 28 bytes
     /// type AccountIdentifier = blob;
-    public typealias AccountIdentifier = Data
+    typealias AccountIdentifier = Data
     
     /// type BlockIndex = nat64;
-    public typealias BlockIndex = UInt64
+    typealias BlockIndex = UInt64
     
     /// type Hash = blob;
-    public typealias Hash = Data
+    typealias Hash = Data
     
     /// // The ledger is a list of blocks
     /// type Ledger = vec Block;
     typealias Ledger = [Block]
     
     /// type Memo = nat64;
-    public typealias Memo = UInt64
+    typealias Memo = UInt64
     
     /// // A function that is used for fetching archived ledger blocks.
     /// type QueryArchiveFn = func (GetBlocksArgs) -> (QueryArchiveResult) query;
@@ -58,10 +58,10 @@ public enum LedgerCanister {
     ///     transaction: Transaction;
     ///     timestamp: TimeStamp;
     /// };
-    public struct Block: Codable {
-        public let transaction: Transaction
-        public let timestamp: TimeStamp
-        public let parent_hash: Hash?
+    struct Block: Codable {
+        let transaction: Transaction
+        let timestamp: TimeStamp
+        let parent_hash: Hash?
     }
     
     /// // A prefix of the block range specified in the [GetBlocksArgs] request.
@@ -164,10 +164,10 @@ public enum LedgerCanister {
     /// type TimeStamp = record {
     ///     timestamp_nanos: nat64;
     /// };
-    public struct TimeStamp: Codable {
-        public let timestamp_nanos: UInt64
+    struct TimeStamp: Codable {
+        let timestamp_nanos: UInt64
         
-        public static var now: TimeStamp {
+        static var now: TimeStamp {
             return TimeStamp(timestamp_nanos: UInt64(Date.now.timeIntervalSince1970) * 1_000_000_000)
         }
     }
@@ -176,8 +176,8 @@ public enum LedgerCanister {
     /// type Tokens = record {
     ///      e8s : nat64;
     /// };
-    public struct Tokens: Codable {
-        public let e8s: UInt64
+    struct Tokens: Codable {
+        let e8s: UInt64
     }
     
     /// type Transaction = record {
@@ -185,14 +185,14 @@ public enum LedgerCanister {
     ///     memo: Memo;
     ///     created_at_time: TimeStamp;
     /// };
-    public struct Transaction: Codable {
-        public let memo: Memo
-        public let operation: Transfer?
-        public let created_at_time: TimeStamp
+    struct Transaction: Codable {
+        let memo: Memo
+        let operation: Operation?
+        let created_at_time: TimeStamp
     }
     
     /// //There are three types of operations: minting tokens, burning tokens & transferring tokens
-    /// type Transfer = variant {
+    /// type Operation = variant {
     ///     Mint: record {
     ///         to: AccountIdentifier;
     ///         amount: Tokens;
@@ -200,22 +200,38 @@ public enum LedgerCanister {
     ///     Burn: record {
     ///          from: AccountIdentifier;
     ///          amount: Tokens;
-    ///    };
-    ///     Send: record {
+    ///     };
+    ///     Transfer: record {
     ///         from: AccountIdentifier;
     ///         to: AccountIdentifier;
     ///         amount: Tokens;
+    ///         fee: Tokens;
     ///     };
     /// };
-    public enum Transfer: Codable {
+    enum Operation: Codable {
         case Burn(from: AccountIdentifier, amount: Tokens)
         case Mint(to: AccountIdentifier, amount: Tokens)
-        case Send(to: AccountIdentifier, from: AccountIdentifier, amount: Tokens)
+        case Transfer(to: AccountIdentifier, from: AccountIdentifier, amount: Tokens, fee: Tokens)
         
         enum CodingKeys: Int, CodingKey {
             case Burn = 737755247
             case Mint = 859142850
-            case Send = 925481320
+            case Transfer = 3021957963
+        }
+
+        enum BurnCodingKeys: Int, CodingKey {
+            case from = 1136829802
+            case amount = 3573748184
+        }
+        enum MintCodingKeys: Int, CodingKey {
+            case to = 25979
+            case amount = 3573748184
+        }
+        enum TransferCodingKeys: Int, CodingKey {
+            case to = 25979
+            case from = 1136829802
+            case amount = 3573748184
+            case fee = 5094982
         }
     }
     
@@ -266,7 +282,7 @@ public enum LedgerCanister {
     ///     // `duplicate_of` field is equal to the index of the block containing the original transaction.
     ///     TxDuplicate : record { duplicate_of: BlockIndex; }
     /// };
-    public enum TransferError: Codable {
+    enum TransferError: Codable {
         case TxTooOld(allowed_window_nanos: UInt64)
         case BadFee(expected_fee: Tokens)
         case TxDuplicate(duplicate_of: BlockIndex)

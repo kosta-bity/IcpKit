@@ -33,8 +33,8 @@ public struct CandidVector: Equatable, Codable {
     }
     
     public init(_ type: CandidType, _ sequence: any Sequence<CandidValue>) throws {
-        guard sequence.allSatisfy({ $0.candidType == type }) else {
-        //guard sequence.allSatisfy({ $0.candidType.isSuperType(of: type) }) else {
+        //guard sequence.allSatisfy({ $0.candidType == type }) else {
+        guard sequence.allSatisfy({ $0.candidType.isSuperType(of: type) }) else {
             throw CandidVectorError.wrongCandidType
         }
         values = Array(sequence)

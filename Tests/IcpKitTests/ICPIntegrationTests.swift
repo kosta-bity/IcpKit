@@ -33,7 +33,7 @@ final class ICPIntegrationTests: XCTestCase {
 //        let response = try await client.readState(paths: ["time"], effectiveCanister: ICPSystemCanisters.ledger, sender: signingPrincipal1)
 //        print(response)
 //    }
-//    
+//   
 //    func testTransfer() async throws {
 //        let block = try await ICPLedgerCanister.transfer(
 //            from: mainAccount1,
@@ -45,13 +45,26 @@ final class ICPIntegrationTests: XCTestCase {
 //    }
     
     func testQueryBlock() async throws {
-        do {
-            let _ = try await ICPLedgerCanister.queryBlock(index: UInt64.max, client)
-        } catch ICPLedgerCanisterError.blockNotFound {
-            XCTAssert(true)
-        } catch {
-            XCTFail()
+//        do {
+//            let _ = try await ICPLedgerCanister.queryBlock(index: UInt64.max, client)
+//        } catch ICPLedgerCanisterError.blockNotFound {
+//            XCTAssert(true)
+//        } catch {
+//            XCTFail()
+//        }
+        let block = try await ICPLedgerCanister.queryBlock(index: 13309698, client)
+        XCTAssertEqual(block.timestamp, 1723103842536019792)
+        XCTAssertEqual(block.transaction.createdNanos, 1723103842536019792)
+        XCTAssertEqual(block.transaction.memo, 0)
+        XCTAssertEqual(block.parentHash, Data.fromHex("7f944c23b83cc7d5457b6503f95430cb751f8cfe561374470e672c70fb850342"))
+        guard case .transfer(let from, let to, let amount, let fee) = block.transaction.operation else {
+            XCTFail("operation is not a transfer")
+            return
         }
+        XCTAssertEqual(from, Data.fromHex("07537100d2fb357209a2283d6c5cb588ef7ee09db32fb7cc6f6241e44b155e4c"))
+        XCTAssertEqual(to, Data.fromHex("57271f92125bdfd4fe0605f2e22c3ad549fc27cf2e85bae080645a5b516154ec"))
+        XCTAssertEqual(amount, 190612587)
+        XCTAssertEqual(fee, 10000)
     }
     
     func testGeneratedLedger() async throws {

@@ -51,6 +51,8 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
     (BigInt(-6), .integer(-6), BigInt.self),
     (Float(1.5), .float32(1.5), Float.self),
     (Double(1.5), .float64(1.5), Double.self),
+    (Data([1,2,3,4]), .blob(Data([1,2,3,4])), Data.self),
+    (Data([1,2]), try! .vector([.natural8(1), .natural8(2)]), Data.self),
     
     (Bool?.none, .option(.bool), Bool?.self),
     (BigInt?.none, .option(.integer), BigInt?.self),
@@ -58,6 +60,8 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
     (Bool??(true), .option(.option(.bool(true))), Bool??.self),
     (Bool??.none, .option(CandidType.option(.bool)), Bool??.self),
     (Optional(Bool?.none), .option(CandidValue.option(.bool)), Bool??.self),
+    (Data?.none, .option(.blob), Data?.self),
+    (Data?.some(Data([1,2])), .option(.blob(Data([1,2]))), Data?.self),
     
     ([Int](), .vector(.integer), [Int].self),
     ([0,1], try! .vector([.integer64(0), .integer64(1)]), [Int].self),
@@ -73,14 +77,19 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
     (TestUnnamedRecord(anyName: "text", _1: 2), .record([.text("text"), .natural8(2)]), TestUnnamedRecord.self),
     (TestRecursiveRecord(a: []), .record(["a": .vector(.record())]), TestRecursiveRecord.self),
     (TestRecursiveRecord(a: [TestRecursiveRecord(a: [])]), .record(["a": try! .vector([.record(["a": .vector(.record())])])]), TestRecursiveRecord.self),
+    (TestDataRecord2(data: Data([1])), .record(["data": .option(.blob(Data([1])))]), TestDataRecord2.self),
+    (TestDataRecord3(data: Data([1])), .record(["data": .option(.option(.blob(Data([1]))))]), TestDataRecord3.self),
+    (TestDataRecord(vector: [.init(data: Data([1]))]), .record(["vector": try! .vector([.record(["data": .option(.blob(Data([1])))])])]), TestDataRecord.self),
+    (TestRecord(a: 1, b: 2), .record([97: .natural8(1), 98: .integer64(2)]), TestRecord.self),
     
-    (TestEnum.a, try! .variant(["a": .null], ("a", .null)), TestEnum.self),
-    (TestEnum.b(2), try! .variant([ "b": .natural8], ("b", .natural8(2))), TestEnum.self),
-    (TestEnum.c(.a), try! .variant([ "c": .variant(["a":.null])], ("c", .variant(["a": .null], ("a", .null)))), TestEnum.self),
-    (TestEnum.d([1,2]), try! .variant([ "d": .vector(.natural8)], ("d", .vector([.natural8(1), .natural8(2)]))), TestEnum.self),
-    (TestEnum.e(a: 1, b: 2), try! .variant(["e": .record(["a": .natural8, "b": .natural16])], ("e", .record(["a":.natural8(1), "b": .natural16(2)]))), TestEnum.self),
-    (TestEnum.f(1, 2), try! .variant(["f": .record([0: .natural8, 1: .natural16])], ("f", .record([0:.natural8(1), 1:.natural16(2)]))), TestEnum.self),
-    (TestEnum.g(SingleValueRecord(value: 2)), try! .variant(["g": .record(["value": .integer8])], ("g", .record(["value": .integer8(2)]))), TestEnum.self),
+    (TestEnum.a, .variant(.init("a", .null)), TestEnum.self),
+    (TestEnum.b(2), .variant(.init("b", .option(.natural8(2)))), TestEnum.self),
+    (TestEnum.c(.a), .variant(.init("c", .variant(.init("a")))), TestEnum.self),
+    (TestEnum.d([1,2]), .variant(.init("d", try! .vector([.natural8(1), .natural8(2)]))), TestEnum.self),
+    (TestEnum.e(a: 1, b: 2), .variant(.init("e", .record(["a":.option(.natural8(1)), "b": .natural16(2)]))), TestEnum.self),
+    (TestEnum.e(a: 1, b: 2), .variant(.init(101, .record([97:.option(.natural8(1)), 98: .natural16(2)]))), TestEnum.self),
+    (TestEnum.f(1, 2), .variant(.init("f", .record([0: .option(.natural8(1)), 1: .natural16(2)]))), TestEnum.self),
+    (TestEnum.g(SingleValueRecord(value: 2)), .variant(.init("g", .record(["value": .integer8(2)]))), TestEnum.self),
     
 ]
 
@@ -111,6 +120,7 @@ private let encodingTestVectors: [(any Encodable, CandidValue)] = [
     (BigInt(-5), .integer(-5)),
     (Data([]), .blob(Data())),
     (Data([1,2,3]), .blob(Data([1,2,3]))),
+    (Data?.some(Data([1])), .option(.blob(Data([1])))),
     
     (Optional(8), .option(.integer64(8))),
     (Bool?.none, .option(.bool)),
@@ -148,17 +158,20 @@ private let encodingTestVectors: [(any Encodable, CandidValue)] = [
         "record":  .record(["a": .natural8(1), "b": .integer64(2)]),
         "records2": try! .vector([.record(["a": try! .vector([.option(.natural8(1)), .option(.natural8)])])]),
     ])),
-    (TestUnnamedRecord(anyName: "text", _1: 2), .record([.text("text"), .natural8(2)])),
+    (TestUnnamedRecord(anyName: "text", _1: 2), .record([.text("text"), .option(.natural8(2))])),
+    (TestDataRecord3(data: Data([1])), .record(["data": .option(.option(.blob(Data([1]))))])),
+    (TestDataRecord2(data: Data([1])), .record(["data": .option(.blob(Data([1])))])),
+    (TestDataRecord(vector: [.init(data: Data([1]))]), .record(["vector": try! .vector([.record(["data": .option(.blob(Data([1])))])])])),
     // this fails because we don't correctly identify the recursive type.
     //(TestRecursiveRecord(a: []), .record(["a": .vector(.record())])),
     
-    (TestEnum.a, try! .variant(["a": .null], ("a", .null))),
-    (TestEnum.b(2), try! .variant([ "b": .natural8], ("b", .natural8(2)))),
-    (TestEnum.c(.a), try! .variant([ "c": .variant(["a":.null])], ("c", .variant(["a": .null], ("a", .null))))),
-    (TestEnum.d([1,2]), try! .variant([ "d": .vector(.natural8)], ("d", .vector([.natural8(1), .natural8(2)])))),
-    (TestEnum.e(a: 1, b: 2), try! .variant(["e": .record(["a": .natural8, "b": .natural16])], ("e", .record(["a":.natural8(1), "b": .natural16(2)])))),
-    (TestEnum.f(1, 2), try! .variant(["f": .record([0: .natural8, 1: .natural16])], ("f", .record([0:.natural8(1), 1:.natural16(2)])))),
-    (TestEnum.g(SingleValueRecord(value: 2)), try! .variant(["g": .record(["value": .integer8])], ("g", .record(["value": .integer8(2)])))),
+    (TestEnum.a, .variant(.init("a", .null))),
+    (TestEnum.b(2), .variant(.init("b", .option(.natural8(2))))),
+    (TestEnum.c(.a), .variant(.init("c", .variant(.init("a"))))),
+    (TestEnum.d([1,2]), .variant(.init("d", try! .vector([.natural8(1), .natural8(2)])))),
+    (TestEnum.e(a: 1, b: 2), .variant(.init("e", .record(["a":.option(.natural8(1)), "b": .natural16(2)])))),
+    (TestEnum.f(1, 2), .variant(.init("f", .record([0: .option(.natural8(1)), 1: .natural16(2)])))),
+    (TestEnum.g(SingleValueRecord(value: 2)), .variant(.init("g", .record(["value": .integer8(2)])))),
     
     (CandidFunction(signature: .init([CandidType](), []), method: nil), .function(CandidFunction(signature: .init([CandidType](), []), method: nil))),
     (try! CandidPrincipal("aaaaa-aa"), try! .principal("aaaaa-aa")),
@@ -179,9 +192,9 @@ private struct TestRecord3: Codable {
     let records2: [TestRecord2]
 }
 
-struct TestUnnamedRecord: Codable {
+private struct TestUnnamedRecord: Codable {
     let anyName: String
-    let _1: UInt8
+    let _1: UInt8?
     
     enum CodingKeys: Int, CodingKey {
         case anyName = 0
@@ -193,14 +206,41 @@ private struct TestRecursiveRecord: Codable {
     let a: [TestRecursiveRecord]
 }
 
+private struct TestDataRecord: Codable {
+    let vector: [TestDataRecord2]
+}
+
+private struct TestDataRecord2: Codable {
+    let data: Data?
+}
+
+private struct TestDataRecord3: Codable {
+    let data: Data??
+}
+
 private indirect enum TestEnum: Codable {
     case a
-    case b(UInt8)
+    case b(UInt8?)
     case c(TestEnum)
     case d([UInt8])
-    case e(a: UInt8, b: UInt16)
-    case f(UInt8, UInt16)
+    case e(a: UInt8?, b: UInt16)
+    case f(UInt8?, UInt16)
     case g(SingleValueRecord)
+    
+    enum CodingKeys: Int, CodingKey {
+        case a = 97
+        case b = 98
+        case c = 99
+        case d = 100
+        case e = 101
+        case f = 102
+        case g = 103
+    }
+    
+    enum ECodingKeys: Int, CodingKey {
+        case a = 97
+        case b = 98
+    }
 }
 
 struct SingleValueRecord: Codable {

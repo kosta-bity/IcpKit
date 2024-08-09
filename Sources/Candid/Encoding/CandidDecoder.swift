@@ -139,11 +139,14 @@ private class CandidUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     private let rootCodingPath: [CodingKey]
     
     init(_ input: CandidValue, _ codingPath: [CodingKey]) throws {
-        guard let vector = input.vectorValue else {
+        self.rootCodingPath = codingPath
+        if let data = input.blobValue {
+            self.inputVector = data.map { CandidValue.natural8($0) }
+        } else if let vector = input.vectorValue {
+            self.inputVector = vector.values
+        } else {
             throw DecodingError.typeMismatch([Any].self, .init(codingPath: codingPath, debugDescription: "not a vector"))
         }
-        self.inputVector = vector.values
-        self.rootCodingPath = codingPath
     }
     
     func nestedContainer<NestedKey>(keyedBy type: NestedKey.Type) throws -> KeyedDecodingContainer<NestedKey> where NestedKey : CodingKey {
@@ -178,8 +181,7 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     let codingPath: [CodingKey]
     var allKeys: [Key] { 
         values.compactMap {
-            if let string = $0.key.stringValue, let stringKey = Key(stringValue: string) { return stringKey }
-            return Key(intValue: $0.key.intValue)
+            $0.key.stringValue.map { Key(stringValue: $0) } ?? Key(intValue: $0.key.intValue)
         }
     }
     private let keys: [CandidKey]
@@ -188,11 +190,15 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     init(_ input: CandidValue, _ codingPath: [CodingKey]) throws {
         if let record = input.recordValue {
             keys = record.candidSortedItems.map { $0.key }
-            values = Dictionary(uniqueKeysWithValues: record.candidSortedItems.map { ($0.key, $0.value) } )
+            // In case of an optional value, the Swift decoding system will first call `contains(_)`.
+            // If that returns false, it will automatically encode a nil
+            // If that return true, it will skip the optional wrapper and directly decode the value
+            // for that reason, we remove all optional wrappers when a value is present and answer correctly to the `contains(_)` call.
+            values = Dictionary(uniqueKeysWithValues: record.candidSortedItems.map { ($0.key, $0.value.withRemovedOptionals) } )
             
         } else if let variant = input.variantValue {
             keys = variant.candidTypes.map { $0.key }
-            values = Dictionary(uniqueKeysWithValues: [(variant.key, variant.value)] )
+            values = Dictionary(uniqueKeysWithValues: [(variant.key, variant.value.withRemovedOptionals)] )
             
         } else {
             throw DecodingError.dataCorrupted(.init(codingPath: codingPath, debugDescription: "not a keyed container"))
@@ -201,10 +207,11 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     }
     
     func contains(_ key: Key) -> Bool {
-        if let int = key.intValue {
-            return keys.contains { $0.intValue == int }
+        let key = candidKey(key)
+        guard let value = values[key] else {
+            return false
         }
-        return keys.contains { $0.stringValue == key.stringValue }
+        return value.hasValue
     }
     
     func decode<T>(_ type: T.Type, forKey key: Key) throws -> T where T : Decodable {
@@ -225,7 +232,9 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
             let associatedValueItems = record.candidSortedItems.map {
                 CandidKeyedValue($0.key.toEnumKey(), $0.value)
             }
-            if associatedValueItems.contains(where: { NestedKey(stringValue: $0.key.stringValue ?? "") != nil }) {
+            if associatedValueItems.contains(where: {
+                $0.key.stringValue.map { NestedKey(stringValue: $0) } ?? NestedKey(intValue: $0.key.intValue) != nil 
+            }) {
                 // at least one associatedValue can be mapped to NestedKey
                 associatedCandidValue = .record(associatedValueItems)
             } else {
@@ -251,8 +260,7 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     func superDecoder(forKey key: Key) throws -> Decoder { fatalError("superDecoder not supported") }
     
     private func candidKey(_ key: Key) -> CandidKey {
-        if let int = key.intValue { return CandidKey(int) }
-        return CandidKey(key.stringValue)
+        key.intValue.map { CandidKey($0) } ?? CandidKey(key.stringValue)
     }
     
     private func value(_ key: Key) throws -> CandidValue {
@@ -319,14 +327,6 @@ extension CandidKeyedDecodingContainer {
 }
 
 private extension CandidValue {
-    var isNil: Bool {
-        switch self {
-        case .empty, .null: return true
-        case .option(let option): return option.value == nil
-        default: return false
-        }
-    }
-    
     func bool(_ codingPath: [CodingKey]) throws -> Bool {
         guard case .bool(let bool) = self else { 
             throw DecodingError.typeMismatch(Bool.self, .init(codingPath: codingPath, debugDescription: "not a Bool"))
@@ -425,6 +425,17 @@ private extension CandidValue {
         return string
     }
     
+    func blob(_ codingPath: [CodingKey]) throws -> Data {
+        if case .vector(let vector) = self,
+           vector.containedType == .natural8 {
+            return Data(vector.values.map { $0.natural8Value! })
+        }
+        if case .blob(let data) = self {
+            return data
+        }
+        throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Data"))
+    }
+    
     func principal(_ codingPath: [CodingKey]) throws -> CandidPrincipal {
         guard case .principal(let principal) = self,
               let principal = principal else {
@@ -446,11 +457,33 @@ private extension CandidValue {
         }
         return service
     }
+    
+    var withRemovedOptionals: CandidValue {
+        switch self {
+        case .option(let option):
+            if let value = option.value { return value }
+            return self
+        default: return self
+        }
+    }
+    
+    var hasValue: Bool {
+        switch self {
+        case .empty, .null, .reserved: return false
+        case .option(let option): return option.value != nil
+        case .principal(let principal): return principal != nil
+        case .function(let function): return function.method != nil
+        case .service(let service): return service.principal != nil
+        default: return true
+        }
+    }
+    
+    var isNil: Bool { !hasValue }
 }
 
 private extension CandidKey {
     func toEnumKey() -> CandidKey {
-        if stringValue == nil {
+        if stringValue == nil && intValue < 10 {
             return CandidKey("_\(intValue)")
         }
         return self
