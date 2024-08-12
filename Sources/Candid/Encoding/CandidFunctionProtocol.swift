@@ -9,13 +9,17 @@ import Foundation
 
 public protocol CandidFunctionProtocol: Codable {
     var canister: CandidPrincipal { get }
-    var method: String { get }
+    var methodName: String { get }
     var query: Bool { get }
     
-    init(_ canister: CandidPrincipal, _ method: String)
+    init(_ canister: CandidPrincipal, _ methodName: String)
 }
 
 public extension CandidFunctionProtocol {
+    init(_ canister: String, _ methodName: String) throws {
+        self.init(try CandidPrincipal(canister), methodName)
+    }
+    
     init(from decoder: Decoder) throws {
         fatalError("not supported. Use CandidDecoder() instead.")
     }

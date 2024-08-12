@@ -18,12 +18,12 @@ public extension CandidFunctionProtocol {
 
 public class ICPFunction<Argument, Result, Query: StaticBool>: CandidFunctionProtocol {
     public let canister: CandidPrincipal
-    public let method: String
+    public let methodName: String
     public var query: Bool { Query.value }
     
     public required init(_ canister: CandidPrincipal, _ method: String) {
         self.canister = canister
-        self.method = method
+        self.methodName = method
     }
 }
 
@@ -45,7 +45,7 @@ public extension ICPFunction where Argument: Encodable, Result: Decodable {
     func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
         let method = ICPMethod(
             canister: icpPrincipal,
-            methodName: method,
+            methodName: methodName,
             args: try encodeArguments(argument)
         )
         let response = try await callOrQuery(method, client, sender)
@@ -58,7 +58,7 @@ public extension ICPFunctionNoResult where Argument: Encodable {
     func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
         let method = ICPMethod(
             canister: icpPrincipal,
-            methodName: method,
+            methodName: methodName,
             args: try encodeArguments(argument)
         )
         let _ = try await callOrQuery(method, client, sender)
@@ -67,7 +67,7 @@ public extension ICPFunctionNoResult where Argument: Encodable {
 
 public extension ICPFunctionNoArgs where Result: Decodable {
     func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-        let method = ICPMethod(canister: icpPrincipal, methodName: method)
+        let method = ICPMethod(canister: icpPrincipal, methodName: methodName)
         let response = try await callOrQuery(method, client, sender)
         let decoded: Result = try CandidDecoder().decode(response)
         return decoded
@@ -76,7 +76,7 @@ public extension ICPFunctionNoArgs where Result: Decodable {
 
 public extension ICPFunctionNoArgsNoResult {
     func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
-        let method = ICPMethod(canister: icpPrincipal, methodName: method)
+        let method = ICPMethod(canister: icpPrincipal, methodName: methodName)
         let _ = try await callOrQuery(method, client, sender)
     }
 }

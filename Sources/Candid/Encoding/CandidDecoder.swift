@@ -470,7 +470,7 @@ private extension CandidValue {
     var hasValue: Bool {
         switch self {
         case .empty, .null, .reserved: return false
-        case .option(let option): return option.value != nil
+        case .option(let option): return option.value != nil && option.value != .null && option.value != .empty && option.value != .reserved
         case .principal(let principal): return principal != nil
         case .function(let function): return function.method != nil
         case .service(let service): return service.principal != nil

@@ -113,12 +113,20 @@ public extension CandidValue {
         .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: .init(name: methodName, principal: try CandidPrincipal(principal))))
     }
     
+    static func function(_ inputs: [CandidType], _ outputs: [CandidType], query: Bool = false, oneWay: Bool = false, compositeQuery: Bool = false, _ principal: any CandidPrincipalProtocol, _ methodName: String) -> CandidValue {
+        .function(CandidFunction(signature: CandidFunctionSignature(inputs, outputs, query: query, oneWay: oneWay, compositeQuery: compositeQuery), method: .init(name: methodName, principal: CandidPrincipal(principal))))
+    }
+    
     static func function(_ principal: String, _ methodName: String) throws -> CandidValue {
         try .function([], [], principal, methodName)
     }
     
     static func service(_ methods: [CandidServiceSignature.Method], _ principal: String) throws -> CandidValue {
         try .service(CandidService(principal: CandidPrincipal(principal), signature: CandidServiceSignature(methods)))
+    }
+    
+    static func service(_ methods: [CandidServiceSignature.Method], _ principal: any CandidPrincipalProtocol) -> CandidValue {
+        .service(CandidService(principal: CandidPrincipal(principal), signature: CandidServiceSignature(methods)))
     }
     
     static func service(_ principal: String) throws -> CandidValue {

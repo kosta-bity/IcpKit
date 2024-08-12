@@ -79,11 +79,18 @@ private class CandidValueEncoder: Encoder {
         } else if let candidService = value as? CandidService {
             encodingValue = CandidSingleEncodingValue(.service(candidService))
             
+        } else if let candidFunctionProtocol = value as? CandidFunctionProtocol {
+            // TODO: function arguments and results
+            encodingValue = CandidSingleEncodingValue(.function([], [], candidFunctionProtocol.canister, candidFunctionProtocol.methodName))
+            
+        } else if let candidServiceProtocol = value as? CandidServiceProtocol {
+            // TODO: service methods
+            encodingValue = CandidSingleEncodingValue(.service([], candidServiceProtocol.principal))
+            
         } else {
             try value.encode(to: self)
             let mirror = Mirror(reflecting: value)
             if .enum == mirror.displayStyle {
-                // TODO: CaseIterable can define all the variant cases
                 guard let record = candidValue.recordValue else {
                     throw EncodingError.invalidValue(T.self, .init(codingPath: codingPath, debugDescription: "Enums should be encoded to records"))
                 }
@@ -202,9 +209,8 @@ private class CandidValueEncoder: Encoder {
         case is Float.Type: return .float32
         case is Double.Type: return .float64
         case is any CandidOptionalMarker.Type:
-            // TODO: How can we unwrap the contained type?
-            // eg. Bool??.none can not be identified
-            return .option(.empty)
+            let optional = type as! any CandidOptionalMarker.Type
+            return .option(candidType(optional.self.wrappedType))
         default:
             return .empty
         }
@@ -440,6 +446,7 @@ extension CandidKeyedEncodingContainer {
 // MARK: Wrapped Types
 private protocol CandidOptionalMarker {
     associatedtype Wrapped: Encodable
+    static var wrappedType: Wrapped.Type { get }
     var value: Wrapped? { get }
     var wrappedType: Wrapped.Type { get }
 }
@@ -447,6 +454,7 @@ private protocol CandidOptionalMarker {
 extension Optional: CandidOptionalMarker where Wrapped: Encodable {
     var value: Wrapped? { self }
     var wrappedType: Wrapped.Type { Wrapped.self }
+    static var wrappedType: Wrapped.Type { Wrapped.self }
 }
 
 private extension Collection {
