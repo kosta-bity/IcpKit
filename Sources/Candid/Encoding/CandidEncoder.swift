@@ -47,48 +47,14 @@ private class CandidValueEncoder: Encoder {
     }
     
     func candidEncode<T>(_ value: T) throws where T: Encodable {
-        if let optional = value as? any CandidOptionalMarker {
-            if let concreteValue = optional.value {
-                let encoder = CandidValueEncoder(codingPath)
-                try encoder.candidEncode(concreteValue)
-                encodingValue = CandidSingleEncodingValue(.option(encoder.candidValue))
-            } else {
-                let wrappedType = candidType(optional.wrappedType)
-                encodingValue = CandidSingleEncodingValue(.option(wrappedType))
-            }
-            
-        } else if let bigUInt = value as? BigUInt {
-            encodingValue = CandidSingleEncodingValue(bigUInt)
-            
-        } else if let bigInt = value as? BigInt {
-            encodingValue = CandidSingleEncodingValue(bigInt)
-            
-        } else if let data = value as? Data {
-            encodingValue = CandidSingleEncodingValue(data)
-            
-        } else if let collection = value as? any Collection, collection.isEmpty {
-            let wrappedType = candidType(collection.wrappedType)
-            encodingValue = CandidSingleEncodingValue(.vector(wrappedType))
-            
-        } else if let candidFunction = value as? CandidFunction {
-            encodingValue = CandidSingleEncodingValue(.function(candidFunction))
-            
-        } else if let candidPrincipal = value as? any CandidPrincipalProtocol {
-            encodingValue = CandidSingleEncodingValue(.principal(.init(candidPrincipal)))
-            
-        } else if let candidService = value as? CandidService {
-            encodingValue = CandidSingleEncodingValue(.service(candidService))
-            
-        } else if let candidFunctionProtocol = value as? CandidFunctionProtocol {
-            // TODO: function arguments and results
-            encodingValue = CandidSingleEncodingValue(.function([], [], candidFunctionProtocol.canister, candidFunctionProtocol.methodName))
-            
-        } else if let candidServiceProtocol = value as? CandidServiceProtocol {
-            // TODO: service methods
-            encodingValue = CandidSingleEncodingValue(.service([], candidServiceProtocol.principal))
+        if let candidValue = try encodeKnownType(value) {
+            encodingValue = CandidSingleEncodingValue(candidValue)
             
         } else {
+            // this will be a primitive type (int, bool, ...), a struct/class or an enum
+            // we go through the Swift encoding system
             try value.encode(to: self)
+            // encoded candid value is now assigned to `self.encodingValue` member
             let mirror = Mirror(reflecting: value)
             if .enum == mirror.displayStyle {
                 guard let record = candidValue.recordValue else {
@@ -97,8 +63,56 @@ private class CandidValueEncoder: Encoder {
                 let variant = try convertRecordToVariant(record, using: mirror)
                 encodingValue = CandidSingleEncodingValue(variant)
             }
-            encodingValue = CandidSingleEncodingValue(addOptionals(to: encodingValue.candidValue, using: mirror))
+            let withOptionals = addOptionals(to: encodingValue.candidValue, using: mirror)
+            encodingValue = CandidSingleEncodingValue(withOptionals)
         }
+    }
+    
+    private func encodeKnownType<T>(_ value: T) throws -> CandidValue? where T: Encodable {
+        if let optional = value as? any CandidOptionalMarker {
+            if let concreteValue = optional.value {
+                let encoder = CandidValueEncoder(codingPath)
+                try encoder.candidEncode(concreteValue)
+                return .option(encoder.candidValue)
+            } else {
+                let wrappedType = candidType(optional.wrappedType)
+                return .option(wrappedType)
+            }
+            
+        } else if let candidValue = value as? CandidValue {
+            return candidValue
+            
+        } else if let bigUInt = value as? BigUInt {
+            return .natural(bigUInt)
+            
+        } else if let bigInt = value as? BigInt {
+            return .integer(bigInt)
+            
+        } else if let data = value as? Data {
+            return .blob(data)
+            
+        } else if let collection = value as? any Collection, collection.isEmpty {
+            let wrappedType = candidType(collection.wrappedType)
+            return .vector(wrappedType)
+            
+        } else if let candidFunction = value as? CandidFunction {
+            return .function(candidFunction)
+            
+        } else if let candidPrincipal = value as? any CandidPrincipalProtocol {
+            return .principal(.init(candidPrincipal))
+            
+        } else if let candidService = value as? CandidService {
+            return .service(candidService)
+            
+        } else if let candidFunctionProtocol = value as? CandidFunctionProtocol {
+            // TODO: function arguments and results
+            return .function([], [], candidFunctionProtocol.canister, candidFunctionProtocol.methodName)
+            
+        } else if let candidServiceProtocol = value as? CandidServiceProtocol {
+            // TODO: service methods
+            return .service([], candidServiceProtocol.principal)
+        }
+        return nil
     }
     
     private func addOptionals(to value: CandidValue, using mirror: Mirror) -> CandidValue {
@@ -113,10 +127,12 @@ private class CandidValueEncoder: Encoder {
             if let child = mirror.children.first {
                 let associatedMirror = Mirror(reflecting: child.value)
                 if let associatedValues = variant.value.recordValue {
+                    // multiple arguments in enum case represented as record
                     let newRecordItems = addOptionals(in: associatedValues.candidSortedItems, using: associatedMirror, intMarker: ".")
                     return .variant(.init(variant.key, .record(newRecordItems)))
+                    
                 } else if associatedMirror.displayStyle == .tuple {
-                    // case of single named argument in an enum
+                    // case of single named argument in an enum. Swift represents this as a tuple (label, value)
                     let tupleMirror = Mirror(reflecting: associatedMirror.children.first!)
                     if tupleMirror.children.count == 2,
                        let label = tupleMirror.descendant("label") as? String,
@@ -149,10 +165,6 @@ private class CandidValueEncoder: Encoder {
         }
         let variantValueKey = value.key
         if associatedValues.candidSortedItems.isEmpty {
-//            if let child = mirror.children.first,
-//               let optional = child.value as? any CandidOptionalMarker {
-//                return .variant(.init(variantValueKey, .option(candidType(optional.wrappedType))))
-//            }
             return .variant(CandidKeyedValue(variantValueKey))
             
         } else if associatedValues.candidSortedItems.count == 1,
@@ -212,6 +224,7 @@ private class CandidValueEncoder: Encoder {
             let optional = type as! any CandidOptionalMarker.Type
             return .option(candidType(optional.self.wrappedType))
         default:
+            // TODO: can we detect the structure of an Encodable Type using CodingKeys?
             return .empty
         }
     }
@@ -242,24 +255,22 @@ private protocol CandidEncodingValue: AnyObject {
 
 private class CandidSingleEncodingValue: CandidEncodingValue {
     private (set) var candidValue: CandidValue!
+    
     func set(_ value: CandidValue) { candidValue = value }
     func set(_ value: Bool) { candidValue = .bool(value) }
     func set(_ value: String) { candidValue = .text(value) }
     func set(_ value: Float) { candidValue = .float32(value) }
     func set(_ value: Double) { candidValue = .float64(value) }
-    func set(_ value: BigInt) { candidValue = .integer(value) }
     func set(_ value: Int) { candidValue = .integer64(Int64(value)) }
     func set(_ value: Int8) { candidValue = .integer8(value) }
     func set(_ value: Int16) { candidValue = .integer16(value) }
     func set(_ value: Int32) { candidValue = .integer32(value) }
     func set(_ value: Int64) { candidValue = .integer64(value) }
-    func set(_ value: BigUInt) { candidValue = .natural(value) }
     func set(_ value: UInt) { candidValue = .natural64(UInt64(value)) }
     func set(_ value: UInt8) { candidValue = .natural8(value) }
     func set(_ value: UInt16) { candidValue = .natural16(value) }
     func set(_ value: UInt32) { candidValue = .natural32(value) }
     func set(_ value: UInt64) { candidValue = .natural64(value) }
-    func set(_ value: Data) { candidValue = .blob(value) }
     
     init() {}
     init(_ value: CandidValue) { candidValue = value }
@@ -267,19 +278,16 @@ private class CandidSingleEncodingValue: CandidEncodingValue {
     init(_ value: String) { candidValue = .text(value) }
     init(_ value: Float) { candidValue = .float32(value) }
     init(_ value: Double) { candidValue = .float64(value) }
-    init(_ value: BigInt) { candidValue = .integer(value) }
     init(_ value: Int) { candidValue = .integer64(Int64(value)) }
     init(_ value: Int8) { candidValue = .integer8(value) }
     init(_ value: Int16) { candidValue = .integer16(value) }
     init(_ value: Int32) { candidValue = .integer32(value) }
     init(_ value: Int64) { candidValue = .integer64(value) }
-    init(_ value: BigUInt) { candidValue = .natural(value) }
     init(_ value: UInt) { candidValue = .natural64(UInt64(value)) }
     init(_ value: UInt8) { candidValue = .natural8(value) }
     init(_ value: UInt16) { candidValue = .natural16(value) }
     init(_ value: UInt32) { candidValue = .natural32(value) }
     init(_ value: UInt64) { candidValue = .natural64(value) }
-    init(_ value: Data) { candidValue = .blob(value) }
 }
 
 private class CandidUnkeyedEncodingValue: CandidEncodingValue {
@@ -287,14 +295,12 @@ private class CandidUnkeyedEncodingValue: CandidEncodingValue {
     private var items: [CandidEncodingValue] = []
     var count: Int { items.count }
     func append(_ value: CandidEncodingValue) { items.append(value) }
-    func append(_ value: CandidValue) { append(CandidSingleEncodingValue(value)) }
 }
 
 private class CandidKeyedEncodingValue<Key>: CandidEncodingValue where Key: CodingKey {
     var candidValue: CandidValue! { .record(items.map { CandidKeyedValue($0.key, $0.value.candidValue) }) }
     private var items: [CandidKey: CandidEncodingValue] = [:]
     func set(_ value: CandidEncodingValue, for key: Key) { items[candidKey(for: key)] = value }
-    func set(_ value: CandidValue, for key: Key) { set(CandidSingleEncodingValue(value), for: key) }
     
     private func candidKey(for key: Key) -> CandidKey {
         if let int = key.intValue, int != CandidKey.candidHash(key.stringValue) {

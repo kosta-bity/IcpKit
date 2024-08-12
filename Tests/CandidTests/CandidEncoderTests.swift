@@ -106,6 +106,7 @@ private let commonTestVectors: [(any Codable, CandidValue, any Decodable.Type)] 
     (TestRecord(a: 1, b: 2), .record([97: .natural8(1), 98: .integer64(2)]), TestRecord.self),
     (TestDataRecord2(data: nil), .record(["data": .option(.blob)]), TestDataRecord2.self),
     (TestRecord?.none, .option(CandidType.empty), TestRecord?.self),    // can not detect type of nil structs
+    (PassThroughCandidValue(candid: .option(CandidType.reserved)), .record(["candid": .option(CandidType.reserved)]), PassThroughCandidValue.self),
     
     (TestEnum.a, .variant(.init("a", .null)), TestEnum.self),
     (TestEnum.b(2), .variant(.init("b", .option(.natural8(2)))), TestEnum.self),
@@ -223,6 +224,10 @@ private indirect enum TestEnum: Codable {
 
 struct SingleValueRecord: Codable {
     let value: Int8
+}
+
+struct PassThroughCandidValue: Codable {
+    let candid: CandidValue
 }
 
 struct TestFunction: CandidFunctionProtocol {

@@ -74,6 +74,9 @@ private class CandidValueDecoder: Decoder {
             let bigInt = try input.integer(codingPath)
             return bigInt as! T
             
+        } else if T.self is CandidValue.Type {
+            return input as! T
+            
         } else if T.self is any CandidPrincipalProtocol.Type {
             let principal = try input.principal(codingPath)
             let principalProtocol = (T.self as! any CandidPrincipalProtocol.Type).init(principal)
@@ -327,101 +330,77 @@ extension CandidKeyedDecodingContainer {
 }
 
 private extension CandidValue {
+    private func typeMismatch<T>(_ codingPath: [CodingKey], _ type: T.Type) -> DecodingError {
+        return DecodingError.typeMismatch(type, .init(codingPath: codingPath, debugDescription: "not a \(type)"))
+    }
+    
     func bool(_ codingPath: [CodingKey]) throws -> Bool {
-        guard case .bool(let bool) = self else { 
-            throw DecodingError.typeMismatch(Bool.self, .init(codingPath: codingPath, debugDescription: "not a Bool"))
-         }
+        guard case .bool(let bool) = self else { throw typeMismatch(codingPath, Bool.self) }
         return bool
     }
     
     func natural(_ codingPath: [CodingKey]) throws -> BigUInt {
-        guard case .natural(let bigUInt) = self else {  
-            throw DecodingError.typeMismatch(BigUInt.self, .init(codingPath: codingPath, debugDescription: "not a BigUInt"))
-         }
+        guard case .natural(let bigUInt) = self else {   throw typeMismatch(codingPath, BigUInt.self) }
         return bigUInt
     }
     
     func natural8(_ codingPath: [CodingKey]) throws -> UInt8 {
-        guard case .natural8(let uInt8) = self else {  
-            throw DecodingError.typeMismatch(UInt8.self, .init(codingPath: codingPath, debugDescription: "not an UInt8"))
-         }
+        guard case .natural8(let uInt8) = self else {   throw typeMismatch(codingPath, UInt8.self) }
         return uInt8
     }
     
     func natural16(_ codingPath: [CodingKey]) throws -> UInt16 {
-        guard case .natural16(let uInt16) = self else {  
-            throw DecodingError.typeMismatch(UInt16.self, .init(codingPath: codingPath, debugDescription: "not an UInt16"))
-         }
+        guard case .natural16(let uInt16) = self else {   throw typeMismatch(codingPath, UInt16.self) }
         return uInt16
     }
     
     func natural32(_ codingPath: [CodingKey]) throws -> UInt32 {
-        guard case .natural32(let uInt32) = self else {  
-            throw DecodingError.typeMismatch(UInt32.self, .init(codingPath: codingPath, debugDescription: "not an UInt32"))
-         }
+        guard case .natural32(let uInt32) = self else {   throw typeMismatch(codingPath, UInt32.self) }
         return uInt32
     }
     
     func natural64(_ codingPath: [CodingKey]) throws -> UInt64 {
-        guard case .natural64(let uInt64) = self else {  
-            throw DecodingError.typeMismatch(UInt64.self, .init(codingPath: codingPath, debugDescription: "not an UInt64"))
-         }
+        guard case .natural64(let uInt64) = self else {  throw typeMismatch(codingPath, UInt64.self) }
         return uInt64
     }
     
     func integer(_ codingPath: [CodingKey]) throws -> BigInt {
-        guard case .integer(let bigInt) = self else {  
-            throw DecodingError.typeMismatch(BigInt.self, .init(codingPath: codingPath, debugDescription: "not a BigInt"))
-         }
+        guard case .integer(let bigInt) = self else { throw typeMismatch(codingPath, BigInt.self) }
         return bigInt
     }
     
     func integer8(_ codingPath: [CodingKey]) throws -> Int8 {
-        guard case .integer8(let int8) = self else {  
-            throw DecodingError.typeMismatch(Int8.self, .init(codingPath: codingPath, debugDescription: "not an Int8"))
-         }
+        guard case .integer8(let int8) = self else { throw typeMismatch(codingPath, Int8.self) }
         return int8
     }
     
     func integer16(_ codingPath: [CodingKey]) throws -> Int16 {
-        guard case .integer16(let int16) = self else {  
-            throw DecodingError.typeMismatch(Int16.self, .init(codingPath: codingPath, debugDescription: "not an Int16"))
-         }
+        guard case .integer16(let int16) = self else { throw typeMismatch(codingPath, Int16.self) }
         return int16
     }
     
     func integer32(_ codingPath: [CodingKey]) throws -> Int32 {
-        guard case .integer32(let int32) = self else {  
-            throw DecodingError.typeMismatch(Int32.self, .init(codingPath: codingPath, debugDescription: "not an Int32"))
-         }
+        guard case .integer32(let int32) = self else { throw typeMismatch(codingPath, Int32.self) }
         return int32
     }
     
     func integer64(_ codingPath: [CodingKey]) throws -> Int64 {
-        guard case .integer64(let int64) = self else {  
-            throw DecodingError.typeMismatch(Int64.self, .init(codingPath: codingPath, debugDescription: "not an Int64"))
-         }
+        guard case .integer64(let int64) = self else { throw typeMismatch(codingPath, Int64.self) }
         return int64
     }
     
     func float32(_ codingPath: [CodingKey]) throws -> Float {
-        guard case .float32(let float) = self else {  
-            throw DecodingError.typeMismatch(Float.self, .init(codingPath: codingPath, debugDescription: "not a Float"))
-         }
+        guard case .float32(let float) = self else { throw typeMismatch(codingPath, Float.self) }
         return float
     }
     
     func float64(_ codingPath: [CodingKey]) throws -> Double {
-        guard case .float64(let double) = self else {  
-            throw DecodingError.typeMismatch(Double.self, .init(codingPath: codingPath, debugDescription: "not a Double"))
-         }
+        guard case .float64(let double) = self else { throw typeMismatch(codingPath, Double.self) }
         return double
     }
     
     func text(_ codingPath: [CodingKey]) throws -> String {
-        guard case .text(let string) = self else {  
-            throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a String"))
-         }
+        guard case .text(let string) = self else { throw typeMismatch(codingPath, String.self) }
         return string
     }
     
@@ -433,28 +412,22 @@ private extension CandidValue {
         if case .blob(let data) = self {
             return data
         }
-        throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Data"))
+        throw typeMismatch(codingPath, Data.self)
     }
     
     func principal(_ codingPath: [CodingKey]) throws -> CandidPrincipal {
         guard case .principal(let principal) = self,
-              let principal = principal else {
-            throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Principal"))
-        }
+              let principal = principal else { throw typeMismatch(codingPath, CandidPrincipal.self) }
         return principal
     }
     
     func function(_ codingPath: [CodingKey]) throws -> CandidFunction {
-        guard case .function(let function) = self else {
-            throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Function"))
-        }
+        guard case .function(let function) = self else { throw typeMismatch(codingPath, CandidFunction.self) }
         return function
     }
     
     func service(_ codingPath: [CodingKey]) throws -> CandidService {
-        guard case .service(let service) = self else {
-            throw DecodingError.typeMismatch(String.self, .init(codingPath: codingPath, debugDescription: "not a Function"))
-        }
+        guard case .service(let service) = self else { throw typeMismatch(codingPath, CandidService.self) }
         return service
     }
     
