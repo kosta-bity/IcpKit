@@ -7,7 +7,7 @@
 
 import Foundation
 
-public class ICPService {
+open class ICPService {
     public let canister: ICPPrincipal
     public let client: ICPRequestClient
     

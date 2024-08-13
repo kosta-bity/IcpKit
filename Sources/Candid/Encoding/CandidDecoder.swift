@@ -183,6 +183,7 @@ private class CandidUnkeyedDecodingContainer: UnkeyedDecodingContainer {
 private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol where Key: CodingKey {
     let codingPath: [CodingKey]
     var allKeys: [Key] { 
+        // only used for enums
         values.compactMap {
             $0.key.stringValue.map { Key(stringValue: $0) } ?? Key(intValue: $0.key.intValue)
         }
@@ -210,6 +211,7 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
     }
     
     func contains(_ key: Key) -> Bool {
+        // used for optional values
         let key = candidKey(key)
         guard let value = values[key] else {
             return false
@@ -236,9 +238,9 @@ private class CandidKeyedDecodingContainer<Key>: KeyedDecodingContainerProtocol 
                 CandidKeyedValue($0.key.toEnumKey(), $0.value)
             }
             if associatedValueItems.contains(where: {
-                $0.key.stringValue.map { NestedKey(stringValue: $0) } ?? NestedKey(intValue: $0.key.intValue) != nil 
+                $0.key.stringValue.map { NestedKey(stringValue: $0) } ?? NestedKey(intValue: $0.key.intValue) != nil
             }) {
-                // at least one associatedValue can be mapped to NestedKey
+                // at least one associatedValue can be mapped to NestedKey, this is the case an enum with at least one associated value
                 associatedCandidValue = .record(associatedValueItems)
             } else {
                 // this is the case of an enum containing a single unnamed value of type record

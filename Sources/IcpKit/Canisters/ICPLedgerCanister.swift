@@ -129,7 +129,7 @@ private extension ICPBlock.Transaction.Operation {
         switch operation {
         case .Burn(let from, let amount): self = .burn(from: from, amount: amount.e8s)
         case .Mint(let to, let amount): self = .mint(to: to, amount: amount.e8s)
-        case .Transfer(let to, let from, let amount, let fee): self = .transfer(from: from, to: to, amount: amount.e8s, fee: fee.e8s)
+        case .Transfer(let to, let fee, let from, let amount): self = .transfer(from: from, to: to, amount: amount.e8s, fee: fee.e8s)
         }
     }
 }
@@ -148,5 +148,11 @@ private extension ICPLedgerCanisterTransferError {
         case .InsufficientFunds(balance: let balance):
             self = .insufficientFunds(balance: balance.e8s)
         }
+    }
+}
+
+private extension LedgerCanister.TimeStamp {
+    static var now: LedgerCanister.TimeStamp {
+        return LedgerCanister.TimeStamp(timestamp_nanos: UInt64(Date.now.timeIntervalSince1970) * 1_000_000_000)
     }
 }

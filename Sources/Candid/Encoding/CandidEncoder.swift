@@ -186,7 +186,7 @@ private class CandidValueEncoder: Encoder {
             if let existing = keyedValues.first(where: {
                 $0.key.stringValue == child.label ||
                 "\(intMarker)\($0.key.intValue)" == child.label ||
-                $0.key.intValue == CandidKey.candidHash(child.label ?? "?")
+                $0.key.intValue == child.label.map { CandidKey.candidHash($0) }
             }) {
                 if child.value is any CandidOptionalMarker {
                     newRecordItems.replace(existing.key, with: .option(existing.value))

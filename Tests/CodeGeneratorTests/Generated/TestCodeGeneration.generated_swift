@@ -53,11 +53,11 @@ enum TestCodeGeneration {
 		case summer
 		case spring
 	
-		enum CodingKeys: Int, CodingKey {
-			case fall = 1135983739
-			case winter = 1385738053
-			case summer = 2706091375
-			case spring = 3281376973
+		enum CodingKeys: String, CandidCodingKey {
+			case fall
+			case winter
+			case summer
+			case spring
 		}
 	}
 	
@@ -67,11 +67,16 @@ enum TestCodeGeneration {
 		case c(String, BigInt)
 		case d(one: Bool, two: Data, three: CandidTuple2<[Int8?], UInt8>)
 	
-		enum CodingKeys: Int, CodingKey {
-			case a = 97
-			case b = 98
-			case c = 99
-			case d = 100
+		enum CodingKeys: String, CandidCodingKey {
+			case a
+			case b
+			case c
+			case d
+		}
+		enum DCodingKeys: String, CandidCodingKey {
+			case one
+			case two
+			case three
 		}
 	}
 	

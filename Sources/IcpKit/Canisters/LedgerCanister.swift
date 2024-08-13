@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import Candid
 import BigInt
 
 enum LedgerCanister {
@@ -96,6 +97,49 @@ enum LedgerCanister {
         let length: UInt64
     }
     
+    /// //There are three types of operations: minting tokens, burning tokens & transferring tokens
+    /// type Operation = variant {
+    ///     Mint: record {
+    ///         to: AccountIdentifier;
+    ///         amount: Tokens;
+    ///     };
+    ///     Burn: record {
+    ///          from: AccountIdentifier;
+    ///          amount: Tokens;
+    ///    };
+    ///     Transfer: record {
+    ///         from: AccountIdentifier;
+    ///         to: AccountIdentifier;
+    ///         amount: Tokens;
+    ///         fee: Tokens;
+    ///     };
+    /// };
+    enum Operation: Codable {
+        case Burn(from: AccountIdentifier, amount: Tokens)
+        case Mint(to: AccountIdentifier, amount: Tokens)
+        case Transfer(to: AccountIdentifier, fee: Tokens, from: AccountIdentifier, amount: Tokens)
+        
+        enum CodingKeys: String, CandidCodingKey {
+            case Burn
+            case Mint
+            case Transfer
+        }
+        enum BurnCodingKeys: String, CandidCodingKey {
+            case from
+            case amount
+        }
+        enum MintCodingKeys: String, CandidCodingKey {
+            case to
+            case amount
+        }
+        enum TransferCodingKeys: String, CandidCodingKey {
+            case to
+            case fee
+            case from
+            case amount
+        }
+    }
+    
     /// type QueryArchiveResult = variant {
     ///     Ok : BlockRange;
     ///     Err : null;      // we don't know the values here...
@@ -104,9 +148,9 @@ enum LedgerCanister {
         case Ok(BlockRange)
         case Err
         
-        enum CodingKeys: Int, CodingKey {
-            case Ok = 17724
-            case Err = 3456837
+        enum CodingKeys: String, CandidCodingKey {
+            case Ok
+            case Err
         }
     }
     
@@ -157,7 +201,7 @@ enum LedgerCanister {
         let blocks: [Block]
         let chain_length: UInt64
         let first_block_index: BlockIndex
-        let archived_blocks: [ArchivedBlock]
+        let archived_blocks: [UnnamedType0]
     }
     
     /// // Timestamps are represented as nanoseconds from the UNIX epoch in UTC timezone
@@ -166,10 +210,6 @@ enum LedgerCanister {
     /// };
     struct TimeStamp: Codable {
         let timestamp_nanos: UInt64
-        
-        static var now: TimeStamp {
-            return TimeStamp(timestamp_nanos: UInt64(Date.now.timeIntervalSince1970) * 1_000_000_000)
-        }
     }
     
     /// // https://internetcomputer.org/docs/current/references/ledger/
@@ -181,7 +221,7 @@ enum LedgerCanister {
     }
     
     /// type Transaction = record {
-    ///     operation: opt Transfer;
+    ///     operation: opt Operation;
     ///     memo: Memo;
     ///     created_at_time: TimeStamp;
     /// };
@@ -189,50 +229,6 @@ enum LedgerCanister {
         let memo: Memo
         let operation: Operation?
         let created_at_time: TimeStamp
-    }
-    
-    /// //There are three types of operations: minting tokens, burning tokens & transferring tokens
-    /// type Operation = variant {
-    ///     Mint: record {
-    ///         to: AccountIdentifier;
-    ///         amount: Tokens;
-    ///     };
-    ///     Burn: record {
-    ///          from: AccountIdentifier;
-    ///          amount: Tokens;
-    ///     };
-    ///     Transfer: record {
-    ///         from: AccountIdentifier;
-    ///         to: AccountIdentifier;
-    ///         amount: Tokens;
-    ///         fee: Tokens;
-    ///     };
-    /// };
-    enum Operation: Codable {
-        case Burn(from: AccountIdentifier, amount: Tokens)
-        case Mint(to: AccountIdentifier, amount: Tokens)
-        case Transfer(to: AccountIdentifier, from: AccountIdentifier, amount: Tokens, fee: Tokens)
-        
-        enum CodingKeys: Int, CodingKey {
-            case Burn = 737755247
-            case Mint = 859142850
-            case Transfer = 3021957963
-        }
-
-        enum BurnCodingKeys: Int, CodingKey {
-            case from = 1136829802
-            case amount = 3573748184
-        }
-        enum MintCodingKeys: Int, CodingKey {
-            case to = 25979
-            case amount = 3573748184
-        }
-        enum TransferCodingKeys: Int, CodingKey {
-            case to = 25979
-            case from = 1136829802
-            case amount = 3573748184
-            case fee = 5094982
-        }
     }
     
     /// // Arguments for the `transfer` call.
@@ -289,12 +285,24 @@ enum LedgerCanister {
         case TxCreatedInFuture
         case InsufficientFunds(balance: Tokens)
         
-        enum CodingKeys: Int, CodingKey {
-            case TxTooOld = 195874615
-            case BadFee = 2142953889
-            case TxDuplicate = 2932695879
-            case TxCreatedInFuture = 4060984012
-            case InsufficientFunds = 4206284395
+        enum CodingKeys: String, CandidCodingKey {
+            case TxTooOld
+            case BadFee
+            case TxDuplicate
+            case TxCreatedInFuture
+            case InsufficientFunds
+        }
+        enum TxTooOldCodingKeys: String, CandidCodingKey {
+            case allowed_window_nanos
+        }
+        enum BadFeeCodingKeys: String, CandidCodingKey {
+            case expected_fee
+        }
+        enum TxDuplicateCodingKeys: String, CandidCodingKey {
+            case duplicate_of
+        }
+        enum InsufficientFundsCodingKeys: String, CandidCodingKey {
+            case balance
         }
     }
     
@@ -306,13 +314,13 @@ enum LedgerCanister {
         case Ok(BlockIndex)
         case Err(TransferError)
         
-        enum CodingKeys: Int, CodingKey {
-            case Ok = 17724
-            case Err = 3456837
+        enum CodingKeys: String, CandidCodingKey {
+            case Ok
+            case Err
         }
     }
     
-    struct ArchivedBlock: Codable {
+    struct UnnamedType0: Codable {
         let callback: QueryArchiveFn
         let start: BlockIndex
         let length: UInt64

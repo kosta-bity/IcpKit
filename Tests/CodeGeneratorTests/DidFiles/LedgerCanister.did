@@ -10,7 +10,7 @@ type AccountIdentifier = blob;
 
 
 //There are three types of operations: minting tokens, burning tokens & transferring tokens
-type Transfer = variant {
+type Operation = variant {
     Mint: record {
         to: AccountIdentifier;
         amount: Tokens;
@@ -19,10 +19,11 @@ type Transfer = variant {
          from: AccountIdentifier;
          amount: Tokens;
    };
-    Send: record {
+    Transfer: record {
         from: AccountIdentifier;
         to: AccountIdentifier;
         amount: Tokens;
+        fee: Tokens;
     };
 };
 
@@ -37,7 +38,7 @@ type TimeStamp = record {
 };
 
 type Transaction = record {
-    operation: opt Transfer;
+    operation: opt Operation;
     memo: Memo;
     created_at_time: TimeStamp;
 };

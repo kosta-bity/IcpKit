@@ -150,10 +150,8 @@ public class CandidCodeGenerator {
     private func buildHeader() -> IndentedString {
         IndentedString(
             "//",
-            "// This file was generated using CandidCodeGenerator",
-            "// created: \(Date.now)",
-            "//",
-            "// You can modify this file if needed",
+            "// This file was generated using IcpKit CandidCodeGenerator",
+            "// For more information visit https://github.com/kosta-bity/IcpKit",
             "//",
             "",
             "import Foundation",
@@ -239,6 +237,12 @@ public class CandidCodeGenerator {
         }
         block.addLine()
         block.addBlock(buildCodingKeys(keyedTypes))
+        for keyedType in keyedTypes {
+            guard case .record(let associatedValues) = keyedType.type,
+                  associatedValues.hasNamedParameters,
+                  let keyName = keyedType.key.stringValue else { continue }
+            block.addBlock(buildCodingKeys(associatedValues, namePrefix: keyName.withFirstLetterCapital))
+        }
         block.decreaseIndent()
         block.addLine("}")
         return GeneratedCode(name: name, output: block, type: .namedType)
@@ -266,12 +270,18 @@ public class CandidCodeGenerator {
         }
     }
     
-    private func buildCodingKeys(_ keyedTypes: CandidKeyedTypes) -> IndentedString {
+    private func buildCodingKeys(_ keyedTypes: CandidKeyedTypes, namePrefix: String = "") -> IndentedString {
         let block = IndentedString()
-        block.addLine("enum CodingKeys: Int, CodingKey {")
+        let enumName = "\(namePrefix)CodingKeys"
+        let enumInheritance = keyedTypes.hasUnnamedParameters ? "Int, CodingKey" : "String, CandidCodingKey"
+        block.addLine("enum \(enumName): \(enumInheritance) {")
         block.increaseIndent()
         for keyedType in keyedTypes {
-            block.addLine("case \(keyedType.key.swiftString) = \(keyedType.key.intValue)")
+            if keyedTypes.isTuple || !keyedTypes.hasUnnamedParameters {
+                block.addLine("case \(keyedType.key.swiftString)")
+            } else {
+                block.addLine("case \(keyedType.key.swiftString) = \(keyedType.key.intValue)")
+            }
         }
         block.decreaseIndent()
         block.addLine("}")
@@ -375,6 +385,7 @@ private extension IndentedString {
 
 private extension CandidKeyedTypes {
     var hasUnnamedParameters: Bool { contains { $0.key.isUnnamed }}
+    var hasNamedParameters: Bool { contains { $0.key.hasString }}
 }
 
 private extension CandidKeyedType {
@@ -593,4 +604,11 @@ private extension CandidValue {
 
 private extension CandidPrincipal {
     var swiftValueInit: String { "try! ICPPrincipal(\"\(string)\")" }
+}
+
+private extension String {
+    var withFirstLetterCapital: String {
+        guard !isEmpty else { return self }
+        return prefix(1).uppercased() + self.dropFirst()
+    }
 }

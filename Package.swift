@@ -72,7 +72,7 @@ let package = Package(
         ),
         .testTarget(
             name: "CodeGeneratorTests",
-            dependencies: ["CodeGenerator", "Candid"],
+            dependencies: ["CodeGenerator", "Candid", "IcpKit"],
             resources: [
                 .process("DidFiles/ICRC7.did"),
                 .process("DidFiles/GoldNFT.did"),

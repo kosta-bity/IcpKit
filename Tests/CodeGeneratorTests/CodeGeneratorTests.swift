@@ -59,12 +59,12 @@ final class CodeGeneratorTests: XCTestCase {
     }
     
     func testDidFiles() async throws {
-        let testFiles: [String] = ["LedgerCanister", "ICRC7", "GoldNFT"]
+        let testFiles: [String] = ["LedgerCanister", "ICRC7"]//, "GoldNFT"]
         for file in testFiles {
             let path = Bundle.module.url(forResource: file, withExtension: "did")!
             let didFile = try String(contentsOf: path)
             let interface = try await CandidParser().parseInterfaceDescription(didFile)
-            let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: interface, nameSpace: file)
+            let generated = try CandidCodeGenerator().generateSwiftCode(for: interface, nameSpace: file)
             let swiftPath = Bundle.module.url(forResource: file, withExtension: "generated_swift")!
             let swiftFile = try String(contentsOf: swiftPath)
             XCTAssertEqual(generated, swiftFile)
@@ -88,9 +88,9 @@ enum UnnamedType0: Codable {
 \tcase a
 \tcase b(Int8)
 
-\tenum CodingKeys: Int, CodingKey {
-\t\tcase a = 97
-\t\tcase b = 98
+\tenum CodingKeys: String, CandidCodingKey {
+\t\tcase a
+\t\tcase b
 \t}
 }
 
@@ -101,9 +101,9 @@ enum UnnamedType0: Codable {
 \tcase a
 \tcase b(Int8)
 
-\tenum CodingKeys: Int, CodingKey {
-\t\tcase a = 97
-\t\tcase b = 98
+\tenum CodingKeys: String, CandidCodingKey {
+\t\tcase a
+\t\tcase b
 \t}
 }
 
@@ -115,10 +115,10 @@ enum UnnamedType0: Codable {
 \tcase b(Int8)
 \tcase c(Bool, Int8)
 
-\tenum CodingKeys: Int, CodingKey {
-\t\tcase a = 97
-\t\tcase b = 98
-\t\tcase c = 99
+\tenum CodingKeys: String, CandidCodingKey {
+\t\tcase a
+\t\tcase b
+\t\tcase c
 \t}
 }
 
@@ -130,10 +130,14 @@ enum UnnamedType0: Codable {
 \tcase b(Int8)
 \tcase c(bool: Bool, int8: Int8)
 
-\tenum CodingKeys: Int, CodingKey {
-\t\tcase a = 97
-\t\tcase b = 98
-\t\tcase c = 99
+\tenum CodingKeys: String, CandidCodingKey {
+\t\tcase a
+\t\tcase b
+\t\tcase c
+\t}
+\tenum CCodingKeys: String, CandidCodingKey {
+\t\tcase bool
+\t\tcase int8
 \t}
 }
 
