@@ -1,3 +1,12 @@
+//
+// This file was generated using IcpKit CandidCodeGenerator
+// For more information visit https://github.com/kosta-bity/IcpKit
+//
+
+import Foundation
+import IcpKit
+import BigInt
+
 struct UnnamedType0: Codable {
 	let cyclesPerCall: UInt64
 	let owner: ICPPrincipal
@@ -8,7 +17,7 @@ struct UnnamedType0: Codable {
 	let providerId: UInt64
 }
 
-let cValue: [UnnamedType0] = [
+let EVMProviders: [UnnamedType0] = [
 	.init(
 		cyclesPerCall: 0,
 		owner: try! ICPPrincipal("rxqtr-vwnhc-q4tjx-lozjs-u7nxo-2tqsn-cusmy-ip2ke-zy52n-x2ukd-gae"),
