@@ -23,17 +23,10 @@ class IcpViewModel: ObservableObject {
     }
     
     @MainActor
-    func callBalance() async throws {
-        isBusy = true
-        defer { isBusy = false }
-        balance = try await ICPLedgerCanister.accountBalance(of: account, client)
-    }
-    
-    @MainActor
     func queryBalance() async throws {
         isBusy = true
         defer { isBusy = false }
-        balance = try await ICPLedgerCanister.accountBalance(.uncertified, of: account, client)
+        balance = try await ICPLedgerCanister.accountBalance(of: account, client)
     }
     
     @MainActor
@@ -49,3 +42,4 @@ class IcpViewModel: ObservableObject {
         )
     }
 }
+

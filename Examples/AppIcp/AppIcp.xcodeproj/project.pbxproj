@@ -3,13 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A77F7DC2B6A4B50003495A0 /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A77F7DB2B6A4B50003495A0 /* IcpKit */; };
+		0A1555B72C6B9168005D599C /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1555B62C6B9168005D599C /* IcpKit */; };
+		0A1555BA2C6B91B9005D599C /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A1555B92C6B91B9005D599C /* IcpKit */; };
+		0A6BA27D2C46B5FC0015461A /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A6BA27C2C46B5FC0015461A /* IcpKit */; };
+		0A6BA2862C46FA450015461A /* AppIcpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A6BA2852C46FA450015461A /* AppIcpTests.swift */; };
 		0A897BAA2B0CBDAA009F2468 /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A897BA92B0CBDAA009F2468 /* IcpKit */; };
 		0A897BAD2B0CBE35009F2468 /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0A897BAC2B0CBE35009F2468 /* IcpKit */; };
+		0AC051432C6B94C60083C052 /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0AC051422C6B94C60083C052 /* IcpKit */; };
 		0AF01C302B0BE28200242C4E /* AppIcpApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF01C2F2B0BE28200242C4E /* AppIcpApp.swift */; };
 		0AF01C322B0BE28200242C4E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF01C312B0BE28200242C4E /* ContentView.swift */; };
 		0AF01C402B0BE2B000242C4E /* IcpKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0AF01C3F2B0BE2B000242C4E /* IcpKit */; };
@@ -19,7 +23,19 @@
 		0AF01C492B0C9E6100242C4E /* HdWalletKit in Frameworks */ = {isa = PBXBuildFile; productRef = 0AF01C482B0C9E6100242C4E /* HdWalletKit */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		0A6BA2872C46FA450015461A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0AF01C242B0BE28200242C4E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0AF01C2B2B0BE28200242C4E;
+			remoteInfo = AppIcp;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		0A6BA2832C46FA450015461A /* AppIcpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppIcpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		0A6BA2852C46FA450015461A /* AppIcpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIcpTests.swift; sourceTree = "<group>"; };
 		0AF01C2C2B0BE28200242C4E /* AppIcp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppIcp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0AF01C2F2B0BE28200242C4E /* AppIcpApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIcpApp.swift; sourceTree = "<group>"; };
 		0AF01C312B0BE28200242C4E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -30,11 +46,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		0A6BA2802C46FA450015461A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0AF01C292B0BE28200242C4E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0A77F7DC2B6A4B50003495A0 /* IcpKit in Frameworks */,
+				0A1555B72C6B9168005D599C /* IcpKit in Frameworks */,
+				0A6BA27D2C46B5FC0015461A /* IcpKit in Frameworks */,
+				0AC051432C6B94C60083C052 /* IcpKit in Frameworks */,
+				0A1555BA2C6B91B9005D599C /* IcpKit in Frameworks */,
 				0A897BAA2B0CBDAA009F2468 /* IcpKit in Frameworks */,
 				0AF01C492B0C9E6100242C4E /* HdWalletKit in Frameworks */,
 				0A897BAD2B0CBE35009F2468 /* IcpKit in Frameworks */,
@@ -45,10 +71,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A6BA2842C46FA450015461A /* AppIcpTests */ = {
+			isa = PBXGroup;
+			children = (
+				0A6BA2852C46FA450015461A /* AppIcpTests.swift */,
+			);
+			path = AppIcpTests;
+			sourceTree = "<group>";
+		};
 		0AF01C232B0BE28200242C4E = {
 			isa = PBXGroup;
 			children = (
 				0AF01C2E2B0BE28200242C4E /* AppIcp */,
+				0A6BA2842C46FA450015461A /* AppIcpTests */,
 				0AF01C2D2B0BE28200242C4E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -57,6 +92,7 @@
 			isa = PBXGroup;
 			children = (
 				0AF01C2C2B0BE28200242C4E /* AppIcp.app */,
+				0A6BA2832C46FA450015461A /* AppIcpTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,6 +121,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		0A6BA2822C46FA450015461A /* AppIcpTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0A6BA2892C46FA450015461A /* Build configuration list for PBXNativeTarget "AppIcpTests" */;
+			buildPhases = (
+				0A6BA27F2C46FA450015461A /* Sources */,
+				0A6BA2802C46FA450015461A /* Frameworks */,
+				0A6BA2812C46FA450015461A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				0A6BA2882C46FA450015461A /* PBXTargetDependency */,
+			);
+			name = AppIcpTests;
+			productName = AppIcpTests;
+			productReference = 0A6BA2832C46FA450015461A /* AppIcpTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		0AF01C2B2B0BE28200242C4E /* AppIcp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0AF01C3B2B0BE28300242C4E /* Build configuration list for PBXNativeTarget "AppIcp" */;
@@ -103,7 +157,10 @@
 				0AF01C482B0C9E6100242C4E /* HdWalletKit */,
 				0A897BA92B0CBDAA009F2468 /* IcpKit */,
 				0A897BAC2B0CBE35009F2468 /* IcpKit */,
-				0A77F7DB2B6A4B50003495A0 /* IcpKit */,
+				0A6BA27C2C46B5FC0015461A /* IcpKit */,
+				0A1555B62C6B9168005D599C /* IcpKit */,
+				0A1555B92C6B91B9005D599C /* IcpKit */,
+				0AC051422C6B94C60083C052 /* IcpKit */,
 			);
 			productName = AppIcp;
 			productReference = 0AF01C2C2B0BE28200242C4E /* AppIcp.app */;
@@ -116,9 +173,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					0A6BA2822C46FA450015461A = {
+						CreatedOnToolsVersion = 15.2;
+						TestTargetID = 0AF01C2B2B0BE28200242C4E;
+					};
 					0AF01C2B2B0BE28200242C4E = {
 						CreatedOnToolsVersion = 15.0.1;
 					};
@@ -135,18 +196,26 @@
 			mainGroup = 0AF01C232B0BE28200242C4E;
 			packageReferences = (
 				0AF01C472B0C9E6100242C4E /* XCRemoteSwiftPackageReference "HdWalletKit.Swift" */,
-				0A77F7DA2B6A4B50003495A0 /* XCRemoteSwiftPackageReference "IcpKit" */,
+				0AC051412C6B94C60083C052 /* XCLocalSwiftPackageReference "../.." */,
 			);
 			productRefGroup = 0AF01C2D2B0BE28200242C4E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				0AF01C2B2B0BE28200242C4E /* AppIcp */,
+				0A6BA2822C46FA450015461A /* AppIcpTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		0A6BA2812C46FA450015461A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0AF01C2A2B0BE28200242C4E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -157,6 +226,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		0A6BA27F2C46FA450015461A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0A6BA2862C46FA450015461A /* AppIcpTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		0AF01C282B0BE28200242C4E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -171,7 +248,56 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		0A6BA2882C46FA450015461A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 0AF01C2B2B0BE28200242C4E /* AppIcp */;
+			targetProxy = 0A6BA2872C46FA450015461A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		0A6BA28A2C46FA450015461A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AR9889QTFK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bity.wallet.AppIcpTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppIcp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AppIcp";
+			};
+			name = Debug;
+		};
+		0A6BA28B2C46FA450015461A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = AR9889QTFK;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.bity.wallet.AppIcpTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AppIcp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AppIcp";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		0AF01C392B0BE28300242C4E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -294,7 +420,6 @@
 				CODE_SIGN_ENTITLEMENTS = AppIcp/AppIcp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = AR9889QTFK;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -312,15 +437,16 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bity.wallet.AppIcp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -332,7 +458,6 @@
 				CODE_SIGN_ENTITLEMENTS = AppIcp/AppIcp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = AR9889QTFK;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -350,21 +475,31 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.bity.wallet.AppIcp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		0A6BA2892C46FA450015461A /* Build configuration list for PBXNativeTarget "AppIcpTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0A6BA28A2C46FA450015461A /* Debug */,
+				0A6BA28B2C46FA450015461A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		0AF01C272B0BE28200242C4E /* Build configuration list for PBXProject "AppIcp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -385,15 +520,14 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		0A77F7DA2B6A4B50003495A0 /* XCRemoteSwiftPackageReference "IcpKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/kosta-bity/IcpKit";
-			requirement = {
-				branch = main;
-				kind = branch;
-			};
+/* Begin XCLocalSwiftPackageReference section */
+		0AC051412C6B94C60083C052 /* XCLocalSwiftPackageReference "../.." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../..;
 		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
 		0AF01C472B0C9E6100242C4E /* XCRemoteSwiftPackageReference "HdWalletKit.Swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/horizontalsystems/HdWalletKit.Swift.git";
@@ -405,9 +539,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		0A77F7DB2B6A4B50003495A0 /* IcpKit */ = {
+		0A1555B62C6B9168005D599C /* IcpKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 0A77F7DA2B6A4B50003495A0 /* XCRemoteSwiftPackageReference "IcpKit" */;
+			productName = IcpKit;
+		};
+		0A1555B92C6B91B9005D599C /* IcpKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IcpKit;
+		};
+		0A6BA27C2C46B5FC0015461A /* IcpKit */ = {
+			isa = XCSwiftPackageProductDependency;
 			productName = IcpKit;
 		};
 		0A897BA92B0CBDAA009F2468 /* IcpKit */ = {
@@ -415,6 +556,10 @@
 			productName = IcpKit;
 		};
 		0A897BAC2B0CBE35009F2468 /* IcpKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IcpKit;
+		};
+		0AC051422C6B94C60083C052 /* IcpKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = IcpKit;
 		};

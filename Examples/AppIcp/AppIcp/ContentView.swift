@@ -23,9 +23,6 @@ struct ContentView: View {
                 Text("Transaction Block:")
                 if let block = viewModel.transactionBlock { Text(String(block)) }
             Divider()
-                Button("Call Balance") {
-                    Task.detached { try await viewModel.callBalance() }
-                }.buttonStyle(.bordered)
                 Button("Query Balance") {
                     Task.detached { try await viewModel.queryBalance() }
                 }.buttonStyle(.bordered)
