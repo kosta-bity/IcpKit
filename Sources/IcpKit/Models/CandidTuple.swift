@@ -18,8 +18,8 @@ public struct CandidTuple2<T0, T1> {
     }
     
     enum CodingKeys: Int, CodingKey {
-        case _0 = 0
-        case _1 = 1
+        case _0
+        case _1
     }
 }
 
@@ -36,9 +36,9 @@ public struct CandidTuple3<T0, T1, T2> {
     }
     
     enum CodingKeys: Int, CodingKey {
-        case _0 = 0
-        case _1 = 1
-        case _2 = 2
+        case _0
+        case _1
+        case _2
     }
 }
 
@@ -57,10 +57,10 @@ public struct CandidTuple4<T0, T1, T2, T3> {
     }
     
     enum CodingKeys: Int, CodingKey {
-        case _0 = 0
-        case _1 = 1
-        case _2 = 2
-        case _3 = 3
+        case _0
+        case _1
+        case _2
+        case _3
     }
 }
 
@@ -81,11 +81,11 @@ public struct CandidTuple5<T0, T1, T2, T3, T4> {
     }
     
     enum CodingKeys: Int, CodingKey {
-        case _0 = 0
-        case _1 = 1
-        case _2 = 2
-        case _3 = 3
-        case _4 = 4
+        case _0
+        case _1
+        case _2
+        case _3
+        case _4
     }
 }
 
@@ -108,12 +108,12 @@ public struct CandidTuple6<T0, T1, T2, T3, T4, T5> {
     }
     
     enum CodingKeys: Int, CodingKey {
-        case _0 = 0
-        case _1 = 1
-        case _2 = 2
-        case _3 = 3
-        case _4 = 4
-        case _5 = 5
+        case _0
+        case _1
+        case _2
+        case _3
+        case _4
+        case _5
     }
 }
 
