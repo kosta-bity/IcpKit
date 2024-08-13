@@ -45,13 +45,6 @@ final class ICPIntegrationTests: XCTestCase {
 //    }
     
     func testQueryBlock() async throws {
-//        do {
-//            let _ = try await ICPLedgerCanister.queryBlock(index: UInt64.max, client)
-//        } catch ICPLedgerCanisterError.blockNotFound {
-//            XCTAssert(true)
-//        } catch {
-//            XCTFail()
-//        }
         let block = try await ICPLedgerCanister.queryBlock(index: 13309698, client)
         XCTAssertEqual(block.timestamp, 1723103842536019792)
         XCTAssertEqual(block.transaction.createdNanos, 1723103842536019792)

@@ -1,4 +1,7 @@
+![IcpKit](IcpKit.png)
+
 # IcpKit
+
 A comprehensive iOS package for writing mobile applications that interact with the Internet Computer Protocol (ICP), written in Swift.
 IcpKit aims at facilitating the interaction between iOS apps and the ICP blockchain.
 
@@ -7,6 +10,8 @@ For more information about ICP Development, we recommend starting from https://i
 [![codecov](https://codecov.io/gh/kosta-bity/IcpKit/graph/badge.svg?token=QL11UD2IXD)](https://codecov.io/gh/kosta-bity/IcpKit)
 
 ## Contributors
+The main developer of this package is Konstantinos Gaitanis.
+
 This Package has been built by [Bity SA](https://bity.com) with the help of the [DFinity Foundation Developer Grant Program](https://dfinity.org/grants).
 
 ## License
@@ -33,7 +38,7 @@ dependencies: [
 The `IcpKit` package defines two libraries `Candid` and `IcpKit`. `Candid` implements the Candid specification and `IcpKit` implements the communication with canisters. To use in your code
 
 ```swift
-import Candid
+import Candid  // not needed when using the CodeGenerator
 import IcpKit
 ```
 
@@ -264,7 +269,7 @@ let phoneBook: [PhoneBookEntry] = try CandidDecoder().decode(phoneBookCandidValu
 | `int<n>` | `Int<n>` | `n = 8, 16, 32, 64`, `Int` corresponds to `int64` |
 | `nat<n>` | `UInt<n>` | `n = 8, 16, 32, 64`, `UInt` corresponds to `nat64` |
 | `blob` | `Data` | |
-| `opt <candid_type>` | `<swift_type>?` | Because of limitations in the Swift compiler, the contained type can only be fully encoded when a value is present. When no value is present, we can only encode up to one level of optionality for simple types. Optional Structs with nil value are encoded as empty. <br />`CandidEncoder().encode(Bool?.none) // .option(.bool) (correct)`<br />`CandidEncoder().encode(Bool??.none) // .option(.option(.empty)) (wrong, only first level of optionality is correct)`<br />`CandidEncoder().encode(MyStruct?.none) // .option(.empty) (wrong, nil Structs can not be determined)` |
+| `opt <candid_type>` | `<swift_type>?` | Because of limitations in the Swift compiler, Optional Structs with nil value are encoded as `opt empty`. <br />`CandidEncoder().encode(MyStruct?.none) // .option(.empty) Type of nil Structs can not be determined) |
 | `vec <candid_type>` | `[<swift_type>]` |  |
 | `record` | `struct <name>: Codable { ... }` | Every record is encoded/decoded to a Swift Codable `struct`. Each record item corresponds to a struct member value with the same name. If the candid item is keyed only by number then the name is `_<number>`.<br />`struct MyStruct: Codable { let a: Bool; let b: String? }` is encoded to `record { a: bool; b: opt text; }` and `record { bool; text; }` decodes to `struct MyStruct2: Codable { let _0: Bool; let _1: String }` |
 | `variant` | `enum <name>: Codable { ... }` | Every variant is encoded/decoded to a Swift Codable `enum`. Each variant case corresponds to an enum case with the same name. Associated values are attached to each case using their names when available.<br />`variant { winter, summer }` encodes to `enum Season: Codable { case winter, summer }`<br />`variant { status: int; error: bool; }` encodes to `enum Status { case status(Int); case error(Bool) }` |
@@ -274,6 +279,74 @@ let phoneBook: [PhoneBookEntry] = try CandidDecoder().decode(phoneBookCandidValu
 | `null` | `nil` |  |
 | `empty` | `nil` |  |
 | `reserved` | `nil` |  |
+
+#### `null`,`reserved` and `empty` vs `nil`
+
+When decoding `null`,`reserved` or `empty` from a `CandidValue` to `Swift`, they are always decoded as `nil` in `Swift`. 
+
+When encoding a `nil` from `Swift` to `CandidValue`, it is always encoded as `opt <sub_type>`.
+
+#### `CodingKeys`
+
+The Candid Binary format does not support textual representation of keys for records, variants, functions etc... Rather, a simple hashing method defined [here](https://github.com/dfinity/candid/blob/master/spec/Candid.md#records) as :
+
+```
+hash(id) = ( Sum_(i=0..k) utf8(id)[i] * 223^(k-i) ) mod 2^32 where k = |utf8(id)|-1
+```
+
+This means that when a CandidValue is deserialised from the binary format, we do not have access to the original key that generated the hash.
+
+The `CandidDecoder` takes care of this automatically for all `Swift structs` by hashing the swift name and then comparing the hashes.
+
+However, due to the way the Swift Decoding System works, we can not do the same for `Swift enums`. This means that for a Swift enum to be decoded from a Deserialised CandidValue (essentially every value received via the `ICPRequestClient`) we need to define the CodingKeys as follows :
+
+- If we are decoding from a variant with named values :
+
+  ```candid
+  type NamedVariant = variant { one: int8; two: int16; three: record { a: int8; b: int16 } };
+  ```
+
+  We use `CandidCodingKey` to perform the hashing :
+
+  ```swift
+  enum NamedVariant {
+      case one(Int8)
+      case two(Int16)
+      case three(a: Int8, b: Int16)
+      
+      enum CodingKeys: String, CandidCodingKey {
+          case one, two, three
+      }
+      enum ThreeCodingKeys: String, CandidCodingKey {
+          case a, b
+      }
+  }
+  ```
+
+- If we are deocding from a variant with unnamed values :
+
+  ```candid
+  type UnnamedVariant = variant { int8; int16; record { int8, int16} };
+  ```
+
+  We use `Int, CodingKey` to assing integer values to the keys :
+
+  ```swift
+  enum UnnamedVariant {
+      case anyName(Int8)
+      case really(Int16)
+      case weCanChoose(here: Int8, too: Int16)
+      
+      enum CodingKeys: Int, CodingKey {
+          case anyName, really, weCanChoose	// as long as we keep the order here
+      }
+      enum WeCanChooseCodingKeys: Int, CodingKey {
+          case here, too										// and here
+      }
+  }
+  ```
+
+See the Swift Documentation regarding Encoding, Decoding and Coding Keys for a deeper understanding.
 
 ## Advanced Topics
 
