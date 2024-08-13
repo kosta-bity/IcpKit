@@ -1,5 +1,5 @@
 //
-//  ICPCodingKey.swift
+//  CandidCodingKey.swift
 //
 //
 //  Created by Konstantinos Gaitanis on 13.08.24.
