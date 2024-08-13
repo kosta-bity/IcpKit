@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  Sha256.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 23.01.24.

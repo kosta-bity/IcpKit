@@ -1,6 +1,5 @@
 //
 //  ICPRequest.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 21.04.23.
 //
@@ -8,13 +7,26 @@
 import Foundation
 import BigInt
 import PotentCBOR
+import Candid
 
 private let canisterBaseUrl: URL = "https://icp-api.io/api/v2/canister"
 
 public struct ICPMethod {
-    let canister: ICPPrincipal
-    let methodName: String
-    let args: CandidValue?
+    public let canister: ICPPrincipal
+    public let methodName: String
+    public let args: [CandidValue]?
+    
+    public init(canister: ICPPrincipal, methodName: String, args: [CandidValue]) {
+        self.canister = canister
+        self.methodName = methodName
+        self.args = args
+    }
+    
+    public init(canister: ICPPrincipal, methodName: String, arg: CandidValue? = nil) {
+        self.canister = canister
+        self.methodName = methodName
+        self.args = arg.map { [$0] }
+    }
 }
 
 public enum ICPRequestType {
@@ -38,6 +50,7 @@ public struct ICPRequest {
             $0.method = .post
             $0.url = Self.buildUrl(request, canister)
             $0.body = .data(rawBody, contentType: "application/cbor")
+            $0.timeout = 120
         }
     }
     

@@ -1,11 +1,11 @@
 //
-//  ICPHttpClient.swift
-//  Runner
+//  ICPRequestClient.swift
 //
 //  Created by Konstantinos Gaitanis on 21.04.23.
 //
 
 import Foundation
+import Candid
 
 public enum ICPRequestRejectCode: UInt8, Decodable {
     case systemFatal = 1

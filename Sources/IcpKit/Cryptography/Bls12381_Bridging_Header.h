@@ -1,6 +1,5 @@
 //
 //  Bls12381_Bridging_Header.h
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 05.05.23.
 //

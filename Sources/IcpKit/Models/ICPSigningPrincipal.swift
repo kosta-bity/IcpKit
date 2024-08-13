@@ -1,6 +1,5 @@
 //
 //  ICPSigningPrincipal.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 15.05.23.
 //

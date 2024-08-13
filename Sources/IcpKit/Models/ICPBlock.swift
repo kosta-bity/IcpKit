@@ -1,6 +1,5 @@
 //
 //  ICPBlock.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 16.05.23.
 //

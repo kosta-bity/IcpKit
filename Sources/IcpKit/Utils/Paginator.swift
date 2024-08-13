@@ -1,6 +1,5 @@
 //
 //  Paginator.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 10.05.23.
 //

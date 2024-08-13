@@ -1,0 +1,3 @@
+import service TestImports2.did;
+
+type B = opt A;

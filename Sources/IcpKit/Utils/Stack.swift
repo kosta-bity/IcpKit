@@ -1,6 +1,5 @@
 //
 //  Stack.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 15.04.23.
 //

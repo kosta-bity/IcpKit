@@ -1,11 +1,11 @@
 //
 //  ICPRequestBuilder.swift
-//  Runner
 //
 //  Created by Konstantinos Gaitanis on 02.05.23.
 //
 
 import Foundation
+import Candid
 
 enum ICPRequestBuilder {
     static let defaultIngressExpirySeconds: TimeInterval = 4 * 60 // 4 minutes
