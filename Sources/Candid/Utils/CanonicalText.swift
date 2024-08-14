@@ -25,7 +25,7 @@ public enum CanonicalText {
     public static func encode(_ data: Data) -> String {
         let checksum = CRC32.checksum(data)
         let dataWithChecksum = checksum + data
-        let base32Encoded = Base32.encode(dataWithChecksum).lowercased().filter { $0 != "=" }
+        let base32Encoded = Base32.encode(dataWithChecksum, options: .letterCase(.lower), .pad(false))
         let grouped = base32Encoded.grouped(by: canonicalTextSeparator, every: 5)
         return grouped
     }
