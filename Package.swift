@@ -21,7 +21,7 @@ let package = Package(
         .package(url: "https://github.com/attaswift/BigInt.git", .upToNextMajor(from: "5.3.0")),
         .package(url: "https://github.com/outfoxx/PotentCodables.git", .upToNextMajor(from: "3.2.0")),
         .package(url: "https://github.com/immobiliare/RealHTTP.git", .upToNextMajor(from: "1.8.3")),
-        .package(url: "https://github.com/mattrubin/Bases", branch: "develop"),
+        .package(url: "https://github.com/swift-libp2p/swift-bases.git", .upToNextMajor(from: "0.0.1")),
         .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", exact: "0.10.0"),
         .package(url: "https://github.com/horizontalsystems/HsCryptoKit.Swift.git", .upToNextMajor(from: "1.2.1")),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
@@ -48,7 +48,7 @@ let package = Package(
             name: "Candid",
             dependencies: [
                 "PotentCodables",
-                .product(name: "Base32", package: "Bases"),
+                .product(name: "Base32", package: "swift-bases"),
             ]
         ),
         .executableTarget(
