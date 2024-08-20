@@ -139,7 +139,7 @@ enum ICRC7 {
 	///   icrc7_tx_window : () -> (opt nat) query;
 	///   icrc7_permitted_drift : () -> (opt nat) query;
 	///   icrc7_token_metadata : (token_ids : vec nat)
-	///       -> (vec opt vec record { text; Value }) query;
+	///       -> (vec record { nat; opt record { text; Value } }) query;
 	///   icrc7_owner_of : (token_ids : vec nat)
 	///       -> (vec opt Account) query;
 	///   icrc7_balance_of : (vec Account) -> (vec nat) query;
@@ -256,9 +256,9 @@ enum ICRC7 {
 		}
 	
 		/// icrc7_token_metadata : (token_ids : vec nat)
-		///       -> (vec opt vec record { text; Value }) query;
-		func icrc7_token_metadata(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[CandidTuple2<String, Value>]?] {
-			let caller = ICPQuery<[BigUInt], [[CandidTuple2<String, Value>]?]>(canister, "icrc7_token_metadata")
+		///       -> (vec record { nat; opt record { text; Value } }) query;
+		func icrc7_token_metadata(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<BigUInt, CandidTuple2<String, Value>?>] {
+			let caller = ICPQuery<[BigUInt], [CandidTuple2<BigUInt, CandidTuple2<String, Value>?>]>(canister, "icrc7_token_metadata")
 			let response = try await caller.callMethod(token_ids, client, sender: sender)
 			return response
 		}
