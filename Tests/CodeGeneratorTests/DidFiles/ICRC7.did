@@ -55,7 +55,7 @@ service : {
   icrc7_tx_window : () -> (opt nat) query;
   icrc7_permitted_drift : () -> (opt nat) query;
   icrc7_token_metadata : (token_ids : vec nat)
-      -> (vec opt vec record { text; Value }) query;
+      -> (vec record { nat; opt record { text; Value } }) query;
   icrc7_owner_of : (token_ids : vec nat)
       -> (vec opt Account) query;
   icrc7_balance_of : (vec Account) -> (vec nat) query;

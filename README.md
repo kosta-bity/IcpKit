@@ -310,16 +310,16 @@ However, due to the way the Swift Decoding System works, we can not do the same 
 
   ```swift
   enum NamedVariant {
-      case one(Int8)
-      case two(Int16)
-      case three(a: Int8, b: Int16)
+    case one(Int8)
+    case two(Int16)
+    case three(a: Int8, b: Int16)
       
-      enum CodingKeys: String, CandidCodingKey {
-          case one, two, three
-      }
-      enum ThreeCodingKeys: String, CandidCodingKey {
-          case a, b
-      }
+    enum CodingKeys: String, CandidCodingKey {
+      case one, two, three
+    }
+    enum ThreeCodingKeys: String, CandidCodingKey {
+      case a, b
+    }
   }
   ```
 
@@ -333,16 +333,16 @@ However, due to the way the Swift Decoding System works, we can not do the same 
 
   ```swift
   enum UnnamedVariant {
-      case anyName(Int8)
-      case really(Int16)
-      case weCanChoose(here: Int8, too: Int16)
+    case anyName(Int8)
+    case really(Int16)
+    case weCanChoose(here: Int8, too: Int16)
       
-      enum CodingKeys: Int, CodingKey {
-          case anyName, really, weCanChoose	// as long as we keep the order here
-      }
-      enum WeCanChooseCodingKeys: Int, CodingKey {
-          case here, too										// and here
-      }
+    enum CodingKeys: Int, CodingKey {
+      case anyName, really, weCanChoose	// as long as we keep the order here
+    }
+    enum WeCanChooseCodingKeys: Int, CodingKey {
+      case here, too										// and here
+    }
   }
   ```
 
@@ -356,11 +356,11 @@ There are several ways to perform a request. Depending if it is a simple query o
 #### Define the method you wish to call :
 ```swift
 let method = ICPMethod(
-    canister: ICPSystemCanisters.ledger,
-    methodName: "account_balance",
-    arg: .record([
-        "account": .blob(account.accountId)
-    ])
+  canister: ICPSystemCanisters.ledger,
+  methodName: "account_balance",
+  arg: .record([
+    "account": .blob(account.accountId)
+  ])
 )
 ```
 #### Make the a simple query request:
@@ -435,6 +435,19 @@ class SimpleSigningPrincipal: ICPSigningPrincipal {
   func sign(_ message: Data, domain: ICPDomainSeparator) async throws -> Data {
     return try ICPCryptography.ellipticSign(message, domain: domain, with: privateKey)
   }
+  
+  static func fromMnemonic(_ words: [String]) throws -> SimplePrincipal {
+    let seed = HdWalletKit.Mnemonic.seed(mnemonic: words)!
+    let xPrivKey = HDExtendedKeyVersion.xprv.rawValue
+    let privateKey = try HDPrivateKey(seed: seed, xPrivKey: xPrivKey)
+      .derived(at: 44, hardened: true)
+      .derived(at: 223, hardened: true)
+      .derived(at: 0, hardened: true)
+      .derived(at: 0, hardened: false)
+      .derived(at: 0, hardened: false)
+    let publicKey = privateKey.publicKey(compressed: false)
+    return try SimplePrincipal(privateKey: privateKey.raw, uncompressedPublicKey: publicKey.raw)
+  }
 }
 ```
 
@@ -443,4 +456,4 @@ class SimpleSigningPrincipal: ICPSigningPrincipal {
 - Serialisation of recursive candid values leads to infinite loop.
 - Encoding of `CandidFunctionProtocol` is not supported as there is no easy way to infer the `CandidTypes` used in the arguments and results of the function. This means that the automatic code generation will fail when calling a canister method that expects another function as input.
 - Encoding of `CandidServiceProtocol` is not supported because functions can not be encoded. 
-- Encoding of chained optionals loses the type after one optionality level.
+- Encoding of optional `Structs` can not infer the members of the struct. These are encoded as `opt empty` which should be accepted by all canisters according to Candid specifications.

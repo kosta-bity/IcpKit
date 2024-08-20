@@ -166,6 +166,24 @@ let cValue: UnnamedType0 = .c(bool: true, int8: 7)
             XCTAssertEqual(generated, expected)
         }
     }
+    
+    func testIcrc7() async throws {
+        // GoldNFT
+        let service = try ICRC7.Service("io7gn-vyaaa-aaaak-qcbiq-cai")
+        let collectionMetadata = try await service.icrc7_collection_metadata()
+        let tokens = try await service.icrc7_tokens(prev: nil, take: nil)
+        for metadata in collectionMetadata {
+            print(metadata.tuple)
+        }
+        let token = tokens.first!
+        print(token)
+        let tokenMetadata = try await service.icrc7_token_metadata(token_ids: [token]).first!._1!
+        guard case .Text(let text) = tokenMetadata._1 else {
+            XCTFail()
+            return
+        }
+        print(text)
+    }
 }
 
 private class BundleDidProvider: CandidInterfaceDefinitionProvider {
