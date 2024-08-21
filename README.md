@@ -1,16 +1,16 @@
-![IcpKit](IcpKit.png)
 
-# IcpKit
+![IcpKit](IcpKit.png)
+[![Build Status][build status badge]][build status] [![Code Coverage][codecov badge]][codecov]
+[![Platforms][platforms badge]][swift package] [![][swift versions]][swift package] 
+[![License: MIT][license]][license badge] 
 
 A comprehensive iOS package for writing mobile applications that interact with the Internet Computer Protocol (ICP), written in Swift.
 IcpKit aims at facilitating the interaction between iOS apps and the ICP blockchain.
 
 For more information about ICP Development, we recommend starting from https://internetcomputer.org/docs/current/references/
 
-[![codecov](https://codecov.io/gh/kosta-bity/IcpKit/graph/badge.svg?token=QL11UD2IXD)](https://codecov.io/gh/kosta-bity/IcpKit)
-
 ## Contributors
-The main developer of this package is Konstantinos Gaitanis.
+The main developer of this package is [Konstantinos Gaitanis](https://github.com/kgaitanis).
 
 This Package has been built by [Bity SA](https://bity.com) with the help of the [DFinity Foundation Developer Grant Program](https://dfinity.org/grants).
 
@@ -20,9 +20,6 @@ This Package has been built by [Bity SA](https://bity.com) with the help of the 
 The BLS12381 Rust Library is licensed by Levi Feldman (see [LICENSE](Sources/bls12381/LICENSE)).
 
 ## Installation
-
-min iOS version : v16
-min macOs version: v13 
 
 ### Swift Package Manager
 Adding IcpKit as a dependency to your Xcode project is as easy as adding it to the `dependencies` value of your `Package.swift`.
@@ -457,3 +454,14 @@ class SimpleSigningPrincipal: ICPSigningPrincipal {
 - Encoding of `CandidFunctionProtocol` is not supported as there is no easy way to infer the `CandidTypes` used in the arguments and results of the function. This means that the automatic code generation will fail when calling a canister method that expects another function as input.
 - Encoding of `CandidServiceProtocol` is not supported because functions can not be encoded. 
 - Encoding of optional `Structs` can not infer the members of the struct. These are encoded as `opt empty` which should be accepted by all canisters according to Candid specifications.
+
+
+[build status]: https://github.com/kosta-bity/IcpKit/actions
+[build status badge]: https://github.com/kosta-bity/IcpKit/actions/workflows/IcpKit-Tests.yml/badge.svg
+[swift package]: https://swiftpackageindex.com/kosta-bity/IcpKit
+[platforms badge]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fkosta-bity%2FIcpKit%2Fbadge%3Ftype%3Dplatforms
+[codecov badge]: https://codecov.io/gh/kosta-bity/IcpKit/graph/badge.svg?token=QL11UD2IXD
+[codecov]: https://codecov.io/gh/kosta-bity/IcpKit
+[license]: https://img.shields.io/badge/License-MIT-yellow.svg
+[license badge]: https://opensource.org/licenses/MIT
+[swift versions]: https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fkosta-bity%2FIcpKit%2Fbadge%3Ftype%3Dswift-versions
