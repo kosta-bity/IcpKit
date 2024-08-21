@@ -7,7 +7,8 @@ let package = Package(
     name: "IcpKit",
     platforms: [
         .iOS(.v16),
-        .macOS(.v13)
+        .macOS(.v11),
+        .macCatalyst(.v16),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
@@ -22,7 +23,6 @@ let package = Package(
         .package(url: "https://github.com/outfoxx/PotentCodables.git", .upToNextMajor(from: "3.2.0")),
         .package(url: "https://github.com/immobiliare/RealHTTP.git", .upToNextMajor(from: "1.8.3")),
         .package(url: "https://github.com/swift-libp2p/swift-bases.git", .upToNextMajor(from: "0.0.1")),
-        .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", exact: "0.10.0"),
         .package(url: "https://github.com/horizontalsystems/HsCryptoKit.Swift.git", .upToNextMajor(from: "1.2.1")),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
     ], 
@@ -35,7 +35,6 @@ let package = Package(
                 "Candid",
                 "BigInt",
                 "RealHTTP",
-                .product(name: "secp256k1", package: "secp256k1.swift"),
                 .product(name: "HsCryptoKit", package: "HsCryptoKit.Swift"),
 //                .target(name: "bls12381"),
             ]
