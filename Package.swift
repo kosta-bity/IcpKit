@@ -7,7 +7,7 @@ let package = Package(
     name: "IcpKit",
     platforms: [
         .iOS(.v16),
-        .macOS(.v11),
+        .macOS(.v13),
         .macCatalyst(.v16),
     ],
     products: [
