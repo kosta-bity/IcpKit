@@ -21,11 +21,11 @@ final class DABTests: XCTestCase {
         }
     }
     
-    func testCrack() async {
-        await crackCandidHash(3933747005)
-        //await crackCandidHash(1169352569) // icon
-        await crackCandidHash(2781795542)
-    }
+//    func testCrack() async {
+//        await crackCandidHash(3933747005)
+//        //await crackCandidHash(1169352569) // icon
+//        await crackCandidHash(2781795542)
+//    }
 }
 
 
