@@ -14,6 +14,7 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(name: "IcpKit", targets: ["IcpKit"]),
         .library(name: "Candid", targets: ["Candid"]),
+        .library(name: "DAB", targets: ["DAB"]),
         .executable(name: "CodeGenerator", targets: ["CodeGenerator"]),
         //.library(name: "Bls12381", targets: ["bls12381"])
     ],
@@ -48,6 +49,12 @@ let package = Package(
             dependencies: [
                 "PotentCodables",
                 .product(name: "Base32", package: "swift-bases"),
+            ]
+        ),
+        .target(
+            name: "DAB",
+            dependencies: [
+                "IcpKit",
             ]
         ),
         .executableTarget(
@@ -86,6 +93,10 @@ let package = Package(
                 .process("Generated/TestImports.did.generated_swift"),
                 .process("Generated/EVMProviders.did.generated_swift"),
             ]
+        ),
+        .testTarget(
+            name: "DABTests",
+            dependencies: ["Candid", "IcpKit", "DAB"]
         ),
     ],
     swiftLanguageVersions: [.v5]
