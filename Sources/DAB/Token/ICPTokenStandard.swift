@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ICPTokenStandard.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 26.08.24.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ICPTokenStandard {
+public enum ICPTokenStandard: CaseIterable {
     case dip20
     case xtc
     case wIcp

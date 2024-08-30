@@ -218,7 +218,7 @@ private extension CandidValueParser {
             _ = try stream.takeNext()
             try stream.expectNext(.colon)
             let principal = try stream.expectNextTextOrWord()
-            return try .service([], principal)
+            return .service([], try CandidPrincipal(principal))
             
         case "func":
             _ = try stream.takeNext()
@@ -231,7 +231,7 @@ private extension CandidValueParser {
             } else {
                 throw CandidParserError.unexpectedToken(method)
             }
-            return try .function([], [], principal, method)
+            return .function([], [], try CandidPrincipal(principal), method)
             
         case "principal":
             _ = try stream.takeNext()

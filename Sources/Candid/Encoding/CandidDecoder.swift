@@ -77,9 +77,9 @@ private class CandidValueDecoder: Decoder {
         } else if T.self is CandidValue.Type {
             return input as! T
             
-        } else if T.self is any CandidPrincipalProtocol.Type {
+        } else if T.self is CandidPrincipal.Type {
             let principal = try input.principal(codingPath)
-            let principalProtocol = (T.self as! any CandidPrincipalProtocol.Type).init(principal)
+            let principalProtocol = (T.self as! CandidPrincipal.Type).init(principal.bytes)
             return principalProtocol as! T
             
         } else if T.self is CandidFunctionProtocol.Type {

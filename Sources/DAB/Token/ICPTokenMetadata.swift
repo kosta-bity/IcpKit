@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ICPTokenMetadata.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 26.08.24.

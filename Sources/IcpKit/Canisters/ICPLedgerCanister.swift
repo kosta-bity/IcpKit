@@ -25,7 +25,7 @@ public enum ICPLedgerCanisterTransferError: Error {
 }
 
 public enum ICPLedgerCanister {
-    private static func service(_ client: ICPRequestClient) -> LedgerCanister.Service { LedgerCanister.Service(canister: ICPSystemCanisters.ledger, client: client) }
+    private static func service(_ client: ICPRequestClient) -> LedgerCanister.Service { LedgerCanister.Service(ICPSystemCanisters.ledger, client: client) }
     /// The fixed fee to be applied on all ICP transactions
     public static let defaultFee: UInt64 = 10_000 // 0.0001 ICP
     

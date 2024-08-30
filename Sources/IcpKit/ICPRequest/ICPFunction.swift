@@ -9,11 +9,9 @@ import Foundation
 import Candid
 
 public extension CandidFunctionProtocol {
-    init(_ canister: ICPPrincipal, _ method: String) {
+    init(_ canister: CandidPrincipal, _ method: String) {
         self.init(CandidPrincipal(canister.bytes), method)
     }
-    
-    var icpPrincipal: ICPPrincipal { ICPPrincipal(canister) }
 }
 
 public class ICPFunction<Argument, Result, Query: StaticBool>: CandidFunctionProtocol {
@@ -44,7 +42,7 @@ public typealias ICPCall<Argument, Result> = ICPFunction<Argument, Result, Stati
 public extension ICPFunction where Argument: Encodable, Result: Decodable {
     func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
         let method = ICPMethod(
-            canister: icpPrincipal,
+            canister: canister,
             methodName: methodName,
             args: try encodeArguments(argument)
         )
@@ -57,7 +55,7 @@ public extension ICPFunction where Argument: Encodable, Result: Decodable {
 public extension ICPFunctionNoResult where Argument: Encodable {
     func callMethod(_ argument: Argument, _ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
         let method = ICPMethod(
-            canister: icpPrincipal,
+            canister: canister,
             methodName: methodName,
             args: try encodeArguments(argument)
         )
@@ -67,7 +65,7 @@ public extension ICPFunctionNoResult where Argument: Encodable {
 
 public extension ICPFunctionNoArgs where Result: Decodable {
     func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-        let method = ICPMethod(canister: icpPrincipal, methodName: methodName)
+        let method = ICPMethod(canister: canister, methodName: methodName)
         let response = try await callOrQuery(method, client, sender)
         let decoded: Result = try CandidDecoder().decode(response)
         return decoded
@@ -76,7 +74,7 @@ public extension ICPFunctionNoArgs where Result: Decodable {
 
 public extension ICPFunctionNoArgsNoResult {
     func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws {
-        let method = ICPMethod(canister: icpPrincipal, methodName: methodName)
+        let method = ICPMethod(canister: canister, methodName: methodName)
         let _ = try await callOrQuery(method, client, sender)
     }
 }
@@ -84,9 +82,9 @@ public extension ICPFunctionNoArgsNoResult {
 fileprivate extension CandidFunctionProtocol {
     func callOrQuery(_ method: ICPMethod, _ client: ICPRequestClient, _ sender: ICPSigningPrincipal?) async throws -> CandidValue {
         if query {
-            return try await client.query(method, effectiveCanister: icpPrincipal, sender: sender)
+            return try await client.query(method, effectiveCanister: canister, sender: sender)
         } else {
-            return try await client.callAndPoll(method, effectiveCanister: icpPrincipal, sender: sender)
+            return try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
         }
     }
     

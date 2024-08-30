@@ -1,0 +1,1806 @@
+type Account = variant {
+  account_id : text;
+  "principal" : principal;
+  extensible : CandyShared;
+  account : record { owner : principal; sub_account : opt vec nat8 };
+};
+type Account__1 = variant {
+  account_id : text;
+  "principal" : principal;
+  extensible : CandyShared;
+  account : record { owner : principal; sub_account : opt vec nat8 };
+};
+type Account__2 = variant {
+  account_id : text;
+  "principal" : principal;
+  extensible : CandyShared;
+  account : record { owner : principal; sub_account : opt vec nat8 };
+};
+type Account__3 = record { owner : principal; subaccount : opt Subaccount };
+type AllocationRecordStable = record {
+  allocated_space : nat;
+  token_id : text;
+  available_space : nat;
+  canister : principal;
+  chunks : vec nat;
+  library_id : text;
+};
+type ApprovalArgs = record {
+  memo : opt vec nat8;
+  from_subaccount : opt vec nat8;
+  created_at_time : opt nat64;
+  expires_at : opt nat64;
+  spender : Account__3;
+};
+type ApprovalError = variant {
+  GenericError : record { message : text; error_code : nat };
+  CreatexInFuture : record { ledger_time : nat64 };
+  NonExistingTokenId;
+  Unauthorized;
+  TooOld;
+};
+type ApprovalResult = vec record {
+  token_id : nat;
+  approval_result : variant { Ok : nat; Err : ApprovalError };
+};
+type ArchivedTransactionResponse = record {
+  args : vec TransactionRange__1;
+  callback : GetTransactionsFn;
+};
+type AskConfigShared = opt AskFeatureArray;
+type AskFeature = variant {
+  kyc : principal;
+  start_price : nat;
+  token : TokenSpec;
+  fee_schema : text;
+  notify : vec principal;
+  wait_for_quiet : WaitForQuietType;
+  reserve : nat;
+  start_date : int;
+  min_increase : MinIncreaseType;
+  allow_list : vec principal;
+  buy_now : nat;
+  fee_accounts : FeeAccountsParams;
+  nifty_settlement : NiftySettlementType;
+  atomic;
+  dutch : DutchParams;
+  ending : EndingType;
+};
+type AskFeatureArray = vec AskFeature;
+type AskSubscribeRequest = variant {
+  subscribe : record {
+    stake : record { principal; nat };
+    filter : opt record {
+      tokens : opt vec TokenSpecFilter;
+      token_ids : opt vec TokenIDFilter;
+    };
+  };
+  unsubscribe : record { principal; nat };
+};
+type AskSubscribeResponse = bool;
+type AuctionConfig = record {
+  start_price : nat;
+  token : TokenSpec;
+  reserve : opt nat;
+  start_date : int;
+  min_increase : MinIncreaseType;
+  allow_list : opt vec principal;
+  buy_now : opt nat;
+  ending : variant {
+    date : int;
+    wait_for_quiet : record {
+      max : nat;
+      date : int;
+      fade : float64;
+      extension : nat64;
+    };
+  };
+};
+type AuctionStateShared = record {
+  status : variant { closed; open; not_started };
+  participants : vec record { principal; int };
+  token : TokenSpec__1;
+  current_bid_amount : nat;
+  winner : opt Account;
+  end_date : int;
+  current_config : BidConfigShared;
+  start_date : int;
+  wait_for_quiet_count : opt nat;
+  current_escrow : opt EscrowReceipt;
+  allow_list : opt vec record { principal; bool };
+  min_next_bid : nat;
+  config : PricingConfigShared__1;
+};
+type BalanceResponse = record {
+  nfts : vec text;
+  offers : vec EscrowRecord__1;
+  sales : vec EscrowRecord__1;
+  stake : vec StakeRecord;
+  multi_canister : opt vec principal;
+  escrow : vec EscrowRecord__1;
+};
+type BalanceResult = variant { ok : BalanceResponse; err : OrigynError };
+type BearerResult = variant { ok : Account; err : OrigynError };
+type BidConfigShared = opt vec BidFeature;
+type BidFeature = variant {
+  fee_schema : text;
+  broker : Account__1;
+  fee_accounts : FeeAccountsParams;
+};
+type BidRequest = record {
+  config : BidConfigShared;
+  escrow_record : EscrowRecord;
+};
+type BidResponse = record {
+  token_id : text;
+  txn_type : variant {
+    escrow_deposit : record {
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    fee_deposit : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    canister_network_updated : record {
+      network : principal;
+      extensible : CandyShared;
+    };
+    escrow_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    canister_managers_updated : record {
+      managers : vec principal;
+      extensible : CandyShared;
+    };
+    auction_bid : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : text;
+    };
+    burn : record { from : opt Account__1; extensible : CandyShared };
+    data : record {
+      hash : opt vec nat8;
+      extensible : CandyShared;
+      data_dapp : opt text;
+      data_path : opt text;
+    };
+    sale_ended : record {
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : opt text;
+    };
+    mint : record {
+      to : Account__1;
+      from : Account__1;
+      sale : opt record { token : TokenSpec; amount : nat };
+      extensible : CandyShared;
+    };
+    royalty_paid : record {
+      tag : text;
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      receiver : Account__1;
+      sale_id : opt text;
+    };
+    extensible : CandyShared;
+    fee_deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    owner_transfer : record {
+      to : Account__1;
+      from : Account__1;
+      extensible : CandyShared;
+    };
+    sale_opened : record {
+      pricing : PricingConfigShared;
+      extensible : CandyShared;
+      sale_id : text;
+    };
+    canister_owner_updated : record {
+      owner : principal;
+      extensible : CandyShared;
+    };
+    sale_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+  };
+  timestamp : int;
+  index : nat;
+};
+type BlockType = record { url : text; block_type : text };
+type Caller = opt principal;
+type CandyShared = variant {
+  Int : int;
+  Map : vec record { CandyShared; CandyShared };
+  Nat : nat;
+  Set : vec CandyShared;
+  Nat16 : nat16;
+  Nat32 : nat32;
+  Nat64 : nat64;
+  Blob : vec nat8;
+  Bool : bool;
+  Int8 : int8;
+  Ints : vec int;
+  Nat8 : nat8;
+  Nats : vec nat;
+  Text : text;
+  Bytes : vec nat8;
+  Int16 : int16;
+  Int32 : int32;
+  Int64 : int64;
+  Option : opt CandyShared;
+  Floats : vec float64;
+  Float : float64;
+  Principal : principal;
+  Array : vec CandyShared;
+  Class : vec PropertyShared;
+};
+type CanisterCyclesAggregatedData = vec nat64;
+type CanisterHeapMemoryAggregatedData = vec nat64;
+type CanisterLogFeature = variant {
+  filterMessageByContains;
+  filterMessageByRegex;
+};
+type CanisterLogMessages = record {
+  data : vec LogMessagesData;
+  lastAnalyzedMessageTimeNanos : opt Nanos;
+};
+type CanisterLogMessagesInfo = record {
+  features : vec opt CanisterLogFeature;
+  lastTimeNanos : opt Nanos;
+  count : nat32;
+  firstTimeNanos : opt Nanos;
+};
+type CanisterLogRequest = variant {
+  getMessagesInfo;
+  getMessages : GetLogMessagesParameters;
+  getLatestMessages : GetLatestLogMessagesParameters;
+};
+type CanisterLogResponse = variant {
+  messagesInfo : CanisterLogMessagesInfo;
+  messages : CanisterLogMessages;
+};
+type CanisterMemoryAggregatedData = vec nat64;
+type CanisterMetrics = record { data : CanisterMetricsData };
+type CanisterMetricsData = variant {
+  hourly : vec HourlyMetricsData;
+  daily : vec DailyMetricsData;
+};
+type ChunkContent = variant {
+  remote : record { args : ChunkRequest; canister : principal };
+  chunk : record {
+    total_chunks : nat;
+    content : vec nat8;
+    storage_allocation : AllocationRecordStable;
+    current_chunk : opt nat;
+  };
+};
+type ChunkRequest = record {
+  token_id : text;
+  chunk : opt nat;
+  library_id : text;
+};
+type ChunkResult = variant { ok : ChunkContent; err : OrigynError };
+type CollectionInfo = record {
+  multi_canister_count : opt nat;
+  managers : opt vec principal;
+  owner : opt principal;
+  metadata : opt CandyShared;
+  logo : opt text;
+  name : opt text;
+  network : opt principal;
+  created_at : opt nat64;
+  fields : opt vec record { text; opt nat; opt nat };
+  upgraded_at : opt nat64;
+  token_ids_count : opt nat;
+  available_space : opt nat;
+  multi_canister : opt vec principal;
+  token_ids : opt vec text;
+  transaction_count : opt nat;
+  unique_holders : opt nat;
+  total_supply : opt nat;
+  symbol : opt text;
+  allocated_storage : opt nat;
+};
+type CollectionMetadata = vec record { text; Value };
+type CollectionResult = variant { ok : CollectionInfo; err : OrigynError };
+type DIP721BoolResult = variant { Ok : bool; Err : NftError };
+type DIP721Metadata = record {
+  logo : opt text;
+  name : opt text;
+  created_at : nat64;
+  upgraded_at : nat64;
+  custodians : vec principal;
+  symbol : opt text;
+};
+type DIP721NatResult = variant { Ok : nat; Err : NftError };
+type DIP721Stats = record {
+  cycles : nat;
+  total_transactions : nat;
+  total_unique_holders : nat;
+  total_supply : nat;
+};
+type DIP721SupportedInterface = variant {
+  Burn;
+  Mint;
+  Approval;
+  TransactionHistory;
+};
+type DIP721TokenMetadata = variant { Ok : TokenMetadata; Err : NftError };
+type DIP721TokensListMetadata = variant { Ok : vec nat; Err : NftError };
+type DIP721TokensMetadata = variant { Ok : vec TokenMetadata; Err : NftError };
+type DailyMetricsData = record {
+  updateCalls : nat64;
+  canisterHeapMemorySize : NumericEntity;
+  canisterCycles : NumericEntity;
+  canisterMemorySize : NumericEntity;
+  timeMillis : int;
+};
+type Data = variant {
+  Int : int;
+  Map : vec record { CandyShared; CandyShared };
+  Nat : nat;
+  Set : vec CandyShared;
+  Nat16 : nat16;
+  Nat32 : nat32;
+  Nat64 : nat64;
+  Blob : vec nat8;
+  Bool : bool;
+  Int8 : int8;
+  Ints : vec int;
+  Nat8 : nat8;
+  Nats : vec nat;
+  Text : text;
+  Bytes : vec nat8;
+  Int16 : int16;
+  Int32 : int32;
+  Int64 : int64;
+  Option : opt CandyShared;
+  Floats : vec float64;
+  Float : float64;
+  Principal : principal;
+  Array : vec CandyShared;
+  Class : vec PropertyShared;
+};
+type DataCertificate = record { certificate : vec nat8; hash_tree : vec nat8 };
+type DepositDetail = record {
+  token : TokenSpec__1;
+  trx_id : opt TransactionID__1;
+  seller : Account;
+  buyer : Account;
+  amount : nat;
+  sale_id : opt text;
+};
+type DepositWithdrawDescription = record {
+  token : TokenSpec__1;
+  withdraw_to : Account;
+  buyer : Account;
+  amount : nat;
+};
+type DistributeSaleRequest = record { seller : opt Account };
+type DistributeSaleResponse = vec Result;
+type DutchParams = record {
+  time_unit : variant { day : nat; hour : nat; minute : nat };
+  decay_type : variant { flat : nat; percent : float64 };
+};
+type EXTAccountIdentifier = text;
+type EXTBalance = nat;
+type EXTBalanceRequest = record { token : EXTTokenIdentifier; user : EXTUser };
+type EXTBalanceResult = variant { ok : EXTBalance; err : EXTCommonError };
+type EXTBearerResult = variant {
+  ok : EXTAccountIdentifier;
+  err : EXTCommonError;
+};
+type EXTCommonError = variant {
+  InvalidToken : EXTTokenIdentifier;
+  Other : text;
+};
+type EXTMemo = vec nat8;
+type EXTMetadata = variant {
+  fungible : record {
+    decimals : nat8;
+    metadata : opt vec nat8;
+    name : text;
+    symbol : text;
+  };
+  nonfungible : record { metadata : opt vec nat8 };
+};
+type EXTMetadataResult = variant { ok : EXTMetadata; err : EXTCommonError };
+type EXTSubAccount = vec nat8;
+type EXTTokenIdentifier = text;
+type EXTTokensResponse = record {
+  nat32;
+  opt record { locked : opt int; seller : principal; price : nat64 };
+  opt vec nat8;
+};
+type EXTTokensResult = variant {
+  ok : vec EXTTokensResponse;
+  err : EXTCommonError;
+};
+type EXTTransferRequest = record {
+  to : EXTUser;
+  token : EXTTokenIdentifier;
+  notify : bool;
+  from : EXTUser;
+  memo : EXTMemo;
+  subaccount : opt EXTSubAccount;
+  amount : EXTBalance;
+};
+type EXTTransferResponse = variant {
+  ok : EXTBalance;
+  err : variant {
+    CannotNotify : EXTAccountIdentifier;
+    InsufficientBalance;
+    InvalidToken : EXTTokenIdentifier;
+    Rejected;
+    Unauthorized : EXTAccountIdentifier;
+    Other : text;
+  };
+};
+type EXTUser = variant { "principal" : principal; address : text };
+type EndSaleResponse = record {
+  token_id : text;
+  txn_type : variant {
+    escrow_deposit : record {
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    fee_deposit : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    canister_network_updated : record {
+      network : principal;
+      extensible : CandyShared;
+    };
+    escrow_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    canister_managers_updated : record {
+      managers : vec principal;
+      extensible : CandyShared;
+    };
+    auction_bid : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : text;
+    };
+    burn : record { from : opt Account__1; extensible : CandyShared };
+    data : record {
+      hash : opt vec nat8;
+      extensible : CandyShared;
+      data_dapp : opt text;
+      data_path : opt text;
+    };
+    sale_ended : record {
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : opt text;
+    };
+    mint : record {
+      to : Account__1;
+      from : Account__1;
+      sale : opt record { token : TokenSpec; amount : nat };
+      extensible : CandyShared;
+    };
+    royalty_paid : record {
+      tag : text;
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      receiver : Account__1;
+      sale_id : opt text;
+    };
+    extensible : CandyShared;
+    fee_deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    owner_transfer : record {
+      to : Account__1;
+      from : Account__1;
+      extensible : CandyShared;
+    };
+    sale_opened : record {
+      pricing : PricingConfigShared;
+      extensible : CandyShared;
+      sale_id : text;
+    };
+    canister_owner_updated : record {
+      owner : principal;
+      extensible : CandyShared;
+    };
+    sale_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+  };
+  timestamp : int;
+  index : nat;
+};
+type EndingType = variant { date : int; timeout : nat };
+type Errors = variant {
+  nyi;
+  storage_configuration_error;
+  escrow_withdraw_payment_failed;
+  token_not_found;
+  owner_not_found;
+  content_not_found;
+  auction_ended;
+  out_of_range;
+  sale_id_does_not_match;
+  sale_not_found;
+  kyc_fail;
+  item_not_owned;
+  property_not_found;
+  validate_trx_wrong_host;
+  withdraw_too_large;
+  content_not_deserializable;
+  bid_too_low;
+  validate_deposit_wrong_amount;
+  existing_sale_found;
+  noop;
+  asset_mismatch;
+  escrow_cannot_be_removed;
+  deposit_burned;
+  cannot_restage_minted_token;
+  cannot_find_status_in_metadata;
+  receipt_data_mismatch;
+  validate_deposit_failed;
+  unreachable;
+  unauthorized_access;
+  item_already_minted;
+  no_escrow_found;
+  escrow_owner_not_the_owner;
+  improper_interface;
+  app_id_not_found;
+  token_non_transferable;
+  kyc_error;
+  sale_not_over;
+  escrow_not_large_enough;
+  update_class_error;
+  malformed_metadata;
+  token_id_mismatch;
+  id_not_found_in_metadata;
+  auction_not_started;
+  low_fee_balance;
+  library_not_found;
+  attempt_to_stage_system_data;
+  no_fee_accounts_provided;
+  validate_deposit_wrong_buyer;
+  not_enough_storage;
+  sales_withdraw_payment_failed;
+};
+type EscrowReceipt = record {
+  token : TokenSpec;
+  token_id : text;
+  seller : Account__1;
+  buyer : Account__1;
+  amount : nat;
+};
+type EscrowReceipt__1 = record {
+  token : TokenSpec;
+  token_id : text;
+  seller : Account__1;
+  buyer : Account__1;
+  amount : nat;
+};
+type EscrowRecord = record {
+  token : TokenSpec__2;
+  token_id : text;
+  seller : Account__2;
+  lock_to_date : opt int;
+  buyer : Account__2;
+  amount : nat;
+  sale_id : opt text;
+  account_hash : opt vec nat8;
+};
+type EscrowRecord__1 = record {
+  token : TokenSpec__1;
+  token_id : text;
+  seller : Account;
+  lock_to_date : opt int;
+  buyer : Account;
+  amount : nat;
+  sale_id : opt text;
+  account_hash : opt vec nat8;
+};
+type EscrowRequest = record {
+  token_id : text;
+  deposit : DepositDetail;
+  lock_to_date : opt int;
+};
+type EscrowResponse = record {
+  balance : nat;
+  receipt : EscrowReceipt;
+  transaction : TransactionRecord;
+};
+type FeeAccountsParams = vec FeeName;
+type FeeDepositRequest = record { token : TokenSpec__1; account : Account };
+type FeeDepositResponse = record {
+  balance : nat;
+  transaction : TransactionRecord;
+};
+type FeeDepositWithdrawDescription = record {
+  status : variant { locked : record { sale_id : text }; unlocked };
+  token : TokenSpec__1;
+  withdraw_to : Account;
+  account : Account;
+  amount : nat;
+};
+type FeeName = text;
+type GenericValue = variant {
+  Nat64Content : nat64;
+  Nat32Content : nat32;
+  BoolContent : bool;
+  Nat8Content : nat8;
+  Int64Content : int64;
+  IntContent : int;
+  NatContent : nat;
+  Nat16Content : nat16;
+  Int32Content : int32;
+  Int8Content : int8;
+  FloatContent : float64;
+  Int16Content : int16;
+  BlobContent : vec nat8;
+  NestedContent : Vec;
+  Principal : principal;
+  TextContent : text;
+};
+type GetArchivesArgs = record { from : opt principal };
+type GetArchivesResult = vec GetArchivesResultItem;
+type GetArchivesResultItem = record {
+  end : nat;
+  canister_id : principal;
+  start : nat;
+};
+type GetLatestLogMessagesParameters = record {
+  upToTimeNanos : opt Nanos;
+  count : nat32;
+  filter : opt GetLogMessagesFilter;
+};
+type GetLogMessagesFilter = record {
+  analyzeCount : nat32;
+  messageRegex : opt text;
+  messageContains : opt text;
+};
+type GetLogMessagesParameters = record {
+  count : nat32;
+  filter : opt GetLogMessagesFilter;
+  fromTimeNanos : opt Nanos;
+};
+type GetMetricsParameters = record {
+  dateToMillis : nat;
+  granularity : MetricsGranularity;
+  dateFromMillis : nat;
+};
+type GetTransactionsFn = func (vec TransactionRange__1) -> (
+    GetTransactionsResult__1,
+  ) query;
+type GetTransactionsResult = record {
+  log_length : nat;
+  blocks : vec record { id : nat; block : Value__1 };
+  archived_blocks : vec ArchivedTransactionResponse;
+};
+type GetTransactionsResult__1 = record {
+  log_length : nat;
+  blocks : vec record { id : nat; block : Value__1 };
+  archived_blocks : vec ArchivedTransactionResponse;
+};
+type GovernanceRequest = variant {
+  update_system_var : record { key : text; val : CandyShared; token_id : text };
+  clear_shared_wallets : text;
+};
+type GovernanceResponse = variant {
+  update_system_var : bool;
+  clear_shared_wallets : bool;
+};
+type GovernanceResult = variant { ok : GovernanceResponse; err : OrigynError };
+type HTTPResponse = record {
+  body : vec nat8;
+  headers : vec HeaderField;
+  streaming_strategy : opt StreamingStrategy;
+  status_code : nat16;
+};
+type HeaderField = record { text; text };
+type HistoryResult = variant { ok : vec TransactionRecord; err : OrigynError };
+type HourlyMetricsData = record {
+  updateCalls : UpdateCallsAggregatedData;
+  canisterHeapMemorySize : CanisterHeapMemoryAggregatedData;
+  canisterCycles : CanisterCyclesAggregatedData;
+  canisterMemorySize : CanisterMemoryAggregatedData;
+  timeMillis : int;
+};
+type HttpRequest = record {
+  url : text;
+  method : text;
+  body : vec nat8;
+  headers : vec HeaderField;
+};
+type ICTokenSpec = record {
+  id : opt nat;
+  fee : opt nat;
+  decimals : nat;
+  canister : principal;
+  standard : variant { ICRC1; EXTFungible; DIP20; Other : CandyShared; Ledger };
+  symbol : text;
+};
+type ICTokenSpec__1 = record {
+  id : opt nat;
+  fee : opt nat;
+  decimals : nat;
+  canister : principal;
+  standard : variant { ICRC1; EXTFungible; DIP20; Other : CandyShared; Ledger };
+  symbol : text;
+};
+type IndexType = variant { Stable; StableTyped; Managed };
+type InstantConfigShared = opt vec InstantFeature;
+type InstantFeature = variant {
+  fee_schema : text;
+  fee_accounts : FeeAccountsParams;
+};
+type LogMessagesData = record {
+  data : Data;
+  timeNanos : Nanos;
+  message : text;
+  caller : Caller;
+};
+type ManageCollectionCommand = variant {
+  UpdateOwner : principal;
+  UpdateManagers : vec principal;
+  UpdateMetadata : record { text; opt CandyShared; bool };
+  UpdateAnnounceCanister : opt principal;
+  UpdateNetwork : opt principal;
+  UpdateSymbol : opt text;
+  UpdateLogo : opt text;
+  UpdateName : opt text;
+};
+type ManageSaleRequest = variant {
+  bid : BidRequest;
+  escrow_deposit : EscrowRequest;
+  fee_deposit : FeeDepositRequest;
+  recognize_escrow : EscrowRequest;
+  withdraw : WithdrawRequest;
+  ask_subscribe : AskSubscribeRequest;
+  end_sale : text;
+  refresh_offers : opt Account;
+  distribute_sale : DistributeSaleRequest;
+  open_sale : text;
+};
+type ManageSaleResponse = variant {
+  bid : BidResponse;
+  escrow_deposit : EscrowResponse;
+  fee_deposit : FeeDepositResponse;
+  recognize_escrow : RecognizeEscrowResponse;
+  withdraw : WithdrawResponse;
+  ask_subscribe : AskSubscribeResponse;
+  end_sale : EndSaleResponse;
+  refresh_offers : vec EscrowRecord__1;
+  distribute_sale : DistributeSaleResponse;
+  open_sale : bool;
+};
+type ManageSaleResult = variant { ok : ManageSaleResponse; err : OrigynError };
+type ManageStorageRequest = variant {
+  add_storage_canisters : vec record {
+    principal;
+    nat;
+    record { nat; nat; nat };
+  };
+  configure_storage : variant { stableBtree : opt nat; heap : opt nat };
+};
+type ManageStorageResponse = variant {
+  add_storage_canisters : record { nat; nat };
+  configure_storage : record { nat; nat };
+};
+type ManageStorageResult = variant {
+  ok : ManageStorageResponse;
+  err : OrigynError;
+};
+type MarketTransferRequest = record {
+  token_id : text;
+  sales_config : SalesConfig;
+};
+type MarketTransferRequestReponse = record {
+  token_id : text;
+  txn_type : variant {
+    escrow_deposit : record {
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    fee_deposit : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    canister_network_updated : record {
+      network : principal;
+      extensible : CandyShared;
+    };
+    escrow_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    canister_managers_updated : record {
+      managers : vec principal;
+      extensible : CandyShared;
+    };
+    auction_bid : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : text;
+    };
+    burn : record { from : opt Account__1; extensible : CandyShared };
+    data : record {
+      hash : opt vec nat8;
+      extensible : CandyShared;
+      data_dapp : opt text;
+      data_path : opt text;
+    };
+    sale_ended : record {
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : opt text;
+    };
+    mint : record {
+      to : Account__1;
+      from : Account__1;
+      sale : opt record { token : TokenSpec; amount : nat };
+      extensible : CandyShared;
+    };
+    royalty_paid : record {
+      tag : text;
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      receiver : Account__1;
+      sale_id : opt text;
+    };
+    extensible : CandyShared;
+    fee_deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    owner_transfer : record {
+      to : Account__1;
+      from : Account__1;
+      extensible : CandyShared;
+    };
+    sale_opened : record {
+      pricing : PricingConfigShared;
+      extensible : CandyShared;
+      sale_id : text;
+    };
+    canister_owner_updated : record {
+      owner : principal;
+      extensible : CandyShared;
+    };
+    sale_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+  };
+  timestamp : int;
+  index : nat;
+};
+type MarketTransferResult = variant {
+  ok : MarketTransferRequestReponse;
+  err : OrigynError;
+};
+type MetricsGranularity = variant { hourly; daily };
+type MinIncreaseType = variant { amount : nat; percentage : float64 };
+type NFTBackupChunk = record {
+  sales_balances : StableSalesBalances;
+  offers : StableOffers;
+  collection_data : StableCollectionData;
+  nft_ledgers : StableNftLedger;
+  canister : principal;
+  allocations : vec record { record { text; text }; AllocationRecordStable };
+  nft_sales : vec record { text; SaleStatusShared };
+  buckets : vec record { principal; StableBucketData };
+  escrow_balances : StableEscrowBalances;
+};
+type NFTInfoResult = variant { ok : NFTInfoStable; err : OrigynError };
+type NFTInfoStable = record {
+  metadata : CandyShared;
+  current_sale : opt SaleStatusShared;
+};
+type NFTUpdateRequest = variant {
+  update : record {
+    token_id : text;
+    update : UpdateRequestShared;
+    app_id : text;
+  };
+  replace : record { token_id : text; data : CandyShared };
+};
+type NFTUpdateResponse = bool;
+type NFTUpdateResult = variant { ok : NFTUpdateResponse; err : OrigynError };
+type Nanos = nat64;
+type NftError = variant {
+  UnauthorizedOperator;
+  SelfTransfer;
+  TokenNotFound;
+  UnauthorizedOwner;
+  TxNotFound;
+  SelfApprove;
+  OperatorNotFound;
+  ExistedNFT;
+  OwnerNotFound;
+  Other : text;
+};
+type Nft_Canister = service {
+  __advance_time : (int) -> (int);
+  __set_time_mode : (variant { test; standard }) -> (bool);
+  __supports : () -> (vec record { text; text }) query;
+  __version : () -> (text) query;
+  back_up : (nat) -> (
+      variant { eof : NFTBackupChunk; data : NFTBackupChunk },
+    ) query;
+  balance : (EXTBalanceRequest) -> (EXTBalanceResult) query;
+  balanceEXT : (EXTBalanceRequest) -> (EXTBalanceResult) query;
+  balance_of_batch_nft_origyn : (vec Account) -> (vec BalanceResult) query;
+  balance_of_nft_origyn : (Account) -> (BalanceResult) query;
+  balance_of_secure_batch_nft_origyn : (vec Account) -> (vec BalanceResult);
+  balance_of_secure_nft_origyn : (Account) -> (BalanceResult);
+  bearer : (EXTTokenIdentifier) -> (EXTBearerResult) query;
+  bearerEXT : (EXTTokenIdentifier) -> (EXTBearerResult) query;
+  bearer_batch_nft_origyn : (vec text) -> (vec BearerResult) query;
+  bearer_batch_secure_nft_origyn : (vec text) -> (vec BearerResult);
+  bearer_nft_origyn : (text) -> (BearerResult) query;
+  bearer_secure_nft_origyn : (text) -> (BearerResult);
+  canister_status : (record { canister_id : canister_id }) -> (canister_status);
+  chunk_nft_origyn : (ChunkRequest) -> (ChunkResult) query;
+  chunk_secure_nft_origyn : (ChunkRequest) -> (ChunkResult);
+  collectCanisterMetrics : () -> () query;
+  collection_nft_origyn : (opt vec record { text; opt nat; opt nat }) -> (
+      CollectionResult,
+    ) query;
+  collection_secure_nft_origyn : (
+      opt vec record { text; opt nat; opt nat },
+    ) -> (CollectionResult);
+  collection_update_batch_nft_origyn : (vec ManageCollectionCommand) -> (
+      vec OrigynBoolResult,
+    );
+  collection_update_nft_origyn : (ManageCollectionCommand) -> (
+      OrigynBoolResult,
+    );
+  cycles : () -> (nat) query;
+  dip721_balance_of : (principal) -> (nat) query;
+  dip721_custodians : () -> (vec principal) query;
+  dip721_is_approved_for_all : (principal, principal) -> (
+      DIP721BoolResult,
+    ) query;
+  dip721_logo : () -> (opt text) query;
+  dip721_metadata : () -> (DIP721Metadata) query;
+  dip721_name : () -> (opt text) query;
+  dip721_operator_token_identifiers : (principal) -> (
+      DIP721TokensListMetadata,
+    ) query;
+  dip721_operator_token_metadata : (principal) -> (DIP721TokensMetadata) query;
+  dip721_owner_of : (nat) -> (OwnerOfResponse) query;
+  dip721_owner_token_identifiers : (principal) -> (
+      DIP721TokensListMetadata,
+    ) query;
+  dip721_owner_token_metadata : (principal) -> (DIP721TokensMetadata) query;
+  dip721_stats : () -> (DIP721Stats) query;
+  dip721_supported_interfaces : () -> (vec DIP721SupportedInterface) query;
+  dip721_symbol : () -> (opt text) query;
+  dip721_token_metadata : (nat) -> (DIP721TokenMetadata) query;
+  dip721_total_supply : () -> (nat) query;
+  dip721_total_transactions : () -> (nat) query;
+  dip721_transfer : (principal, nat) -> (DIP721NatResult);
+  dip721_transfer_from : (principal, principal, nat) -> (DIP721NatResult);
+  getCanisterLog : (opt CanisterLogRequest) -> (opt CanisterLogResponse) query;
+  getCanisterMetrics : (GetMetricsParameters) -> (opt CanisterMetrics) query;
+  getEXTTokenIdentifier : (text) -> (text) query;
+  get_access_key : () -> (OrigynTextResult) query;
+  get_halt : () -> (bool) query;
+  get_nat_as_token_id_origyn : (nat) -> (text) query;
+  get_tip : () -> (Tip) query;
+  get_token_id_as_nat : (text) -> (nat) query;
+  governance_batch_nft_origyn : (vec GovernanceRequest) -> (
+      vec GovernanceResult,
+    );
+  governance_nft_origyn : (GovernanceRequest) -> (GovernanceResult);
+  history_batch_nft_origyn : (vec record { text; opt nat; opt nat }) -> (
+      vec HistoryResult,
+    ) query;
+  history_batch_secure_nft_origyn : (vec record { text; opt nat; opt nat }) -> (
+      vec HistoryResult,
+    );
+  history_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult) query;
+  history_secure_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult);
+  http_access_key : () -> (OrigynTextResult);
+  http_request : (HttpRequest) -> (HTTPResponse) query;
+  http_request_streaming_callback : (StreamingCallbackToken) -> (
+      StreamingCallbackResponse,
+    ) query;
+  icrc3_get_archives : (GetArchivesArgs) -> (GetArchivesResult) query;
+  icrc3_get_blocks : (vec TransactionRange) -> (GetTransactionsResult) query;
+  icrc3_get_tip_certificate : () -> (opt DataCertificate) query;
+  icrc3_supported_block_types : () -> (vec BlockType) query;
+  icrc7_approve : (ApprovalArgs) -> (ApprovalResult);
+  icrc7_atomic_batch_transfers : () -> (opt bool) query;
+  icrc7_balance_of : (vec Account__3) -> (vec nat) query;
+  icrc7_collection_metadata : () -> (CollectionMetadata) query;
+  icrc7_default_take_value : () -> (opt nat) query;
+  icrc7_description : () -> (opt text) query;
+  icrc7_logo : () -> (opt text) query;
+  icrc7_max_approvals_per_token_or_collection : () -> (opt nat) query;
+  icrc7_max_memo_size : () -> (opt nat) query;
+  icrc7_max_query_batch_size : () -> (opt nat) query;
+  icrc7_max_revoke_approvals : () -> (opt nat) query;
+  icrc7_max_take_value : () -> (opt nat) query;
+  icrc7_max_update_batch_size : () -> (opt nat) query;
+  icrc7_name : () -> (text) query;
+  icrc7_owner_of : (vec nat) -> (vec opt Account__3) query;
+  icrc7_permitted_drift : () -> (opt nat) query;
+  icrc7_supply_cap : () -> (opt nat) query;
+  icrc7_supported_standards : () -> (vec SupportedStandard) query;
+  icrc7_symbol : () -> (text) query;
+  icrc7_token_metadata : (vec nat) -> (
+      vec opt vec record { text; Value },
+    ) query;
+  icrc7_tokens : (opt nat, opt nat32) -> (vec nat) query;
+  icrc7_tokens_of : (Account__3, opt nat, opt nat32) -> (vec nat) query;
+  icrc7_total_supply : () -> (nat) query;
+  icrc7_transfer : (vec TransferArgs) -> (TransferResult);
+  icrc7_transfer_fee : (nat) -> (opt nat) query;
+  icrc7_tx_window : () -> (opt nat) query;
+  manage_storage_nft_origyn : (ManageStorageRequest) -> (ManageStorageResult);
+  market_transfer_batch_nft_origyn : (vec MarketTransferRequest) -> (
+      vec MarketTransferResult,
+    );
+  market_transfer_nft_origyn : (MarketTransferRequest) -> (
+      MarketTransferResult,
+    );
+  metadata : () -> (DIP721Metadata) query;
+  metadataExt : (EXTTokenIdentifier) -> (EXTMetadataResult) query;
+  mint_batch_nft_origyn : (vec record { text; Account }) -> (
+      vec OrigynTextResult,
+    );
+  mint_nft_origyn : (text, Account) -> (OrigynTextResult);
+  nftStreamingCallback : (StreamingCallbackToken) -> (
+      StreamingCallbackResponse,
+    ) query;
+  nft_batch_origyn : (vec text) -> (vec NFTInfoResult) query;
+  nft_batch_secure_origyn : (vec text) -> (vec NFTInfoResult);
+  nft_origyn : (text) -> (NFTInfoResult) query;
+  nft_secure_origyn : (text) -> (NFTInfoResult);
+  operaterTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
+  ownerOf : (nat) -> (OwnerOfResponse) query;
+  ownerTokenMetadata : (principal) -> (DIP721TokensMetadata) query;
+  sale_batch_nft_origyn : (vec ManageSaleRequest) -> (vec ManageSaleResult);
+  sale_info_batch_nft_origyn : (vec SaleInfoRequest) -> (
+      vec SaleInfoResult,
+    ) query;
+  sale_info_batch_secure_nft_origyn : (vec SaleInfoRequest) -> (
+      vec SaleInfoResult,
+    );
+  sale_info_nft_origyn : (SaleInfoRequest) -> (SaleInfoResult) query;
+  sale_info_secure_nft_origyn : (SaleInfoRequest) -> (SaleInfoResult);
+  sale_nft_origyn : (ManageSaleRequest) -> (ManageSaleResult);
+  set_data_harvester : (nat) -> ();
+  set_halt : (bool) -> ();
+  share_wallet_nft_origyn : (ShareWalletRequest) -> (OwnerUpdateResult);
+  stage_batch_nft_origyn : (vec record { metadata : CandyShared }) -> (
+      vec OrigynTextResult,
+    );
+  stage_library_batch_nft_origyn : (vec StageChunkArg) -> (
+      vec StageLibraryResult,
+    );
+  stage_library_nft_origyn : (StageChunkArg) -> (StageLibraryResult);
+  stage_nft_origyn : (record { metadata : CandyShared }) -> (OrigynTextResult);
+  state_size : () -> (StateSize) query;
+  storage_info_nft_origyn : () -> (StorageMetricsResult) query;
+  storage_info_secure_nft_origyn : () -> (StorageMetricsResult);
+  tokens_ext : (text) -> (EXTTokensResult) query;
+  transfer : (EXTTransferRequest) -> (EXTTransferResponse);
+  transferDip721 : (principal, nat) -> (DIP721NatResult);
+  transferEXT : (EXTTransferRequest) -> (EXTTransferResponse);
+  transferFrom : (principal, principal, nat) -> (DIP721NatResult);
+  transferFromDip721 : (principal, principal, nat) -> (DIP721NatResult);
+  update_app_nft_origyn : (NFTUpdateRequest) -> (NFTUpdateResult);
+  update_icrc3 : (vec UpdateSetting) -> (vec bool);
+  wallet_receive : () -> (nat);
+  whoami : () -> (principal) query;
+};
+type NiftySettlementType = record {
+  fixed : bool;
+  interestRatePerSecond : float64;
+  duration : opt int;
+  expiration : opt int;
+  lenderOffer : bool;
+};
+type NumericEntity = record {
+  avg : nat64;
+  max : nat64;
+  min : nat64;
+  first : nat64;
+  last : nat64;
+};
+type OrigynBoolResult = variant { ok : bool; err : OrigynError };
+type OrigynError = record {
+  "text" : text;
+  error : Errors;
+  number : nat32;
+  flag_point : text;
+};
+type OrigynTextResult = variant { ok : text; err : OrigynError };
+type OwnerOfResponse = variant { Ok : opt principal; Err : NftError };
+type OwnerTransferResponse = record {
+  transaction : TransactionRecord;
+  assets : vec CandyShared;
+};
+type OwnerUpdateResult = variant {
+  ok : OwnerTransferResponse;
+  err : OrigynError;
+};
+type PricingConfigShared = variant {
+  ask : AskConfigShared;
+  extensible : CandyShared;
+  instant : InstantConfigShared;
+  auction : AuctionConfig;
+};
+type PricingConfigShared__1 = variant {
+  ask : AskConfigShared;
+  extensible : CandyShared;
+  instant : InstantConfigShared;
+  auction : AuctionConfig;
+};
+type PropertyShared = record {
+  value : CandyShared;
+  name : text;
+  immutable : bool;
+};
+type RecognizeEscrowResponse = record {
+  balance : nat;
+  receipt : EscrowReceipt;
+  transaction : opt TransactionRecord;
+};
+type RejectDescription = record {
+  token : TokenSpec__1;
+  token_id : text;
+  seller : Account;
+  buyer : Account;
+};
+type Result = variant { ok : ManageSaleResponse; err : OrigynError };
+type SaleInfoRequest = variant {
+  status : text;
+  fee_deposit_info : opt Account;
+  active : opt record { nat; nat };
+  deposit_info : opt Account;
+  history : opt record { nat; nat };
+  escrow_info : EscrowReceipt;
+};
+type SaleInfoResponse = variant {
+  status : opt SaleStatusShared;
+  fee_deposit_info : SubAccountInfo;
+  active : record {
+    eof : bool;
+    records : vec record { text; opt SaleStatusShared };
+    count : nat;
+  };
+  deposit_info : SubAccountInfo;
+  history : record {
+    eof : bool;
+    records : vec opt SaleStatusShared;
+    count : nat;
+  };
+  escrow_info : SubAccountInfo;
+};
+type SaleInfoResult = variant { ok : SaleInfoResponse; err : OrigynError };
+type SaleStatusShared = record {
+  token_id : text;
+  sale_type : variant { auction : AuctionStateShared };
+  broker_id : opt principal;
+  original_broker_id : opt principal;
+  sale_id : text;
+};
+type SalesConfig = record {
+  broker_id : opt Account__1;
+  pricing : PricingConfigShared;
+  escrow_receipt : opt EscrowReceipt__1;
+};
+type ShareWalletRequest = record {
+  to : Account;
+  token_id : text;
+  from : Account;
+};
+type StableBucketData = record {
+  "principal" : principal;
+  allocated_space : nat;
+  date_added : int;
+  version : record { nat; nat; nat };
+  b_gateway : bool;
+  available_space : nat;
+  allocations : vec record { record { text; text }; int };
+};
+type StableCollectionData = record {
+  active_bucket : opt principal;
+  managers : vec principal;
+  owner : principal;
+  metadata : opt CandyShared;
+  logo : opt text;
+  name : opt text;
+  network : opt principal;
+  available_space : nat;
+  symbol : opt text;
+  allocated_storage : nat;
+};
+type StableEscrowBalances = vec record {
+  Account;
+  Account;
+  text;
+  EscrowRecord__1;
+};
+type StableNftLedger = vec record { text; TransactionRecord };
+type StableOffers = vec record { Account; Account; int };
+type StableSalesBalances = vec record {
+  Account;
+  Account;
+  text;
+  EscrowRecord__1;
+};
+type StageChunkArg = record {
+  content : vec nat8;
+  token_id : text;
+  chunk : nat;
+  filedata : CandyShared;
+  library_id : text;
+};
+type StageLibraryResponse = record { canister : principal };
+type StageLibraryResult = variant {
+  ok : StageLibraryResponse;
+  err : OrigynError;
+};
+type StakeRecord = record { staker : Account; token_id : text; amount : nat };
+type StateSize = record {
+  sales_balances : nat;
+  offers : nat;
+  nft_ledgers : nat;
+  allocations : nat;
+  nft_sales : nat;
+  buckets : nat;
+  escrow_balances : nat;
+};
+type StorageMetrics = record {
+  gateway : principal;
+  available_space : nat;
+  allocations : vec AllocationRecordStable;
+  allocated_storage : nat;
+};
+type StorageMetricsResult = variant { ok : StorageMetrics; err : OrigynError };
+type StreamingCallbackResponse = record {
+  token : opt StreamingCallbackToken;
+  body : vec nat8;
+};
+type StreamingCallbackToken = record {
+  key : text;
+  index : nat;
+  content_encoding : text;
+};
+type StreamingStrategy = variant {
+  Callback : record {
+    token : StreamingCallbackToken;
+    callback : func () -> ();
+  };
+};
+type SubAccountInfo = record {
+  account_id : vec nat8;
+  "principal" : principal;
+  account_id_text : text;
+  account : record { "principal" : principal; sub_account : vec nat8 };
+};
+type Subaccount = vec nat8;
+type SupportedStandard = record { url : text; name : text };
+type Tip = record {
+  last_block_index : vec nat8;
+  hash_tree : vec nat8;
+  last_block_hash : vec nat8;
+};
+type TokenIDFilter = record {
+  filter_type : variant { allow; block };
+  token_id : text;
+  tokens : vec record {
+    token : TokenSpec__1;
+    min_amount : opt nat;
+    max_amount : opt nat;
+  };
+};
+type TokenMetadata = record {
+  transferred_at : opt nat64;
+  transferred_by : opt principal;
+  owner : opt principal;
+  operator : opt principal;
+  approved_at : opt nat64;
+  approved_by : opt principal;
+  properties : vec record { text; GenericValue };
+  is_burned : bool;
+  token_identifier : nat;
+  burned_at : opt nat64;
+  burned_by : opt principal;
+  minted_at : nat64;
+  minted_by : principal;
+};
+type TokenSpec = variant { ic : ICTokenSpec; extensible : CandyShared };
+type TokenSpecFilter = record {
+  token : TokenSpec__1;
+  filter_type : variant { allow; block };
+};
+type TokenSpec__1 = variant { ic : ICTokenSpec__1; extensible : CandyShared };
+type TokenSpec__2 = variant { ic : ICTokenSpec; extensible : CandyShared };
+type TransactionID = variant {
+  "nat" : nat;
+  "text" : text;
+  extensible : CandyShared;
+};
+type TransactionID__1 = variant {
+  "nat" : nat;
+  "text" : text;
+  extensible : CandyShared;
+};
+type TransactionRange = record { start : nat; length : nat };
+type TransactionRange__1 = record { start : nat; length : nat };
+type TransactionRecord = record {
+  token_id : text;
+  txn_type : variant {
+    escrow_deposit : record {
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    fee_deposit : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    canister_network_updated : record {
+      network : principal;
+      extensible : CandyShared;
+    };
+    escrow_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    canister_managers_updated : record {
+      managers : vec principal;
+      extensible : CandyShared;
+    };
+    auction_bid : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : text;
+    };
+    burn : record { from : opt Account__1; extensible : CandyShared };
+    data : record {
+      hash : opt vec nat8;
+      extensible : CandyShared;
+      data_dapp : opt text;
+      data_path : opt text;
+    };
+    sale_ended : record {
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : opt text;
+    };
+    mint : record {
+      to : Account__1;
+      from : Account__1;
+      sale : opt record { token : TokenSpec; amount : nat };
+      extensible : CandyShared;
+    };
+    royalty_paid : record {
+      tag : text;
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      receiver : Account__1;
+      sale_id : opt text;
+    };
+    extensible : CandyShared;
+    fee_deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    owner_transfer : record {
+      to : Account__1;
+      from : Account__1;
+      extensible : CandyShared;
+    };
+    sale_opened : record {
+      pricing : PricingConfigShared;
+      extensible : CandyShared;
+      sale_id : text;
+    };
+    canister_owner_updated : record {
+      owner : principal;
+      extensible : CandyShared;
+    };
+    sale_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+  };
+  timestamp : int;
+  index : nat;
+};
+type TransferArgs = record {
+  to : Account__3;
+  token_id : nat;
+  memo : opt vec nat8;
+  from_subaccount : opt vec nat8;
+  created_at_time : opt nat64;
+};
+type TransferError = variant {
+  GenericError : record { message : text; error_code : nat };
+  Duplicate : record { duplicate_of : nat };
+  NonExistingTokenId;
+  Unauthorized;
+  CreatedInFuture : record { ledger_time : nat64 };
+  TooOld;
+};
+type TransferResult = vec opt TransferResultItem;
+type TransferResultItem = record {
+  token_id : nat;
+  transfer_result : variant { Ok : nat; Err : TransferError };
+};
+type UpdateCallsAggregatedData = vec nat64;
+type UpdateModeShared = variant {
+  Set : CandyShared;
+  Lock : CandyShared;
+  Next : vec UpdateShared;
+};
+type UpdateRequestShared = record { id : text; update : vec UpdateShared };
+type UpdateSetting = variant {
+  maxRecordsToArchive : nat;
+  archiveIndexType : IndexType;
+  maxArchivePages : nat;
+  settleToRecords : nat;
+  archiveCycles : nat;
+  maxActiveRecords : nat;
+  maxRecordsInArchiveInstance : nat;
+  archiveControllers : opt opt vec principal;
+};
+type UpdateShared = record { mode : UpdateModeShared; name : text };
+type Value = variant {
+  Int : int;
+  Map : vec record { text; Value };
+  Nat : nat;
+  Blob : vec nat8;
+  Text : text;
+  Array : vec Value;
+};
+type Value__1 = variant {
+  Int : int;
+  Map : vec record { text; Value__1 };
+  Nat : nat;
+  Blob : vec nat8;
+  Text : text;
+  Array : vec Value__1;
+};
+type Vec = vec record {
+  text;
+  variant {
+    Nat64Content : nat64;
+    Nat32Content : nat32;
+    BoolContent : bool;
+    Nat8Content : nat8;
+    Int64Content : int64;
+    IntContent : int;
+    NatContent : nat;
+    Nat16Content : nat16;
+    Int32Content : int32;
+    Int8Content : int8;
+    FloatContent : float64;
+    Int16Content : int16;
+    BlobContent : vec nat8;
+    NestedContent : Vec;
+    Principal : principal;
+    TextContent : text;
+  };
+};
+type WaitForQuietType = record { max : nat; fade : float64; extension : nat64 };
+type WithdrawDescription = record {
+  token : TokenSpec__1;
+  token_id : text;
+  seller : Account;
+  withdraw_to : Account;
+  buyer : Account;
+  amount : nat;
+};
+type WithdrawRequest = variant {
+  reject : RejectDescription;
+  fee_deposit : FeeDepositWithdrawDescription;
+  sale : WithdrawDescription;
+  deposit : DepositWithdrawDescription;
+  escrow : WithdrawDescription;
+};
+type WithdrawResponse = record {
+  token_id : text;
+  txn_type : variant {
+    escrow_deposit : record {
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    fee_deposit : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    canister_network_updated : record {
+      network : principal;
+      extensible : CandyShared;
+    };
+    escrow_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    canister_managers_updated : record {
+      managers : vec principal;
+      extensible : CandyShared;
+    };
+    auction_bid : record {
+      token : TokenSpec;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : text;
+    };
+    burn : record { from : opt Account__1; extensible : CandyShared };
+    data : record {
+      hash : opt vec nat8;
+      extensible : CandyShared;
+      data_dapp : opt text;
+      data_path : opt text;
+    };
+    sale_ended : record {
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      sale_id : opt text;
+    };
+    mint : record {
+      to : Account__1;
+      from : Account__1;
+      sale : opt record { token : TokenSpec; amount : nat };
+      extensible : CandyShared;
+    };
+    royalty_paid : record {
+      tag : text;
+      token : TokenSpec;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+      receiver : Account__1;
+      sale_id : opt text;
+    };
+    extensible : CandyShared;
+    fee_deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      account : Account__1;
+      amount : nat;
+    };
+    owner_transfer : record {
+      to : Account__1;
+      from : Account__1;
+      extensible : CandyShared;
+    };
+    sale_opened : record {
+      pricing : PricingConfigShared;
+      extensible : CandyShared;
+      sale_id : text;
+    };
+    canister_owner_updated : record {
+      owner : principal;
+      extensible : CandyShared;
+    };
+    sale_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      token_id : text;
+      trx_id : TransactionID;
+      seller : Account__1;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+    deposit_withdraw : record {
+      fee : nat;
+      token : TokenSpec;
+      trx_id : TransactionID;
+      extensible : CandyShared;
+      buyer : Account__1;
+      amount : nat;
+    };
+  };
+  timestamp : int;
+  index : nat;
+};
+type canister_id = principal;
+type canister_status = record {
+  status : variant { stopped; stopping; running };
+  memory_size : nat;
+  cycles : nat;
+  settings : definite_canister_settings;
+  module_hash : opt vec nat8;
+};
+type definite_canister_settings = record {
+  freezing_threshold : nat;
+  controllers : opt vec principal;
+  memory_allocation : nat;
+  compute_allocation : nat;
+};
+service : Nft_Canister

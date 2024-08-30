@@ -1,12 +1,12 @@
 //
-//  File.swift
+//  ICPToken.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 26.08.24.
 //
 
 import Foundation
-import Candid
+import IcpKit
 import BigInt
 
 public struct ICPToken {
@@ -19,6 +19,6 @@ public struct ICPToken {
     
     public let logo: URL
     public let website: URL
-    public let principal: any CandidPrincipalProtocol
+    public let principal: ICPPrincipal
     
 }

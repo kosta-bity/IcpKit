@@ -7,21 +7,8 @@
 
 import Foundation
 
-public protocol CandidPrincipalProtocol: Equatable, Codable {
-    var bytes: Data { get }
-    var string: String { get }
-    
-    init(_ string: String) throws
-    init(_ bytes: Data)
-}
-
-public extension CandidPrincipalProtocol {
-    init(_ other: any CandidPrincipalProtocol) {
-        self.init(other.bytes)
-    }
-}
-
-public struct CandidPrincipal: CandidPrincipalProtocol {
+/// from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal
+public struct CandidPrincipal: Equatable, Codable, ExpressibleByStringLiteral, CustomStringConvertible {
     public let bytes: Data
     public let string: String
     
@@ -33,5 +20,13 @@ public struct CandidPrincipal: CandidPrincipalProtocol {
     public init(_ bytes: Data) {
         self.bytes = bytes
         self.string = CanonicalText.encode(bytes)
+    }
+}
+
+public extension CandidPrincipal {
+    var description: String { string }
+    
+    init(stringLiteral value: String) {
+        try! self.init(value)
     }
 }

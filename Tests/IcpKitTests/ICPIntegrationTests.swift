@@ -62,7 +62,7 @@ final class ICPIntegrationTests: XCTestCase {
     
     func testGeneratedLedger() async throws {
         let nBlocks: UInt64 = 3
-        let ledger = LedgerCanister.Service(canister: ICPSystemCanisters.ledger, client: client)
+        let ledger = LedgerCanister.Service(ICPSystemCanisters.ledger, client: client)
         let blocks = try await ledger.query_blocks(.init(start: 11268933, length: nBlocks))
         XCTAssertEqual(blocks.archived_blocks.map { $0.length }.reduce(0, +) + UInt64(blocks.blocks.count), nBlocks)
         for archive in blocks.archived_blocks {

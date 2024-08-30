@@ -474,11 +474,9 @@ private extension Array where Element == CandidFunctionSignature.Parameter {
         switch count {
         case 0: return ""
         case 1: return first!.type.swiftType()
-        case 2...6:
+        default:
             let types = map { $0.type.swiftType() }.joined(separator: ", ")
             return "CandidTuple\(count)<\(types)>"
-        default:
-            fatalError("function has too many arguments/parameters... not implemented")
         }
     }
     
@@ -486,7 +484,7 @@ private extension Array where Element == CandidFunctionSignature.Parameter {
         switch count {
         case 0: return ""
         case 1: return "\(first!.name ?? "arg0"), "
-        case 2...6:
+        default:
             var count = 0
             let args = map {
                 if let name = $0.name { return name }
@@ -495,8 +493,6 @@ private extension Array where Element == CandidFunctionSignature.Parameter {
                 return arg
             }.joined(separator: ", ")
             return ".init(\(args)), "
-        default:
-            fatalError("function has too many arguments... not implemented")
         }
     }
 }
@@ -603,7 +599,7 @@ private extension CandidValue {
 }
 
 private extension CandidPrincipal {
-    var swiftValueInit: String { "try! ICPPrincipal(\"\(string)\")" }
+    var swiftValueInit: String { "\"\(string)\"" }
 }
 
 private extension String {

@@ -1,12 +1,12 @@
 //
-//  File.swift
+//  ICPTokenWrapper.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 26.08.24.
 //
 
 import Foundation
-import Candid
+import IcpKit
 import BigInt
 
 public struct ICPTokenBalanceResponse {
@@ -16,8 +16,8 @@ public struct ICPTokenBalanceResponse {
 }
 
 public struct ICPTokenTransferArgs {
-    public let to: any CandidPrincipalProtocol
-    public let from: any CandidPrincipalProtocol
+    public let from: ICPSigningPrincipal
+    public let to: ICPPrincipal
     public let amount: BigUInt
     
     // options
@@ -29,7 +29,7 @@ public struct ICPTokenTransferArgs {
 }
 
 public struct ICPTokenApproveArgs {
-    public let spender: any CandidPrincipalProtocol
+    public let spender: ICPPrincipal
     public let amount: BigUInt
     public let nonce: BigUInt?
 }
@@ -48,7 +48,7 @@ public enum ICPTokenTransferResponse {
 public protocol ICPTokenWrapper {
     var standard: ICPTokenStandard { get }
     
-    func balance(_ principal: any CandidPrincipalProtocol) async throws -> ICPTokenBalanceResponse
+    func balance(_ principal: ICPPrincipal) async throws -> ICPTokenBalanceResponse
     func transfer(_ args: ICPTokenTransferArgs) async throws -> ICPTokenTransferResponse
     func approve(_ args: ICPTokenApproveArgs) async throws -> ICPTokenApproveResult
     func metadata() async throws -> ICPTokenMetadata

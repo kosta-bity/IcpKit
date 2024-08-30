@@ -15,9 +15,9 @@ public struct CandidFunction: Equatable, Codable {
         self.method = method
     }
     
-    public init(signature: CandidFunctionSignature, principal: String, methodName: String) throws {
+    public init(signature: CandidFunctionSignature, principal: CandidPrincipal, methodName: String) {
         self.signature = signature
-        self.method = try .init(name: methodName, principal: principal)
+        self.method = .init(name: methodName, principal: principal)
     }
     
     public struct ServiceMethod: Equatable, Codable {

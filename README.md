@@ -272,7 +272,7 @@ let phoneBook: [PhoneBookEntry] = try CandidDecoder().decode(phoneBookCandidValu
 | `variant` | `enum <name>: Codable { ... }` | Every variant is encoded/decoded to a Swift Codable `enum`. Each variant case corresponds to an enum case with the same name. Associated values are attached to each case using their names when available.<br />`variant { winter, summer }` encodes to `enum Season: Codable { case winter, summer }`<br />`variant { status: int; error: bool; }` encodes to `enum Status { case status(Int); case error(Bool) }` |
 | `function` | `CandidFunctionProtocol` | Automatic encoding of Swift functions to a Candid Value is not supported because we can not deduce the function signature from the Swift Types without a value. This is due to Swift's Type system limitations. Decoding is allowed however. |
 | `service` | `CandidServiceProtocol` | Encoding is not supported for the same reasons as for functions. |
-| `principal` | `CandidPrincipalProtocol` |  |
+| `principal` | `CandidPrincipal` |  |
 | `null` | `nil` |  |
 | `empty` | `nil` |  |
 | `reserved` | `nil` |  |

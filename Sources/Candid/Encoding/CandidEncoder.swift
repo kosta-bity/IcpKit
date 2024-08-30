@@ -98,7 +98,7 @@ private class CandidValueEncoder: Encoder {
         } else if let candidFunction = value as? CandidFunction {
             return .function(candidFunction)
             
-        } else if let candidPrincipal = value as? any CandidPrincipalProtocol {
+        } else if let candidPrincipal = value as? CandidPrincipal {
             return .principal(.init(candidPrincipal))
             
         } else if let candidService = value as? CandidService {

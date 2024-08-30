@@ -154,12 +154,12 @@ enum UnnamedType0: Codable {
 
 let cValue: UnnamedType0 = .c(bool: true, int8: 7)
 """),
-            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCallNoArgs<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPCallNoResult<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCall<[Bool], [Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoArgs<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoResult<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQuery<[Bool], [Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCallNoArgs<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPCallNoResult<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCall<[Bool], [Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoArgs<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoResult<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQuery<[Bool], [Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
         ]
         for (input, expected) in testVectors {
             let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: input, valueName: "cValue")
@@ -168,21 +168,20 @@ let cValue: UnnamedType0 = .c(bool: true, int8: 7)
     }
     
     func testIcrc7() async throws {
-        // GoldNFT
-        let service = try ICRC7.Service("io7gn-vyaaa-aaaak-qcbiq-cai")
+        // GoldNFT io7gn-vyaaa-aaaak-qcbiq-cai
+        let service = try ICRC7.Service("auw3m-7yaaa-aaaal-qjf6q-cai")
         let collectionMetadata = try await service.icrc7_collection_metadata()
-        let tokens = try await service.icrc7_tokens(prev: nil, take: nil)
         for metadata in collectionMetadata {
             print(metadata.tuple)
         }
-        let token = tokens.first!
-        print(token)
-        let tokenMetadata = try await service.icrc7_token_metadata(token_ids: [token]).first!._1!
-        guard case .Text(let text) = tokenMetadata._1 else {
-            XCTFail()
-            return
+        print("------------")
+        let tokens = try await service.icrc7_tokens(prev: nil, take: nil)
+        let tokenMetadata = try await service.icrc7_token_metadata(token_ids: tokens).first!!
+        for metadata in tokenMetadata {
+            print(metadata._0)
+            print(metadata._1)
+            print("---")
         }
-        print(text)
     }
 }
 

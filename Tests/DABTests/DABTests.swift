@@ -8,16 +8,44 @@
 import XCTest
 import Candid
 import IcpKit
-@testable import DAB
+import DAB
 
 final class DABTests: XCTestCase {
-    let dab = try! DABNft.Service("ctqxp-yyaaa-aaaah-abbda-cai")
+    let nftService = DABNftService()
     
-    func testGetAllNfts() async throws {
-        let allNfts = try await dab.get_all()
+    func testAllCollections() async throws {
+        let allCollections = try await nftService.allCollections()
+        for collection in allCollections {
+            if collection.canister.string == "io7gn-vyaaa-aaaak-qcbiq-cai" {
+                print(collection)
+            }
+        }
+    }
+    
+    func testAccountHolding() async throws {
+        let holdings = try await nftService.holdings(kostaPrincipal)
+        for nft in holdings {
+            let details = try await nftService.actor(for: nft).nftDetails(nft.index)
+            print(details)
+        }
+    }
+    
+    func testAllNfts() async throws {
+        let allCollections = try await nftService.allCollections()
+        let standard = ICPNftStandard.icrc7
+        let collection = allCollections.first(where: { $0.canister.string == "auw3m-7yaaa-aaaal-qjf6q-cai" })!
+        let actor = nftService.actor(for: collection)
+        let nfts = try await actor.allNfts()
+        for nft in nfts {
+            //print(nft)
+        }
         
-        for nft in allNfts {
-            print(nft)
+        let standard2 = ICPNftStandard.ext
+        let collection2 = allCollections.first(where: { $0.standard == standard2 })!
+        let actor2 = nftService.actor(for: collection2)
+        let nfts2 = try await actor2.allNfts()
+        for nft2 in nfts2 {
+            print(nft2)
         }
     }
     
@@ -30,7 +58,7 @@ final class DABTests: XCTestCase {
 
 
 
-
+let kostaPrincipal: ICPPrincipal = "42cjv-glyli-7erx2-uovp2-vcevd-f7lqz-2qtix-eijra-5r2hk-ysmgb-rqe"
 
 
 
