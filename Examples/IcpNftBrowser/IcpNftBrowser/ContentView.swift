@@ -6,12 +6,22 @@
 //
 
 import SwiftUI
+import IcpKit
 import DAB
 
 struct ContentView: View {
     @StateObject var controller: AppController
-    @State var searchString: String = ""
-    @State var searchStandard: ICPNftStandard?
+    
+    private enum Tab: Int {
+        case allNfts
+        case myNfts
+    }
+    @State private var presentingNft: ICPNftDetails?
+    @State private var principalString: String = ""
+    @State private var currentTab: Tab = .allNfts
+    @State private var searchString: String = ""
+    @State private var searchStandard: ICPNftStandard?
+    
     private var filteredCollections: Binding<[ICPNftCollection]?> { Binding(
         get: {
             guard var collections = controller.collections else { return nil }
@@ -30,14 +40,48 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack {
-                SearchBar(searchString: $searchString, standard: $searchStandard)
+                tabs
+                TabView(selection: $currentTab) {
+                    allNfts.tag(Tab.allNfts)
+                    myNfts.tag(Tab.myNfts)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .navigationTitle("Nft Collections")
+            }
+            .safeAreaPadding()
+        }
+    }
+    
+    private var tabs: some View {
+        HStack {
+            Spacer()
+            Button("All NFTs") { currentTab = .allNfts }
+            Spacer()
+            Button("My NFTs") { currentTab = .myNfts }
+            Spacer()
+        }
+    }
+    
+    private var allNfts: some View {
+        VStack {
+            SearchBar(searchString: $searchString, standard: $searchStandard)
+            NftCollectionList(collections: filteredCollections)
+                
+        }
+    }
+    
+    private var myNfts: some View {
+        SheetPresenter(presenting: $presentingNft, builder: NftDetails.init) {
+            VStack {
+                PrincipalInput(principalString: $principalString)
+                    .onChange(of: principalString) { controller.fetchNfts(principalString) }
                 ScrollView {
-                    NftCollectionList(collections: filteredCollections)
-                        .navigationTitle("Nft Collections")
+                    Lazy2dGrid(items: $controller.myNFTs) { nft in NftPreview(nft: nft).onTapGesture {
+                        presentingNft = nft
+                    }}
                 }
             }
         }
-        .safeAreaPadding()
     }
 }
 

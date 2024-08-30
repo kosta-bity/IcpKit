@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct CardContainer<T: View>: View {
-    var child: () -> T
+struct CardContainer<Content: View>: View {
+    var content: () -> Content
     
     var body: some View {
-        child()
+        content()
             .frame(height: 180)
             .frame(maxWidth: .infinity)
             .padding()

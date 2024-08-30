@@ -25,7 +25,6 @@ struct SearchBar: View {
                 Text(standard.map { "Only \($0.description)" } ?? "All")
             }
         }
-        .safeAreaPadding()
     }
 }
 

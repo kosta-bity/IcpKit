@@ -12,21 +12,8 @@ struct NftCollectionList: View {
     @Binding var collections: [ICPNftCollection]?
     
     var body: some View {
-        if let collections = collections {
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible(minimum: 170, maximum: .infinity)),
-                    GridItem(.flexible(minimum: 170, maximum: .infinity))
-                ]) {
-                ForEach(collections) { collection in
-                    NftCollectionPreview(collection: collection)
-                }
-            }
-            .padding()
-            
-        } else {
-            Text("Loading...")
-            ProgressView()
+        ScrollView {
+            Lazy2dGrid(items: $collections, builder: NftCollectionPreview.init)
         }
     }
 }

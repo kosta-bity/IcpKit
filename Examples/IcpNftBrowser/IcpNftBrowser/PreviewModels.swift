@@ -48,6 +48,13 @@ class MockAppController: AppController {
             self.collections = PreviewModels.fakeCollections
         }
     }
+    
+    override func fetchNfts(_ principalString: String) {
+        self.myNFTs = nil
+        DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(2))) {
+            self.myNFTs = buildFakeNftList(PreviewModels.fakeCollections.first!)
+        }
+    }
 }
 
 class MockCollectionController: CollectionController {

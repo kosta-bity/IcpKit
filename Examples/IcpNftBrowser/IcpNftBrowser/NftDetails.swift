@@ -36,7 +36,6 @@ struct NftDetails: View {
                 NftProperty(label: "Metadata", value: nft.metadata.debugDescription)
             }
         }
-        .safeAreaPadding()
         .navigationTitle(nft.name ?? nft.id.description)
     }
 }

@@ -7,9 +7,11 @@
 
 import Foundation
 import DAB
+import IcpKit
 
 class AppController: ObservableObject {
     @Published var collections: [ICPNftCollection]?
+    @Published var myNFTs: [ICPNftDetails]? = []
     
     private let nftService = DABNftService()
     
@@ -19,8 +21,21 @@ class AppController: ObservableObject {
         self.collections = nil
         Task {
             let collections = try await nftService.allCollections()
-            print("Loaded \(collections.count) NFT Collections")
             DispatchQueue.main.async { self.collections = collections }
+        }
+    }
+    
+    func fetchNfts(_ principalString: String) {
+        guard let principal = try? ICPPrincipal(principalString) else {
+            print("invalid principal")
+            myNFTs = []
+            return
+        }
+        myNFTs = nil
+        print("fetching holding for \(principal)")
+        Task {
+            let nfts = try await nftService.holdings(principal)
+            DispatchQueue.main.async { self.myNFTs = nfts }
         }
     }
 }
