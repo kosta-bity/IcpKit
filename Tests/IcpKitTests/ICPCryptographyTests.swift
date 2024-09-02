@@ -44,11 +44,18 @@ final class ICPCryptographyTests: XCTestCase {
     }
     
     // test vectors from https://internetcomputer.org/docs/current/references/id-encoding-spec#test-vectors
-    func testCanonicalText() {
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("000102030405060708")!), "xtqug-aqaae-bagba-faydq-q")
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("00")!), "2ibo7-dia")
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("")!), "aaaaa-aa")
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("0102030405060708091011121314151617181920212223242526272829")!), "iineg-fibai-bqibi-ga4ea-searc-ijrif-iwc4m-bsibb-eirsi-jjge4-ucs")
+    func testCanonicalText() throws {
+        let testVectors: [(String, String)] = [
+            ("000102030405060708", "xtqug-aqaae-bagba-faydq-q"),
+            ("00","2ibo7-dia"),
+            ("","aaaaa-aa"),
+            ("0102030405060708091011121314151617181920212223242526272829","iineg-fibai-bqibi-ga4ea-searc-ijrif-iwc4m-bsibb-eirsi-jjge4-ucs"),
+        ]
+        for (dataHex, canonical) in testVectors {
+            let data = Data.fromHex(dataHex)!
+            XCTAssertEqual(CanonicalText.encode(data), canonical)
+            XCTAssertEqual(try CanonicalText.decode(canonical), data)
+        }
     }
     
     // test vectors generated using keysmith https://github.com/dfinity/keysmith
@@ -116,12 +123,12 @@ final class ICPCryptographyTests: XCTestCase {
             signature: Data.fromHex("b931848dc01a3640f6610e82581b6b200ed00ae31ae3503c8dd363238c010960bc90afb295ff02dd1639aecf1efc8d4e")!))
         
         XCTAssertNoThrow(try ICPCryptography.verifyBlsSignature(
-            message: "hello".data!,
+            message: "hello".data,
             publicKey: Data.fromHex("a7623a93cdb56c4d23d99c14216afaab3dfd6d4f9eb3db23d038280b6d5cb2caaee2a19dd92c9df7001dede23bf036bc0f33982dfb41e8fa9b8e96b5dc3e83d55ca4dd146c7eb2e8b6859cb5a5db815db86810b8d12cee1588b5dbf34a4dc9a5")!,
             signature: Data.fromHex("b89e13a212c830586eaa9ad53946cd968718ebecc27eda849d9232673dcd4f440e8b5df39bf14a88048c15e16cbcaabe")!))
         
         XCTAssertThrowsError(try ICPCryptography.verifyBlsSignature(
-            message: "hallo".data!,
+            message: "hallo".data,
             publicKey: Data.fromHex("a7623a93cdb56c4d23d99c14216afaab3dfd6d4f9eb3db23d038280b6d5cb2caaee2a19dd92c9df7001dede23bf036bc0f33982dfb41e8fa9b8e96b5dc3e83d55ca4dd146c7eb2e8b6859cb5a5db815db86810b8d12cee1588b5dbf34a4dc9a5")!,
             signature: Data.fromHex("b89e13a212c830586eaa9ad53946cd968718ebecc27eda849d9232673dcd4f440e8b5df39bf14a88048c15e16cbcaabe")!))
         

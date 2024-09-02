@@ -45,13 +45,13 @@ public struct ICPRequest {
         requestId = try content.calculateRequestId()
         let envelope = try await ICPRequestBuilder.buildEnvelope(content, sender: sender)
         let rawBody = try ICPCryptography.CBOR.serialise(envelope)
-        
-        httpRequest = HttpRequest {
-            $0.method = .post
-            $0.url = Self.buildUrl(request, canister)
-            $0.body = .data(rawBody, contentType: "application/cbor")
-            $0.timeout = 120
-        }
+        httpRequest = HttpRequest(
+            method: "POST",
+            url: Self.buildUrl(request, canister),
+            body: rawBody,
+            headers: ["Content-Type": "application/cbor"],
+            timeout: 120
+        )
     }
     
     private static func buildUrl(_ request: ICPRequestType, _ canister: ICPPrincipal) -> URL {

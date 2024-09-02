@@ -46,15 +46,6 @@
       }
     },
     {
-      "identity" : "realhttp",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/immobiliare/RealHTTP.git",
-      "state" : {
-        "revision" : "c0ffb265eae8684da02ad20cfcc147c23463ad95",
-        "version" : "1.8.3"
-      }
-    },
-    {
       "identity" : "regex",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/sharplet/Regex.git",

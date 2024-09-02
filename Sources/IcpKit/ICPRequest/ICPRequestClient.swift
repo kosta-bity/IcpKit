@@ -62,7 +62,7 @@ public enum ICPRequestCertification {
 
 /// The HttpClient that takes care of encoding and serialising all requests
 public class ICPRequestClient {
-    private let client = SimpleHttpClient()
+    private let client = UrlSessionHttpClient()
     
     public init() {}
     
@@ -222,12 +222,9 @@ public class ICPRequestClient {
     private func fetchCbor(_ icpRequest: ICPRequest, canister: ICPPrincipal, sender: ICPPrincipal? = nil) async throws -> Data? {
         let response = try await client.fetch(icpRequest.httpRequest)
         
-        guard response.statusCode == .ok || response.statusCode == .accepted else {
+        guard response.statusCode == 200 || response.statusCode == 202 else {
             let errorString = String(data: response.data ?? Data(), encoding: .utf8)
-            if let error = response.error {
-                throw ICPRemoteClientError.httpError(error, errorString)
-            }
-            throw ICPRemoteClientError.failed(statusCode: response.statusCode.rawValue, error: errorString)
+            throw ICPRemoteClientError.failed(statusCode: response.statusCode, error: errorString)
         }
         return response.data
     }
