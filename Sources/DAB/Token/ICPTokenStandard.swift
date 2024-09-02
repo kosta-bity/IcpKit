@@ -15,5 +15,6 @@ public enum ICPTokenStandard: CaseIterable {
     case icp
     case rosetta
     case icrc1
+    case icrc2
     case drc20
 }

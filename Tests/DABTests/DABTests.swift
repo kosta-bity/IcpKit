@@ -12,6 +12,7 @@ import DAB
 
 final class DABTests: XCTestCase {
     let nftService = DABNftService()
+    let tokenService = DABTokenService()
     
     func testAllCollections() async throws {
         let allCollections = try await nftService.allCollections()
@@ -47,6 +48,20 @@ final class DABTests: XCTestCase {
         for nft2 in nfts2 {
             print(nft2)
         }
+    }
+    
+    func testAllTokens() async throws {
+        let allTokens = try await tokenService.allTokens()
+        for token in allTokens {
+            if token.symbol == "OGY" {
+                print(token)
+            }
+        }
+    }
+    
+    func testTokenBalance() async throws {
+        let holdings = try await tokenService.balanceOf(kostaPrincipal)
+        print(holdings)
     }
     
 //    func testCrack() async {

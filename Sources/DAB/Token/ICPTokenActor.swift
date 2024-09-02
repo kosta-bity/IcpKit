@@ -1,5 +1,5 @@
 //
-//  ICPTokenWrapper.swift
+//  ICPTokenActor.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 26.08.24.
@@ -9,22 +9,15 @@ import Foundation
 import IcpKit
 import BigInt
 
-public struct ICPTokenBalanceResponse {
-    public let value: BigUInt
-    public let decimals: Int
-    public let error: String?
-}
-
 public struct ICPTokenTransferArgs {
-    public let from: ICPSigningPrincipal
-    public let to: ICPPrincipal
+    public let sender: ICPSigningPrincipal
+    public let from: ICPAccount
+    public let to: ICPAccount
     public let amount: BigUInt
     
     // options
     public let fee: BigUInt?
     public let memo: String?
-    public let fromSubAccount: BigUInt?
-    public let toSubAccount: Data? // or BigUInt?
     public let createdAtTime: Date?
 }
 
@@ -40,17 +33,24 @@ public enum ICPTokenApproveResult {
 }
 
 public enum ICPTokenTransferResponse {
-    case height(String)
+    case height(BigUInt)
     case amount(String)
     case transactionId(String)
 }
 
-public protocol ICPTokenWrapper {
+public protocol ICPTokenActor {
     var standard: ICPTokenStandard { get }
+
+    init(_ canister: ICPPrincipal, _ client: ICPRequestClient)
     
-    func balance(_ principal: ICPPrincipal) async throws -> ICPTokenBalanceResponse
+    func balance(_ principal: ICPPrincipal) async throws -> BigUInt
+    func fee() async throws -> BigUInt
     func transfer(_ args: ICPTokenTransferArgs) async throws -> ICPTokenTransferResponse
     func approve(_ args: ICPTokenApproveArgs) async throws -> ICPTokenApproveResult
-    func metadata() async throws -> ICPTokenMetadata
-    func decimals() async throws -> Int
+}
+
+public extension ICPTokenActor {
+    init(_ canister: String, _ client: ICPRequestClient) throws {
+        self.init(try ICPPrincipal(canister), client)
+    }
 }
