@@ -13,8 +13,8 @@ class ICRC7NftActor: ICPNftActor {
     let standard: ICPNftStandard = .icrc7
     private let service: ICRC7.Service
     
-    required init(_ canister: ICPPrincipal) {
-        service = ICRC7.Service(canister)
+    required init(_ canister: ICPPrincipal, _ client: ICPRequestClient) {
+        service = ICRC7.Service(canister, client: client)
     }
     
     func allNfts() async throws -> [ICPNftDetails] {

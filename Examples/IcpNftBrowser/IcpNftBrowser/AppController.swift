@@ -13,7 +13,7 @@ class AppController: ObservableObject {
     @Published var collections: [ICPNftCollection]?
     @Published var myNFTs: [ICPNftDetails]? = []
     
-    private let nftService = DABNftService()
+    let nftService = DABNftService()
     
     init() { refreshCollections() }
     

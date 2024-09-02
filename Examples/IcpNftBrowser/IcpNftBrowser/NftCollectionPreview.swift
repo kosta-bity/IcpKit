@@ -9,35 +9,29 @@ import SwiftUI
 import DAB
 
 struct NftCollectionPreview: View {
-    @State var collection: ICPNftCollection
+    let collection: ICPNftCollection
+    let service: DABNftService
     
     var body: some View {
         NavigationLink {
-            NftCollectionDetails(controller: CollectionController(collection: collection))
+            NftCollectionDetails(controller: CollectionController(collection: collection, service: service))
         } label: {
             contents
         }
     }
     
     private var contents: some View {
-        CardContainer {
-            VStack {
-                RemoteImage(url: collection.icon)
-                Text(collection.name)
-                    .bold()
-                    .font(.title3)
-                Text(collection.description)
-                    .font(.caption)
-                    .lineLimit(3)
-            }
-            .frame(height: 180)
-            .tagged(collection.standard.description)
-        }
+        Card(
+            image: collection.icon,
+            title: collection.name,
+            description: collection.description,
+            tag: collection.standard.description
+        )
     }
 }
 
 #Preview {
-    return NftCollectionPreview(collection: PreviewModels.fakeCollections.first!)
+    return NftCollectionPreview(collection: PreviewModels.fakeCollections.first!, service: PreviewModels.mockService)
 }
 
 extension ICPNftStandard: Identifiable, CustomStringConvertible {

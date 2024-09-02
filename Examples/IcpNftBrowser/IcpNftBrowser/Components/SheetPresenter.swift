@@ -11,7 +11,7 @@ struct SheetPresenter<Presented, Content: View, PresentedView: View>: View {
     @Binding var presenting: Presented?
     let builder: (Presented) -> PresentedView
     let content: () -> Content
-    private var isPresenting: Binding<Bool> { Binding(get: { presenting != nil }, set: {_ in }) }
+    private var isPresenting: Binding<Bool> { Binding.readOnly { presenting != nil } }
     
     var body: some View {
         content()

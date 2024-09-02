@@ -13,8 +13,8 @@ class OrigynNftActor: ICPNftActor {
     let standard: ICPNftStandard = .origynNft
     private let service: OrigynNFT.Service
     
-    required init(_ canister: ICPPrincipal) {
-        service = OrigynNFT.Service(canister)
+    required init(_ canister: ICPPrincipal, _ client: ICPRequestClient) {
+        service = OrigynNFT.Service(canister, client: client)
     }
     
     func allNfts() async throws -> [ICPNftDetails] {

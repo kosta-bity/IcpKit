@@ -19,17 +19,7 @@ struct NftCollectionDetails: View {
         ) {
             ScrollView {
                 VStack {
-                    AsyncImage(url: controller.collection.icon) { phase in
-                        if let image = phase.image {
-                            image
-                                .resizable()
-                                .scaledToFit()
-                        } else if phase.error != nil {
-                            Color.red // Indicates an error.
-                        } else {
-                            ProgressView()
-                        }
-                    }
+                    RemoteImage(controller.collection.icon)
                     Text(controller.collection.description)
                         .lineLimit(.max)
                     Divider()
@@ -39,6 +29,7 @@ struct NftCollectionDetails: View {
                 }
             }
         }
+        .safeAreaPadding()
         .navigationTitle(controller.collection.name)
     }
 }

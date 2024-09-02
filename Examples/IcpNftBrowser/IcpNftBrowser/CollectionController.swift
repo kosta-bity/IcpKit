@@ -10,12 +10,13 @@ import DAB
 
 class CollectionController: ObservableObject {
     let collection: ICPNftCollection
-    private lazy var actor: ICPNftActor = { DABNftService.actor(for: collection) }()
+    private let actor: ICPNftActor
     
     @Published var nfts: [ICPNftDetails]?
     
-    init(collection: ICPNftCollection) {
+    init(collection: ICPNftCollection, service: DABNftService) {
         self.collection = collection
+        self.actor = service.actor(for: collection)
         fetchNfts()
     }
     

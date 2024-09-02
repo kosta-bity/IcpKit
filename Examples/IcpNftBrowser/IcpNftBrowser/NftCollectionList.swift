@@ -10,16 +10,17 @@ import DAB
 
 struct NftCollectionList: View {
     @Binding var collections: [ICPNftCollection]?
+    let service: DABNftService
     
     var body: some View {
         ScrollView {
-            Lazy2dGrid(items: $collections, builder: NftCollectionPreview.init)
+            Lazy2dGrid(items: $collections, builder: { NftCollectionPreview(collection: $0, service: service) })
         }
     }
 }
 
 #Preview {
-    NftCollectionList(collections: .constant(PreviewModels.fakeCollections))
+    NftCollectionList(collections: .constant(PreviewModels.fakeCollections), service: PreviewModels.mockService)
 }
 
 extension ICPNftCollection: Identifiable {

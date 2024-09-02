@@ -13,18 +13,9 @@ struct NftDetails: View {
     
     var body: some View {
         ScrollView {
-            VStack {
-                AsyncImage(url: nft.url) { phase in
-                    if let image = phase.image {
-                        image
-                            .resizable()
-                            .scaledToFit()
-                    } else if phase.error != nil {
-                        Color.red // Indicates an error.
-                    } else {
-                        ProgressView()
-                    }
-                }
+            VStack {                
+                RemoteImage(nft.url)
+                .frame(minHeight: 150)
                 .clipShape(RoundedRectangle(cornerRadius: 5))
                 nft.name.map { Text($0)
                         .bold()
@@ -36,6 +27,7 @@ struct NftDetails: View {
                 NftProperty(label: "Metadata", value: nft.metadata.debugDescription)
             }
         }
+        .safeAreaPadding()
         .navigationTitle(nft.name ?? nft.id.description)
     }
 }

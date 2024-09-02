@@ -9,21 +9,25 @@ import Foundation
 import IcpKit
 
 public class DABNftService {
-    private let service = try! DABNft.Service("ctqxp-yyaaa-aaaah-abbda-cai")
+    private let client: ICPRequestClient
+    private let service: DABNft.Service
     
-    public init() { }
+    public init() { 
+        client = ICPRequestClient()
+        service = try! DABNft.Service("ctqxp-yyaaa-aaaah-abbda-cai", client: client)
+    }
     
     public func allCollections() async throws -> [ICPNftCollection] {
         let allCollections = try await service.get_all()
         return allCollections.compactMap(ICPNftCollection.init)
     }
     
-    public static func `actor`(for nft: ICPNftDetails) -> any ICPNftActor {
-        ICPNftActorFactory.actor(for: nft.standard, nft.canister)
+    public func `actor`(for nft: ICPNftDetails) -> any ICPNftActor {
+        ICPNftActorFactory.actor(for: nft.standard, nft.canister, client)
     }
     
-    public static func `actor`(for collection: ICPNftCollection) -> any ICPNftActor {
-        ICPNftActorFactory.actor(for: collection.standard, collection.canister)
+    public func `actor`(for collection: ICPNftCollection) -> any ICPNftActor {
+        ICPNftActorFactory.actor(for: collection.standard, collection.canister, client)
     }
     
     public func holdings(_ account: ICPPrincipal) async throws -> [ICPNftDetails] {
@@ -42,7 +46,7 @@ public class DABNftService {
     }
     
     private func holding(_ account: ICPPrincipal, _ collection: ICPNftCollection) async throws -> [ICPNftDetails] {
-        let actor = ICPNftActorFactory.actor(for: collection.standard, collection.canister)
+        let actor = actor(for: collection)
         do {
             let holding = try await actor.userTokens(account)
             return holding

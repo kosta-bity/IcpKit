@@ -11,7 +11,7 @@ import IcpKit
 public protocol ICPNftActor {
     var standard: ICPNftStandard { get }
     
-    init(_ canister: ICPPrincipal)
+    init(_ canister: ICPPrincipal, _ client: ICPRequestClient)
     
     func allNfts() async throws -> [ICPNftDetails]
     func nftDetails(_ tokenIndex: ICPNftDetails.Index) async throws -> ICPNftDetails
@@ -27,7 +27,7 @@ public enum ICPNftActorError: Error {
 }
 
 public extension ICPNftActor {
-    init(_ canister: String) throws {
-        self.init(try ICPPrincipal(canister))
+    init(_ canister: String, _ client: ICPRequestClient) throws {
+        self.init(try ICPPrincipal(canister), client)
     }
 }

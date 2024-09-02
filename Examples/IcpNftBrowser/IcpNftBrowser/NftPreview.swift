@@ -12,15 +12,12 @@ struct NftPreview: View {
     let nft: ICPNftDetails
     
     var body: some View {
-        CardContainer {
-            VStack {
-                RemoteImage(url: nft.url)
-                nft.name.map { Text($0)
-                        .bold()
-                        .font(.title3)
-                }
-            }
-        }
+        Card(
+            image: nft.url,
+            title: nft.name,
+            description: nft.index.description,
+            tag: nil
+        )
     }
 }
 

@@ -13,8 +13,8 @@ class EXTNftActor: ICPNftActor {
     let standard: ICPNftStandard = .ext
     private let service: EXT.Service
     
-    required init(_ canister: ICPPrincipal) {
-        service = EXT.Service(canister)
+    required init(_ canister: ICPPrincipal, _ client: ICPRequestClient) {
+        service = EXT.Service(canister, client: client)
     }
     
     func allNfts() async throws -> [ICPNftDetails] {

@@ -17,7 +17,7 @@ public class ICPNftActorFactory {
         }
     }
     
-    public static func `actor`(for standard: ICPNftStandard, _ canister: ICPPrincipal) -> ICPNftActor {
-        actorType(for: standard).init(canister)
+    public static func `actor`(for standard: ICPNftStandard, _ canister: ICPPrincipal, _ client: ICPRequestClient) -> ICPNftActor {
+        actorType(for: standard).init(canister, client)
     }
 }
