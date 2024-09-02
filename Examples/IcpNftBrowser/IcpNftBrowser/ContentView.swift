@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject var controller: AppController
     
-    private enum Tab { case allNfts, myNfts }
+    private enum Tab { case allNfts, allTokens, myNfts }
     @State private var currentTab: Tab = .allNfts
     
     var body: some View {
@@ -19,6 +19,7 @@ struct ContentView: View {
                 tabs
                 TabView(selection: $currentTab) {
                     AllNfts(controller: controller).tag(Tab.allNfts)
+                    AllTokens(controller: controller).tag(Tab.allTokens)
                     MyNfts(controller: controller).tag(Tab.myNfts)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
@@ -32,6 +33,8 @@ struct ContentView: View {
         HStack {
             Spacer()
             Button("All NFTs") { currentTab = .allNfts }
+            Spacer()
+            Button("All Tokens") { currentTab = .allTokens }
             Spacer()
             Button("My NFTs") { currentTab = .myNfts }
             Spacer()

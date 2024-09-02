@@ -11,11 +11,18 @@ import IcpKit
 
 class AppController: ObservableObject {
     @Published var collections: [ICPNftCollection]?
+    @Published var tokens: [ICPToken]?
     @Published var myNFTs: [ICPNftDetails]? = []
     
     let nftService = DABNftService()
+    let tokenService = DABTokenService()
     
-    init() { refreshCollections() }
+    init() { refresh() }
+    
+    func refresh() {
+        refreshCollections()
+        refreshTokens()
+    }
     
     open func refreshCollections() {
         self.collections = nil
@@ -25,9 +32,16 @@ class AppController: ObservableObject {
         }
     }
     
+    open func refreshTokens() {
+        self.tokens = nil
+        Task {
+            let tokens = try await tokenService.allTokens()
+            DispatchQueue.main.async { self.tokens = tokens }
+        }
+    }
+    
     func fetchNfts(_ principalString: String) {
         guard let principal = try? ICPPrincipal(principalString) else {
-            print("invalid principal")
             myNFTs = []
             return
         }
@@ -37,5 +51,9 @@ class AppController: ObservableObject {
             let nfts = try await nftService.holdings(principal)
             DispatchQueue.main.async { self.myNFTs = nfts }
         }
+    }
+    
+    func fetchTokens(_ principal: String) {
+        
     }
 }

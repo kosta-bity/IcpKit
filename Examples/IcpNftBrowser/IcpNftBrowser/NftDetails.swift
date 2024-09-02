@@ -21,10 +21,10 @@ struct NftDetails: View {
                         .bold()
                         .font(.title3)
                 }
-                NftProperty(label: "ID", value: nft.id)
-                NftProperty(label: "Index", value: nft.index.description)
-                NftProperty(label: "Canister", value: nft.canister.string)
-                NftProperty(label: "Metadata", value: nft.metadata.debugDescription)
+                ItemProperty(label: "ID", value: nft.id)
+                ItemProperty(label: "Index", value: nft.index.description)
+                ItemProperty(label: "Canister", value: nft.canister.string)
+                ItemProperty(label: "Metadata", value: nft.metadata.debugDescription)
             }
         }
         .safeAreaPadding()

@@ -1,5 +1,5 @@
 //
-//  NftProperty.swift
+//  ItemProperty.swift
 //  IcpNftBrowser
 //
 //  Created by Konstantinos Gaitanis on 30.08.24.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct NftProperty: View {
+struct ItemProperty: View {
     let label: String
     let value: String?
     
@@ -26,5 +26,5 @@ struct NftProperty: View {
 }
 
 #Preview {
-    NftProperty(label: "ID", value: "aaaaa-aa")
+    ItemProperty(label: "ID", value: "aaaaa-aa")
 }

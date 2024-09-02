@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
-import DAB
 
-struct SearchBar: View {
+struct SearchBar<T>: View where T: Identifiable & CaseIterable & CustomStringConvertible, T.AllCases.Element == T {
     @Binding var searchString: String
-    @Binding var standard: ICPNftStandard?
+    @Binding var standard: T?
     
     var body: some View {
         HStack {
@@ -18,7 +17,7 @@ struct SearchBar: View {
                 .textFieldStyle(.roundedBorder)
             Menu {
                 Button("All") { standard = nil }
-                ForEach(ICPNftStandard.allCases) { standard in
+                ForEach(Array(T.allCases)) { standard in
                     Button(standard.description) { self.standard = standard }
                 }
             } label: {
@@ -28,6 +27,8 @@ struct SearchBar: View {
     }
 }
 
+
+import DAB
 #Preview {
-    SearchBar(searchString: .constant(""), standard: .constant(nil))
+    SearchBar(searchString: .constant(""), standard: .constant(ICPNftStandard.icrc7))
 }

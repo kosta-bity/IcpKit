@@ -22,6 +22,19 @@ public struct ICPToken {
     
     public let logo: URL?
     public let website: URL?
+    
+    public init(standard: ICPTokenStandard, canister: ICPPrincipal, name: String, decimals: UInt, symbol: String, description: String, totalSupply: BigUInt, verified: Bool, logo: URL?, website: URL?) {
+        self.standard = standard
+        self.canister = canister
+        self.name = name
+        self.decimals = decimals
+        self.symbol = symbol
+        self.description = description
+        self.totalSupply = totalSupply
+        self.verified = verified
+        self.logo = logo
+        self.website = website
+    }
 }
 
 extension ICPToken: Hashable {

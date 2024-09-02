@@ -28,11 +28,19 @@ struct AllNfts: View {
     var body: some View {
         VStack {
             SearchBar(searchString: $searchString, standard: $searchStandard)
-            NftCollectionList(collections: filteredCollections, service: controller.nftService)
+            ScrollView {
+                Lazy2dGrid(items: filteredCollections, builder: {                    
+                    NftCollectionPreview(collection: $0, service: controller.nftService)
+                })
+            }
         }
     }
 }
 
 #Preview {
     AllNfts(controller: PreviewModels.mockAppController)
+}
+
+extension ICPNftCollection: Identifiable {
+    public var id: String { canister.string }
 }
