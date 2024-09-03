@@ -18,6 +18,10 @@ public class DABTokenService {
         service = try! DABTokens.Service("b7hhy-tyaaa-aaaah-abbja-cai", client: client)
     }
     
+    public func `actor`(for token: ICPToken) -> ICPTokenActor? {
+        ICPTokenActorFactory.actor(for: token, client)
+    }
+    
     public func allTokens() async throws -> [ICPToken] {
         let dabTokens = try await service.get_all()
         let tokens = try dabTokens.map(ICPToken.init)

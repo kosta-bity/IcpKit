@@ -8,6 +8,8 @@ import IcpKit
 import BigInt
 
 enum ICRC1 {
+	typealias MetadataField = CandidTuple2<String, Value>
+	
 	/// // https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-1/README.md
 	/// type Subaccount = blob;
 	typealias Subaccount = Data
@@ -17,6 +19,12 @@ enum ICRC1 {
 	struct Account: Codable {
 		let owner: ICPPrincipal
 		let subaccount: Subaccount?
+	}
+	
+	/// type SupportedStandard = record { name : text; url : text };
+	struct SupportedStandard: Codable {
+		let url: String
+		let name: String
 	}
 	
 	/// type TransferArgs = record {
@@ -87,7 +95,8 @@ enum ICRC1 {
 		}
 	}
 	
-	enum UnnamedType0: Codable {
+	/// type TransferResult = variant { Ok: nat; Err: TransferError; };
+	enum TransferResult: Codable {
 		case Ok(BigUInt)
 		case Err(TransferError)
 	
@@ -95,11 +104,6 @@ enum ICRC1 {
 			case Ok
 			case Err
 		}
-	}
-	
-	struct UnnamedType1: Codable {
-		let url: String
-		let name: String
 	}
 	
 	/// type Value = variant {
@@ -128,12 +132,12 @@ enum ICRC1 {
 	///     icrc1_symbol : () -> (text) query;
 	///     icrc1_decimals : () -> (nat8) query;
 	///     icrc1_fee : () -> (nat) query;
-	///     icrc1_metadata : () -> (vec record { text; Value }) query;
+	///     icrc1_metadata : () -> (vec MetadataField) query;
 	///     icrc1_total_supply : () -> (nat) query;
 	///     icrc1_minting_account : () -> (opt Account) query;
 	///     icrc1_balance_of : (Account) -> (nat) query;
-	///     icrc1_transfer : (TransferArgs) -> (variant { Ok: nat; Err: TransferError; });
-	///     icrc1_supported_standards : () -> (vec record { name : text; url : text }) query;
+	///     icrc1_transfer : (TransferArgs) -> (TransferResult);
+	///     icrc1_supported_standards : () -> (vec SupportedStandard) query;
 	/// };
 	class Service: ICPService {
 		/// icrc1_name : () -> (text) query;
@@ -164,9 +168,9 @@ enum ICRC1 {
 			return response
 		}
 	
-		/// icrc1_metadata : () -> (vec record { text; Value }) query;
-		func icrc1_metadata(sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<String, Value>] {
-			let caller = ICPQueryNoArgs<[CandidTuple2<String, Value>]>(canister, "icrc1_metadata")
+		/// icrc1_metadata : () -> (vec MetadataField) query;
+		func icrc1_metadata(sender: ICPSigningPrincipal? = nil) async throws -> [MetadataField] {
+			let caller = ICPQueryNoArgs<[MetadataField]>(canister, "icrc1_metadata")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
@@ -192,16 +196,16 @@ enum ICRC1 {
 			return response
 		}
 	
-		/// icrc1_transfer : (TransferArgs) -> (variant { Ok: nat; Err: TransferError; });
-		func icrc1_transfer(_ arg0: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType0 {
-			let caller = ICPCall<TransferArgs, UnnamedType0>(canister, "icrc1_transfer")
+		/// icrc1_transfer : (TransferArgs) -> (TransferResult);
+		func icrc1_transfer(_ arg0: TransferArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferResult {
+			let caller = ICPCall<TransferArgs, TransferResult>(canister, "icrc1_transfer")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
-		/// icrc1_supported_standards : () -> (vec record { name : text; url : text }) query;
-		func icrc1_supported_standards(sender: ICPSigningPrincipal? = nil) async throws -> [UnnamedType1] {
-			let caller = ICPQueryNoArgs<[UnnamedType1]>(canister, "icrc1_supported_standards")
+		/// icrc1_supported_standards : () -> (vec SupportedStandard) query;
+		func icrc1_supported_standards(sender: ICPSigningPrincipal? = nil) async throws -> [SupportedStandard] {
+			let caller = ICPQueryNoArgs<[SupportedStandard]>(canister, "icrc1_supported_standards")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}

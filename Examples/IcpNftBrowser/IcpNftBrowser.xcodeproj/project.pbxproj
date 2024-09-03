@@ -27,16 +27,16 @@
 		0AAB0B762C82169400739497 /* SheetPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB0B752C82169400739497 /* SheetPresenter.swift */; };
 		0AAB0B792C821AB500739497 /* Binding+ReadOnly.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB0B782C821AB500739497 /* Binding+ReadOnly.swift */; };
 		0AAB0B7B2C821C3C00739497 /* AllNfts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB0B7A2C821C3C00739497 /* AllNfts.swift */; };
-		0AAB0B7D2C821CE200739497 /* MyNfts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB0B7C2C821CE200739497 /* MyNfts.swift */; };
 		0AAB0B802C822BF200739497 /* SVGView in Frameworks */ = {isa = PBXBuildFile; productRef = 0AAB0B7F2C822BF200739497 /* SVGView */; };
 		0AAB0B842C822C4500739497 /* RemoteImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB0B832C822C4500739497 /* RemoteImage.swift */; };
 		0AAB0B8B2C82403300739497 /* MiniWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAB0B8A2C82403300739497 /* MiniWebView.swift */; };
 		0AE2B1F22C8596C00095F5DA /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1F12C8596C00095F5DA /* Card.swift */; };
-		0AE2B1F42C86114D0095F5DA /* TokenController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1F32C86114D0095F5DA /* TokenController.swift */; };
 		0AE2B1F62C8612300095F5DA /* AllTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1F52C8612300095F5DA /* AllTokens.swift */; };
 		0AE2B1F82C8615130095F5DA /* TokenPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1F72C8615130095F5DA /* TokenPreview.swift */; };
 		0AE2B1FA2C86191B0095F5DA /* TokenDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1F92C86191B0095F5DA /* TokenDetails.swift */; };
 		0AE2B1FC2C8619710095F5DA /* ItemProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1FB2C8619710095F5DA /* ItemProperty.swift */; };
+		0AE2B1FE2C8748100095F5DA /* MyHoldings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1FD2C8748100095F5DA /* MyHoldings.swift */; };
+		0AE2B2002C874B040095F5DA /* TokenBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AE2B1FF2C874B040095F5DA /* TokenBalance.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -59,15 +59,15 @@
 		0AAB0B752C82169400739497 /* SheetPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SheetPresenter.swift; sourceTree = "<group>"; };
 		0AAB0B782C821AB500739497 /* Binding+ReadOnly.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+ReadOnly.swift"; sourceTree = "<group>"; };
 		0AAB0B7A2C821C3C00739497 /* AllNfts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllNfts.swift; sourceTree = "<group>"; };
-		0AAB0B7C2C821CE200739497 /* MyNfts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyNfts.swift; sourceTree = "<group>"; };
 		0AAB0B832C822C4500739497 /* RemoteImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteImage.swift; sourceTree = "<group>"; };
 		0AAB0B8A2C82403300739497 /* MiniWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniWebView.swift; sourceTree = "<group>"; };
 		0AE2B1F12C8596C00095F5DA /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
-		0AE2B1F32C86114D0095F5DA /* TokenController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenController.swift; sourceTree = "<group>"; };
 		0AE2B1F52C8612300095F5DA /* AllTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllTokens.swift; sourceTree = "<group>"; };
 		0AE2B1F72C8615130095F5DA /* TokenPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenPreview.swift; sourceTree = "<group>"; };
 		0AE2B1F92C86191B0095F5DA /* TokenDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenDetails.swift; sourceTree = "<group>"; };
 		0AE2B1FB2C8619710095F5DA /* ItemProperty.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ItemProperty.swift; sourceTree = "<group>"; };
+		0AE2B1FD2C8748100095F5DA /* MyHoldings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MyHoldings.swift; sourceTree = "<group>"; };
+		0AE2B1FF2C874B040095F5DA /* TokenBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenBalance.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,10 +107,9 @@
 				0AAB0B5C2C819C6400739497 /* Components */,
 				0AAB0B542C80ADEF00739497 /* AppController.swift */,
 				0AAB0B562C80AE0B00739497 /* CollectionController.swift */,
-				0AE2B1F32C86114D0095F5DA /* TokenController.swift */,
 				0AAB0B352C80638D00739497 /* ContentView.swift */,
+				0AE2B1FD2C8748100095F5DA /* MyHoldings.swift */,
 				0AAB0B7A2C821C3C00739497 /* AllNfts.swift */,
-				0AAB0B7C2C821CE200739497 /* MyNfts.swift */,
 				0AE2B1F52C8612300095F5DA /* AllTokens.swift */,
 				0AAB0B332C80638D00739497 /* IcpNftBrowserApp.swift */,
 				0AAB0B522C80A91E00739497 /* NftCollectionDetails.swift */,
@@ -146,6 +145,7 @@
 				0AAB0B732C81FD3900739497 /* Lazy2dGrid.swift */,
 				0AAB0B752C82169400739497 /* SheetPresenter.swift */,
 				0AAB0B8A2C82403300739497 /* MiniWebView.swift */,
+				0AE2B1FF2C874B040095F5DA /* TokenBalance.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -237,8 +237,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0AE2B1F42C86114D0095F5DA /* TokenController.swift in Sources */,
 				0AAB0B742C81FD3900739497 /* Lazy2dGrid.swift in Sources */,
+				0AE2B2002C874B040095F5DA /* TokenBalance.swift in Sources */,
 				0AAB0B362C80638D00739497 /* ContentView.swift in Sources */,
 				0AE2B1FC2C8619710095F5DA /* ItemProperty.swift in Sources */,
 				0AE2B1FA2C86191B0095F5DA /* TokenDetails.swift in Sources */,
@@ -253,7 +253,7 @@
 				0AAB0B532C80A91E00739497 /* NftCollectionDetails.swift in Sources */,
 				0AAB0B5B2C819C1600739497 /* NftDetails.swift in Sources */,
 				0AAB0B7B2C821C3C00739497 /* AllNfts.swift in Sources */,
-				0AAB0B7D2C821CE200739497 /* MyNfts.swift in Sources */,
+				0AE2B1FE2C8748100095F5DA /* MyHoldings.swift in Sources */,
 				0AE2B1F82C8615130095F5DA /* TokenPreview.swift in Sources */,
 				0AAB0B842C822C4500739497 /* RemoteImage.swift in Sources */,
 				0AAB0B552C80ADEF00739497 /* AppController.swift in Sources */,

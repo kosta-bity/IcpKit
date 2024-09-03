@@ -8,11 +8,18 @@
 import Foundation
 import DAB
 import IcpKit
+import BigInt
+
+struct TokenHolding {
+    let token: ICPToken
+    let balance: BigUInt
+}
 
 class AppController: ObservableObject {
     @Published var collections: [ICPNftCollection]?
     @Published var tokens: [ICPToken]?
     @Published var myNFTs: [ICPNftDetails]? = []
+    @Published var myTokens: [TokenHolding] = []
     
     let nftService = DABNftService()
     let tokenService = DABTokenService()
@@ -41,19 +48,29 @@ class AppController: ObservableObject {
     }
     
     func fetchNfts(_ principalString: String) {
+        myTokens = []
         guard let principal = try? ICPPrincipal(principalString) else {
             myNFTs = []
             return
         }
         myNFTs = nil
-        print("fetching holding for \(principal)")
         Task {
-            let nfts = try await nftService.holdings(principal)
-            DispatchQueue.main.async { self.myNFTs = nfts }
+            try await withThrowingTaskGroup(of: Balance.self) { group in
+                group.addTask { .nfts(try await self.nftService.holdings(principal)) }
+                group.addTask { .tokens(try await self.tokenService.balanceOf(principal).map { .init(token: $0.0, balance: $0.1) }) }
+                
+                for try await result in group {
+                    switch result {
+                    case .nfts(let nfts): DispatchQueue.main.async { self.myNFTs = nfts }
+                    case .tokens(let tokens): DispatchQueue.main.async { self.myTokens = tokens }
+                    }
+                }
+            }
         }
     }
-    
-    func fetchTokens(_ principal: String) {
-        
-    }
+}
+
+private enum Balance {
+    case nfts([ICPNftDetails])
+    case tokens([TokenHolding])
 }

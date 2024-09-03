@@ -11,10 +11,10 @@ public enum ICPNftStandard: CaseIterable {
     case ext
     case icrc7
     case origynNft
-    // case dip721
-    // case icPunks
-    // case departuresLabs
-    // case erc721 // Ethereum?
-    // case c3     // wrapped ICP
-    
+    case dip721
+    case dip721v2
+    case icPunks
+    case departuresLabs
+    case erc721 // Ethereum
+    case c3     // wrapped ICP
 }

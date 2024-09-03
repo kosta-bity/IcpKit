@@ -1,0 +1,117 @@
+// https://github.com/Psychedelic/DIP20/blob/main/spec.md
+
+type Metadata = record {
+    logo : text; // base64 encoded logo or logo url
+    name : text; // token name
+    symbol : text; // token symbol
+    decimals : nat8; // token decimal
+    totalSupply : nat; // token total supply
+    owner : principal; // token owner
+    fee : nat; // fee for update calls
+};
+
+type TxError = variant {
+    InsufficientAllowance;
+    InsufficientBalance;
+    ErrorOperationStyle;
+    Unauthorized;
+    LedgerTrap;
+    ErrorTo;
+    Other: text;
+    BlockUsed;
+    AmountTooSmall;
+};
+
+type TxReceipt = variant {
+    Ok: nat;
+    Err: TxError;
+};
+
+type Operation = variant {
+    approve;
+    mint;
+    transfer;
+    transferFrom;
+};
+
+type TransactionStatus = variant {
+    succeeded;
+    failed;
+};
+
+// Timestamps are represented as nanoseconds from the UNIX epoch in UTC timezone
+type TimeStamp = record {
+    timestamp_nanos: nat64;
+};
+
+type TxRecord = record {
+    caller: opt principal;
+    op: Operation; // operation type
+    index: nat; // transaction index
+    from: principal;
+    to: principal;
+    amount: nat;
+    fee: nat;
+    timestamp: TimeStamp;
+    status: TransactionStatus;
+};
+
+service: {
+    // Returns the logo of the token.
+    logo: () -> (text) query;
+    
+    // Returns the name of the token.
+    name: () -> (text) query;
+    
+    // Returns the symbol of the token.
+    symbol: () -> (text) query;
+    
+    // Returns the decimals of the token.
+    decimals: () -> (nat8) query;
+    
+    // Returns the total supply of the token.
+    totalSupply: () -> (nat8) query;
+    
+    // Returns the balance of user who.
+    balanceOf: (who: principal) -> (nat8) query;
+    
+    //Returns the amount which spender is still allowed to withdraw from owner.
+    allowance: (owner: principal, spender: principal) -> (nat) query;
+
+    // Returns the metadata of the token.
+    getMetadata: () -> (Metadata) query;
+    
+    // Returns the history size.
+    historySize: () -> (nat) query;
+
+    // Returns transaction detail of the transaction identified by index.
+    // If the index is out of range, the execution traps. Transactions are indexed from zero.
+    getTransaction: (index: nat) -> (TxRecord) query;
+    
+    // Returns an array of transaction records in the range [start, start + limit).
+    // To fend off DoS attacks, this function is allowed to trap, if limit is greater than the limit allowed by the token.
+    // This function is also allowed to trap if start + limit > historySize()
+    getTransactions: (start: nat, limit: nat) -> (vec TxRecord) query;
+    
+    // Returns an array of transaction records in range [start, start + limit) related to user who.
+    // Unlike getTransactions function, the range [start, start + limit) for getUserTransactions is not the global range of all transactions.
+    // The range [start, start + limit) here pertains to the transactions of user who.
+    // Implementations are allowed to return less TxRecords than requested to fend off DoS attacks.
+    getUserTransactions: (who: principal, start: nat, limit: nat) -> (vec TxRecord) query;
+
+    // Returns total number of transactions related to the user who.
+    getUserTransactionAmount: (who: principal) -> (nat) query;
+    
+    // Transfers value amount of tokens to user to, returns a TxReceipt which contains the transaction index or an error message.
+    transfer: (to: principal, value: nat) -> (TxReceipt);
+    
+    // Transfers value amount of tokens from user from to user to,
+    // this method allows canister smart contracts to transfer tokens on your behalf,
+    // it returns a TxReceipt which contains the transaction index or an error message.
+    transferFrom: (from: principal, to: principal, value: nat) -> (TxReceipt);
+    
+    // Allows spender to withdraw tokens from your account, up to the value amount.
+    // If it is called again it overwrites the current allowance with value.
+    // There is no upper limit for value.
+    approve: (spender: principal, value: nat) -> (TxReceipt);
+};

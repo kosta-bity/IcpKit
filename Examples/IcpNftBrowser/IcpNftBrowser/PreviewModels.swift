@@ -8,6 +8,7 @@
 import Foundation
 import DAB
 import IcpKit
+import BigInt
 
 struct PreviewModels {
     private init() {}
@@ -20,6 +21,7 @@ struct PreviewModels {
     static let mockNft = buildFakeNftList(fakeCollections.first!).first!
     static let mockUrl: URL = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.nEHLDZOYs2khTgDdZfJ-hwAAAA%26pid%3DApi&f=1&ipt=758c269e9e78c6a643664a8716572a5ac72df26dfe102e0538fb480e794f4cb7&ipo=images"
     static let mockSvgUrl: URL = "https://jmuqr-yqaaa-aaaaj-qaicq-cai.raw.icp0.io/?type=thumbnail&tokenid=ngedt-bakor-uwiaa-aaaaa-cmaca-uaqca-aaaaa-a"
+    static let mockHolding: [TokenHolding] = buildFakeTokenList().enumerated().map { TokenHolding(token: $0.element, balance: BigUInt($0.offset * 1000))}
 }
 
 private func buildFakeCollection(_ name: String) -> ICPNftCollection {
@@ -73,8 +75,10 @@ class MockAppController: AppController {
     
     override func fetchNfts(_ principalString: String) {
         self.myNFTs = nil
+        self.myTokens = []
         DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .seconds(2))) {
             self.myNFTs = buildFakeNftList(PreviewModels.fakeCollections.first!)
+            self.myTokens = PreviewModels.mockHolding
         }
     }
     

@@ -1,0 +1,82 @@
+// https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-2/README.md
+
+type Account = record {
+    owner : principal;
+    subaccount : opt blob;
+};
+
+type ApproveArgs = record {
+    from_subaccount : opt blob;
+    spender : Account;
+    amount : nat;
+    expected_allowance : opt nat;
+    expires_at : opt nat64;
+    fee : opt nat;
+    memo : opt blob;
+    created_at_time : opt nat64;
+};
+
+type ApproveError = variant {
+    BadFee : record { expected_fee : nat };
+    // The caller does not have enough funds to pay the approval fee.
+    InsufficientFunds : record { balance : nat };
+    // The caller specified the [expected_allowance] field, and the current
+    // allowance did not match the given value.
+    AllowanceChanged : record { current_allowance : nat };
+    // The approval request expired before the ledger had a chance to apply it.
+    Expired : record { ledger_time : nat64; };
+    TooOld;
+    CreatedInFuture: record { ledger_time : nat64 };
+    Duplicate : record { duplicate_of : nat };
+    TemporarilyUnavailable;
+    GenericError : record { error_code : nat; message : text };
+};
+
+type TransferFromError = variant {
+    BadFee : record { expected_fee : nat };
+    BadBurn : record { min_burn_amount : nat };
+    // The [from] account does not hold enough funds for the transfer.
+    InsufficientFunds : record { balance : nat };
+    // The caller exceeded its allowance.
+    InsufficientAllowance : record { allowance : nat };
+    TooOld;
+    CreatedInFuture: record { ledger_time : nat64 };
+    Duplicate : record { duplicate_of : nat };
+    TemporarilyUnavailable;
+    GenericError : record { error_code : nat; message : text };
+};
+
+type TransferFromArgs = record {
+    spender_subaccount : opt blob;
+    from : Account;
+    to : Account;
+    amount : nat;
+    fee : opt nat;
+    memo : opt blob;
+    created_at_time : opt nat64;
+};
+
+type AllowanceArgs = record {
+    account : Account;
+    spender : Account;
+};
+
+type Allowance = record {
+  allowance : nat;
+  expires_at : opt nat64;
+};
+
+service: {
+    // This method entitles the spender to transfer token amount on behalf of the caller from account.
+    // The number of transfers the spender can initiate from the caller's account is unlimited as long as the total amounts and fees of these transfers do not exceed the allowance.
+    // The caller does not need to have the full token amount on the specified account for the approval to succeed, just enough tokens to pay the approval fee.
+    // The call resets the allowance and the expiration date for the spender account to the given values.
+    icrc2_approve : (ApproveArgs) -> (variant { Ok : nat; Err : ApproveError });
+    
+    // Transfers a token amount from the from account to the to account using the allowance of the spender's account.
+    // The ledger draws the fees from the from account.
+    icrc2_transfer_from : (TransferFromArgs) -> (variant { Ok : nat; Err : TransferFromError });
+    
+    // Returns the token allowance that the spender account can transfer from the specified account, and the expiration time for that allowance, if any.
+    icrc2_allowance : (AllowanceArgs) -> (Allowance) query;
+};

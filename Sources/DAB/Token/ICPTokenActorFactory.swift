@@ -26,4 +26,8 @@ public class ICPTokenActorFactory {
     public static func `actor`(for standard: ICPTokenStandard, _ canister: ICPPrincipal, _ client: ICPRequestClient) -> ICPTokenActor? {
         actorType(for: standard)?.init(canister, client)
     }
+    
+    public static func `actor`(for token: ICPToken, _ client: ICPRequestClient) -> ICPTokenActor? {
+        actorType(for: token.standard)?.init(token.canister, client)
+    }
 }

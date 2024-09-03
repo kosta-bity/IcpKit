@@ -10,7 +10,7 @@ import DAB
 
 class CollectionController: ObservableObject {
     let collection: ICPNftCollection
-    private let actor: ICPNftActor
+    private let actor: ICPNftActor?
     
     @Published var nfts: [ICPNftDetails]?
     
@@ -21,6 +21,7 @@ class CollectionController: ObservableObject {
     }
     
     open func fetchNfts() {
+        guard let actor = actor else { return }
         nfts = nil
         Task {
             let nfts = try await actor.allNfts()

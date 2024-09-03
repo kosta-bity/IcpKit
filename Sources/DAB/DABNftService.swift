@@ -22,11 +22,11 @@ public class DABNftService {
         return allCollections.compactMap(ICPNftCollection.init)
     }
     
-    public func `actor`(for nft: ICPNftDetails) -> any ICPNftActor {
+    public func `actor`(for nft: ICPNftDetails) -> ICPNftActor? {
         ICPNftActorFactory.actor(for: nft.standard, nft.canister, client)
     }
     
-    public func `actor`(for collection: ICPNftCollection) -> any ICPNftActor {
+    public func `actor`(for collection: ICPNftCollection) -> ICPNftActor? {
         ICPNftActorFactory.actor(for: collection.standard, collection.canister, client)
     }
     
@@ -46,11 +46,11 @@ public class DABNftService {
     }
     
     private func holding(_ account: ICPPrincipal, _ collection: ICPNftCollection) async throws -> [ICPNftDetails] {
-        let actor = actor(for: collection)
+        guard let actor = actor(for: collection) else { return [] }
         do {
             let holding = try await actor.userTokens(account)
             return holding
-        } catch (let error) {
+        } catch {
             //print(error)
             return []
         }
@@ -86,6 +86,12 @@ private extension ICPNftStandard {
         case "ext": self = .ext
         case "icrc7": self = .icrc7
         case "nftorigyn": self = .origynNft
+        case "icpunks": self = .icPunks
+        case "departureLabs": self = .departuresLabs
+        case "c3": self = .c3
+        case "dip721": self = .dip721
+        case "dip721v2": self = .dip721v2
+        case "erc721": self = .erc721
         default: return nil
         }
     }
