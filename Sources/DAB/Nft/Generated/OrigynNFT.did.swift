@@ -3024,7 +3024,7 @@ enum OrigynNFT {
 		///       DIP721BoolResult,
 		///     ) query;
 		func dip721_is_approved_for_all(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> DIP721BoolResult {
-			let caller = ICPQuery<CandidTuple2<ICPPrincipal, ICPPrincipal>, DIP721BoolResult>(canister, "dip721_is_approved_for_all")
+			let caller = ICPQuery<ICPFunctionArgs2<ICPPrincipal, ICPPrincipal>, DIP721BoolResult>(canister, "dip721_is_approved_for_all")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -3133,14 +3133,14 @@ enum OrigynNFT {
 	
 		/// dip721_transfer : (principal, nat) -> (DIP721NatResult);
 		func dip721_transfer(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
 	
 		/// dip721_transfer_from : (principal, principal, nat) -> (DIP721NatResult);
 		func dip721_transfer_from(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer_from")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "dip721_transfer_from")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -3237,14 +3237,14 @@ enum OrigynNFT {
 	
 		/// history_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult) query;
 		func history_nft_origyn(_ arg0: String, _ arg1: BigUInt?, _ arg2: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
-			let caller = ICPQuery<CandidTuple3<String, BigUInt?, BigUInt?>, HistoryResult>(canister, "history_nft_origyn")
+			let caller = ICPQuery<ICPFunctionArgs3<String, BigUInt?, BigUInt?>, HistoryResult>(canister, "history_nft_origyn")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
 	
 		/// history_secure_nft_origyn : (text, opt nat, opt nat) -> (HistoryResult);
 		func history_secure_nft_origyn(_ arg0: String, _ arg1: BigUInt?, _ arg2: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> HistoryResult {
-			let caller = ICPCall<CandidTuple3<String, BigUInt?, BigUInt?>, HistoryResult>(canister, "history_secure_nft_origyn")
+			let caller = ICPCall<ICPFunctionArgs3<String, BigUInt?, BigUInt?>, HistoryResult>(canister, "history_secure_nft_origyn")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -3444,14 +3444,14 @@ enum OrigynNFT {
 	
 		/// icrc7_tokens : (opt nat, opt nat32) -> (vec nat) query;
 		func icrc7_tokens(_ arg0: BigUInt?, _ arg1: UInt32?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPQuery<CandidTuple2<BigUInt?, UInt32?>, [BigUInt]>(canister, "icrc7_tokens")
+			let caller = ICPQuery<ICPFunctionArgs2<BigUInt?, UInt32?>, [BigUInt]>(canister, "icrc7_tokens")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
 	
 		/// icrc7_tokens_of : (Account__3, opt nat, opt nat32) -> (vec nat) query;
 		func icrc7_tokens_of(_ arg0: Account__3, _ arg1: BigUInt?, _ arg2: UInt32?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPQuery<CandidTuple3<Account__3, BigUInt?, UInt32?>, [BigUInt]>(canister, "icrc7_tokens_of")
+			let caller = ICPQuery<ICPFunctionArgs3<Account__3, BigUInt?, UInt32?>, [BigUInt]>(canister, "icrc7_tokens_of")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -3534,7 +3534,7 @@ enum OrigynNFT {
 	
 		/// mint_nft_origyn : (text, Account) -> (OrigynTextResult);
 		func mint_nft_origyn(_ arg0: String, _ arg1: Account, sender: ICPSigningPrincipal? = nil) async throws -> OrigynTextResult {
-			let caller = ICPCall<CandidTuple2<String, Account>, OrigynTextResult>(canister, "mint_nft_origyn")
+			let caller = ICPCall<ICPFunctionArgs2<String, Account>, OrigynTextResult>(canister, "mint_nft_origyn")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -3731,7 +3731,7 @@ enum OrigynNFT {
 	
 		/// transferDip721 : (principal, nat) -> (DIP721NatResult);
 		func transferDip721(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferDip721")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferDip721")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -3745,14 +3745,14 @@ enum OrigynNFT {
 	
 		/// transferFrom : (principal, principal, nat) -> (DIP721NatResult);
 		func transferFrom(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFrom")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFrom")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
 	
 		/// transferFromDip721 : (principal, principal, nat) -> (DIP721NatResult);
 		func transferFromDip721(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> DIP721NatResult {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFromDip721")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, ICPPrincipal, BigUInt>, DIP721NatResult>(canister, "transferFromDip721")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}

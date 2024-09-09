@@ -70,10 +70,10 @@ service: {
     decimals: () -> (nat8) query;
     
     // Returns the total supply of the token.
-    totalSupply: () -> (nat8) query;
+    totalSupply: () -> (nat) query;
     
     // Returns the balance of user who.
-    balanceOf: (who: principal) -> (nat8) query;
+    balanceOf: (who: principal) -> (nat) query;
     
     //Returns the amount which spender is still allowed to withdraw from owner.
     allowance: (owner: principal, spender: principal) -> (nat) query;

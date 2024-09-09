@@ -476,7 +476,7 @@ private extension Array where Element == CandidFunctionSignature.Parameter {
         case 1: return first!.type.swiftType()
         default:
             let types = map { $0.type.swiftType() }.joined(separator: ", ")
-            return "CandidTuple\(count)<\(types)>"
+            return "ICPFunctionArgs\(count)<\(types)>"
         }
     }
     

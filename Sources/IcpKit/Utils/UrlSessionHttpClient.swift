@@ -8,7 +8,7 @@
 import Foundation
 
 class UrlSessionHttpClient: HttpClient {
-    private static let session: URLSession = URLSession(
+    private let session: URLSession = URLSession(
         configuration: .ephemeral,
         delegate: nil,
         delegateQueue: OperationQueue()
@@ -16,7 +16,7 @@ class UrlSessionHttpClient: HttpClient {
     
     func fetch(_ request: HttpRequest) async throws -> HttpResponse {
         let urlRequest = request.urlRequest
-        let (data, response) = try await Self.session.data(for: urlRequest)
+        let (data, response) = try await session.data(for: urlRequest)
         guard let statusCode = (response as? HTTPURLResponse)?.statusCode else {
             throw URLError(.badServerResponse)
         }

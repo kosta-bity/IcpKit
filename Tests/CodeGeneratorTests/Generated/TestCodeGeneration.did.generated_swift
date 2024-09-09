@@ -7,15 +7,15 @@ enum TestCodeGeneration {
 	
 	typealias Function01q = ICPQueryNoArgs<Bool>
 	
-	typealias Function02 = ICPCallNoArgs<CandidTuple2<Bool, String>>
+	typealias Function02 = ICPCallNoArgs<ICPFunctionArgs2<Bool, String>>
 	
-	typealias Function03q = ICPQueryNoArgs<CandidTuple3<Bool, String, Bool?>>
+	typealias Function03q = ICPQueryNoArgs<ICPFunctionArgs3<Bool, String, Bool?>>
 	
 	typealias Function10 = ICPCallNoResult<Bool>
 	
-	typealias Function20 = ICPCallNoResult<CandidTuple2<Bool, String>>
+	typealias Function20 = ICPCallNoResult<ICPFunctionArgs2<Bool, String>>
 	
-	typealias Function30q = ICPQueryNoResult<CandidTuple3<Bool, String, Bool?>>
+	typealias Function30q = ICPQueryNoResult<ICPFunctionArgs3<Bool, String, Bool?>>
 	
 	typealias RepeatedRecord = CandidTuple2<[Int8?], UInt8>
 	
@@ -115,13 +115,13 @@ enum TestCodeGeneration {
 		}
 	
 		func multipleUnnamedArgsAndResults(_ arg0: String, _ arg1: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> (Bool?, [Data]) {
-			let caller = ICPCall<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleUnnamedArgsAndResults")
+			let caller = ICPCall<ICPFunctionArgs2<String, [BigUInt]>, ICPFunctionArgs2<Bool?, [Data]>>(canister, "multipleUnnamedArgsAndResults")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response.tuple
 		}
 	
 		func multipleNamedArgsAndResults(name: String, ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> (out1: Bool?, out2: [Data]) {
-			let caller = ICPCall<CandidTuple2<String, [BigUInt]>, CandidTuple2<Bool?, [Data]>>(canister, "multipleNamedArgsAndResults")
+			let caller = ICPCall<ICPFunctionArgs2<String, [BigUInt]>, ICPFunctionArgs2<Bool?, [Data]>>(canister, "multipleNamedArgsAndResults")
 			let response = try await caller.callMethod(.init(name, ids), client, sender: sender)
 			return response.tuple
 		}

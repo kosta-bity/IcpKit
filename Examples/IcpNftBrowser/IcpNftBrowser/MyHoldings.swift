@@ -37,6 +37,6 @@ struct MyHoldings: View {
     MyHoldings(controller: PreviewModels.mockAppController)
 }
 
-extension TokenHolding: Identifiable {
-    var id: String { token.canister.string }
+extension ICPTokenBalance: Identifiable {
+    public var id: String { token.canister.string }
 }

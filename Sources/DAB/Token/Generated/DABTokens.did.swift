@@ -143,13 +143,13 @@ enum DABTokens {
 		}
 	
 		func add(trusted_source: ICPPrincipal?, token: add_token_input, sender: ICPSigningPrincipal? = nil) async throws -> operation_response {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal?, add_token_input>, operation_response>(canister, "add")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal?, add_token_input>, operation_response>(canister, "add")
 			let response = try await caller.callMethod(.init(trusted_source, token), client, sender: sender)
 			return response
 		}
 	
 		func remove(trusted_source: ICPPrincipal?, token_id: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> operation_response {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal?, ICPPrincipal>, operation_response>(canister, "remove")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal?, ICPPrincipal>, operation_response>(canister, "remove")
 			let response = try await caller.callMethod(.init(trusted_source, token_id), client, sender: sender)
 			return response
 		}

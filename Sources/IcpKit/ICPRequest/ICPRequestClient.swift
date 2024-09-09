@@ -62,9 +62,15 @@ public enum ICPRequestCertification {
 
 /// The HttpClient that takes care of encoding and serialising all requests
 public class ICPRequestClient {
-    private let client = UrlSessionHttpClient()
+    private let client: any HttpClient
     
-    public init() {}
+    public init() {
+        client = UrlSessionHttpClient()
+    }
+    
+    public init(_ client: any HttpClient) {
+        self.client = client
+    }
     
     /// Makes a Query/Call Request to the given canister and returns the result.
     /// Queries do not affect the state of the blockchain and are generally fast.
@@ -113,6 +119,7 @@ public class ICPRequestClient {
     ///   - duration: The maximum duration of polling
     ///   - waitDuration: The wait time between two consecutive polls
     /// - Returns: The response of the request
+    // TODO: return [CandidValue]
     public func callAndPoll(_ method: ICPMethod,
                      effectiveCanister canister: ICPPrincipal,
                      sender: ICPSigningPrincipal? = nil,
@@ -132,6 +139,7 @@ public class ICPRequestClient {
     ///   - canister: The canister
     ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
     /// - Returns: The response of the query
+    // TODO: return [CandidValue]
     public func query(_ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> CandidValue {
         let icpRequest = try await ICPRequest(.query(method), canister: canister, sender: sender)
         guard let cborEncodedResponse = try await fetchCbor(icpRequest, canister: canister) else {
@@ -165,6 +173,7 @@ public class ICPRequestClient {
     ///   - duration: The duration for the polling will take place, defaults to 2 minutes
     ///   - waitDuration: The time between two consecutive calls, defaults to 2 seconds
     /// - Returns: The response of the query
+    // TODO: return [CandidValue]
     public func pollRequestStatus(requestId: Data,
                            effectiveCanister canister: ICPPrincipal,
                            sender: ICPSigningPrincipal? = nil,
@@ -229,6 +238,7 @@ public class ICPRequestClient {
         return response.data
     }
     
+    // TODO: return [CandidValue]
     private func parseQueryResponse(_ data: Data) throws -> CandidValue {
         let queryResponse = try ICPCryptography.CBOR.deserialise(QueryResponseDecodable.self, from: data)
         guard queryResponse.status != .rejected else {

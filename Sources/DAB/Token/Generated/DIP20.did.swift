@@ -157,10 +157,10 @@ enum DIP20 {
 	///     decimals: () -> (nat8) query;
 	///     
 	///     // Returns the total supply of the token.
-	///     totalSupply: () -> (nat8) query;
+	///     totalSupply: () -> (nat) query;
 	///     
 	///     // Returns the balance of user who.
-	///     balanceOf: (who: principal) -> (nat8) query;
+	///     balanceOf: (who: principal) -> (nat) query;
 	///     
 	///     //Returns the amount which spender is still allowed to withdraw from owner.
 	///     allowance: (owner: principal, spender: principal) -> (nat) query;
@@ -233,17 +233,17 @@ enum DIP20 {
 		}
 	
 		/// // Returns the total supply of the token.
-		///     totalSupply: () -> (nat8) query;
-		func totalSupply(sender: ICPSigningPrincipal? = nil) async throws -> UInt8 {
-			let caller = ICPQueryNoArgs<UInt8>(canister, "totalSupply")
+		///     totalSupply: () -> (nat) query;
+		func totalSupply(sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
+			let caller = ICPQueryNoArgs<BigUInt>(canister, "totalSupply")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response
 		}
 	
 		/// // Returns the balance of user who.
-		///     balanceOf: (who: principal) -> (nat8) query;
-		func balanceOf(who: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> UInt8 {
-			let caller = ICPQuery<ICPPrincipal, UInt8>(canister, "balanceOf")
+		///     balanceOf: (who: principal) -> (nat) query;
+		func balanceOf(who: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
+			let caller = ICPQuery<ICPPrincipal, BigUInt>(canister, "balanceOf")
 			let response = try await caller.callMethod(who, client, sender: sender)
 			return response
 		}
@@ -251,7 +251,7 @@ enum DIP20 {
 		/// //Returns the amount which spender is still allowed to withdraw from owner.
 		///     allowance: (owner: principal, spender: principal) -> (nat) query;
 		func allowance(owner: ICPPrincipal, spender: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> BigUInt {
-			let caller = ICPQuery<CandidTuple2<ICPPrincipal, ICPPrincipal>, BigUInt>(canister, "allowance")
+			let caller = ICPQuery<ICPFunctionArgs2<ICPPrincipal, ICPPrincipal>, BigUInt>(canister, "allowance")
 			let response = try await caller.callMethod(.init(owner, spender), client, sender: sender)
 			return response
 		}
@@ -286,7 +286,7 @@ enum DIP20 {
 		///     // This function is also allowed to trap if start + limit > historySize()
 		///     getTransactions: (start: nat, limit: nat) -> (vec TxRecord) query;
 		func getTransactions(start: BigUInt, limit: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> [TxRecord] {
-			let caller = ICPQuery<CandidTuple2<BigUInt, BigUInt>, [TxRecord]>(canister, "getTransactions")
+			let caller = ICPQuery<ICPFunctionArgs2<BigUInt, BigUInt>, [TxRecord]>(canister, "getTransactions")
 			let response = try await caller.callMethod(.init(start, limit), client, sender: sender)
 			return response
 		}
@@ -297,7 +297,7 @@ enum DIP20 {
 		///     // Implementations are allowed to return less TxRecords than requested to fend off DoS attacks.
 		///     getUserTransactions: (who: principal, start: nat, limit: nat) -> (vec TxRecord) query;
 		func getUserTransactions(who: ICPPrincipal, start: BigUInt, limit: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> [TxRecord] {
-			let caller = ICPQuery<CandidTuple3<ICPPrincipal, BigUInt, BigUInt>, [TxRecord]>(canister, "getUserTransactions")
+			let caller = ICPQuery<ICPFunctionArgs3<ICPPrincipal, BigUInt, BigUInt>, [TxRecord]>(canister, "getUserTransactions")
 			let response = try await caller.callMethod(.init(who, start, limit), client, sender: sender)
 			return response
 		}
@@ -313,7 +313,7 @@ enum DIP20 {
 		/// // Transfers value amount of tokens to user to, returns a TxReceipt which contains the transaction index or an error message.
 		///     transfer: (to: principal, value: nat) -> (TxReceipt);
 		func transfer(to: ICPPrincipal, value: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> TxReceipt {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, TxReceipt>(canister, "transfer")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, TxReceipt>(canister, "transfer")
 			let response = try await caller.callMethod(.init(to, value), client, sender: sender)
 			return response
 		}
@@ -323,7 +323,7 @@ enum DIP20 {
 		///     // it returns a TxReceipt which contains the transaction index or an error message.
 		///     transferFrom: (from: principal, to: principal, value: nat) -> (TxReceipt);
 		func transferFrom(from: ICPPrincipal, to: ICPPrincipal, value: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> TxReceipt {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, TxReceipt>(canister, "transferFrom")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, ICPPrincipal, BigUInt>, TxReceipt>(canister, "transferFrom")
 			let response = try await caller.callMethod(.init(from, to, value), client, sender: sender)
 			return response
 		}
@@ -333,7 +333,7 @@ enum DIP20 {
 		///     // There is no upper limit for value.
 		///     approve: (spender: principal, value: nat) -> (TxReceipt);
 		func approve(spender: ICPPrincipal, value: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> TxReceipt {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, TxReceipt>(canister, "approve")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, TxReceipt>(canister, "approve")
 			let response = try await caller.callMethod(.init(spender, value), client, sender: sender)
 			return response
 		}

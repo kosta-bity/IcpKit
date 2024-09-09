@@ -42,3 +42,11 @@ extension ICPToken: Hashable {
         hasher.combine(canister.bytes)
     }
 }
+
+public extension ICPToken {
+    func decimal(_ amount: BigUInt) -> Decimal {
+        let base = BigUInt(10).power(Int(decimals))
+        let decimal = Decimal(exactly: amount)! / Decimal(exactly: base)!
+        return decimal
+    }
+}

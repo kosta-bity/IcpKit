@@ -12,14 +12,18 @@ public class DABNftService {
     private let client: ICPRequestClient
     private let service: DABNft.Service
     
+    private var cachedCollections: [ICPNftCollection]?
+    
     public init() { 
         client = ICPRequestClient()
-        service = try! DABNft.Service("ctqxp-yyaaa-aaaah-abbda-cai", client: client)
+        service = DABNft.Service(DABService.nftRegistry, client: client)
     }
     
     public func allCollections() async throws -> [ICPNftCollection] {
+        if let cachedCollections = cachedCollections { return cachedCollections }
         let allCollections = try await service.get_all()
-        return allCollections.compactMap(ICPNftCollection.init)
+        cachedCollections = allCollections.compactMap(ICPNftCollection.init)
+        return cachedCollections!
     }
     
     public func `actor`(for nft: ICPNftDetails) -> ICPNftActor? {

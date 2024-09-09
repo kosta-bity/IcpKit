@@ -14,6 +14,7 @@ struct PreviewModels {
     private init() {}
     
     static let mockService = DABNftService()
+    static let mockPrincipal: ICPPrincipal = "mi5lp-tjcms-b77vo-qbfgp-cjzyc-imkew-uowpv-ca7f4-l5fzx-yy6ba-qqe"
     static let fakeCollections = (0..<10).map { buildFakeCollection("Fake Collection #\($0)") }
     static let mockAppController = MockAppController()
     static let mockCollectionController = MockCollectionController(collection: fakeCollections.first!, service: mockService)
@@ -21,7 +22,7 @@ struct PreviewModels {
     static let mockNft = buildFakeNftList(fakeCollections.first!).first!
     static let mockUrl: URL = "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.nEHLDZOYs2khTgDdZfJ-hwAAAA%26pid%3DApi&f=1&ipt=758c269e9e78c6a643664a8716572a5ac72df26dfe102e0538fb480e794f4cb7&ipo=images"
     static let mockSvgUrl: URL = "https://jmuqr-yqaaa-aaaaj-qaicq-cai.raw.icp0.io/?type=thumbnail&tokenid=ngedt-bakor-uwiaa-aaaaa-cmaca-uaqca-aaaaa-a"
-    static let mockHolding: [TokenHolding] = buildFakeTokenList().enumerated().map { TokenHolding(token: $0.element, balance: BigUInt($0.offset * 1000))}
+    static let mockHolding: [ICPTokenBalance] = buildFakeTokenList().enumerated().map { ICPTokenBalance(token: $0.element, balance: BigUInt($0.offset * 1000))}
 }
 
 private func buildFakeCollection(_ name: String) -> ICPNftCollection {

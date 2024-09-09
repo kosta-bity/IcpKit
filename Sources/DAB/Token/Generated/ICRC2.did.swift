@@ -118,6 +118,20 @@ enum ICRC2 {
 		}
 	}
 	
+	/// type ApproveResult = variant {
+	///     Ok : nat;
+	///     Err : ApproveError;
+	/// };
+	enum ApproveResult: Codable {
+		case Ok(BigUInt)
+		case Err(ApproveError)
+	
+		enum CodingKeys: String, CandidCodingKey {
+			case Ok
+			case Err
+		}
+	}
+	
 	/// type TransferFromArgs = record {
 	///     spender_subaccount : opt blob;
 	///     from : Account;
@@ -196,17 +210,11 @@ enum ICRC2 {
 		}
 	}
 	
-	enum UnnamedType0: Codable {
-		case Ok(BigUInt)
-		case Err(ApproveError)
-	
-		enum CodingKeys: String, CandidCodingKey {
-			case Ok
-			case Err
-		}
-	}
-	
-	enum UnnamedType1: Codable {
+	/// type TransferFromResult = variant {
+	///     Ok : nat;
+	///     Err : TransferFromError;
+	/// };
+	enum TransferFromResult: Codable {
 		case Ok(BigUInt)
 		case Err(TransferFromError)
 	
@@ -222,11 +230,11 @@ enum ICRC2 {
 	///     // The number of transfers the spender can initiate from the caller's account is unlimited as long as the total amounts and fees of these transfers do not exceed the allowance.
 	///     // The caller does not need to have the full token amount on the specified account for the approval to succeed, just enough tokens to pay the approval fee.
 	///     // The call resets the allowance and the expiration date for the spender account to the given values.
-	///     icrc2_approve : (ApproveArgs) -> (variant { Ok : nat; Err : ApproveError });
+	///     icrc2_approve : (ApproveArgs) -> (ApproveResult);
 	///     
 	///     // Transfers a token amount from the from account to the to account using the allowance of the spender's account.
 	///     // The ledger draws the fees from the from account.
-	///     icrc2_transfer_from : (TransferFromArgs) -> (variant { Ok : nat; Err : TransferFromError });
+	///     icrc2_transfer_from : (TransferFromArgs) -> (TransferFromResult);
 	///     
 	///     // Returns the token allowance that the spender account can transfer from the specified account, and the expiration time for that allowance, if any.
 	///     icrc2_allowance : (AllowanceArgs) -> (Allowance) query;
@@ -236,18 +244,18 @@ enum ICRC2 {
 		///     // The number of transfers the spender can initiate from the caller's account is unlimited as long as the total amounts and fees of these transfers do not exceed the allowance.
 		///     // The caller does not need to have the full token amount on the specified account for the approval to succeed, just enough tokens to pay the approval fee.
 		///     // The call resets the allowance and the expiration date for the spender account to the given values.
-		///     icrc2_approve : (ApproveArgs) -> (variant { Ok : nat; Err : ApproveError });
-		func icrc2_approve(_ arg0: ApproveArgs, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType0 {
-			let caller = ICPCall<ApproveArgs, UnnamedType0>(canister, "icrc2_approve")
+		///     icrc2_approve : (ApproveArgs) -> (ApproveResult);
+		func icrc2_approve(_ arg0: ApproveArgs, sender: ICPSigningPrincipal? = nil) async throws -> ApproveResult {
+			let caller = ICPCall<ApproveArgs, ApproveResult>(canister, "icrc2_approve")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
 		/// // Transfers a token amount from the from account to the to account using the allowance of the spender's account.
 		///     // The ledger draws the fees from the from account.
-		///     icrc2_transfer_from : (TransferFromArgs) -> (variant { Ok : nat; Err : TransferFromError });
-		func icrc2_transfer_from(_ arg0: TransferFromArgs, sender: ICPSigningPrincipal? = nil) async throws -> UnnamedType1 {
-			let caller = ICPCall<TransferFromArgs, UnnamedType1>(canister, "icrc2_transfer_from")
+		///     icrc2_transfer_from : (TransferFromArgs) -> (TransferFromResult);
+		func icrc2_transfer_from(_ arg0: TransferFromArgs, sender: ICPSigningPrincipal? = nil) async throws -> TransferFromResult {
+			let caller = ICPCall<TransferFromArgs, TransferFromResult>(canister, "icrc2_transfer_from")
 			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}

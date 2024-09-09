@@ -142,13 +142,13 @@ enum DABNft {
 		}
 	
 		func add(trusted_source: ICPPrincipal?, nft: add_nft_input, sender: ICPSigningPrincipal? = nil) async throws -> operation_response {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal?, add_nft_input>, operation_response>(canister, "add")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal?, add_nft_input>, operation_response>(canister, "add")
 			let response = try await caller.callMethod(.init(trusted_source, nft), client, sender: sender)
 			return response
 		}
 	
 		func remove(trusted_source: ICPPrincipal?, nft_id: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> operation_response {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal?, ICPPrincipal>, operation_response>(canister, "remove")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal?, ICPPrincipal>, operation_response>(canister, "remove")
 			let response = try await caller.callMethod(.init(trusted_source, nft_id), client, sender: sender)
 			return response
 		}

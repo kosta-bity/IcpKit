@@ -13,9 +13,11 @@ public class DABTokenService {
     private let client: ICPRequestClient
     private let service: DABTokens.Service
     
+    private var cachedTokens: [ICPToken]?
+    
     public init() {
         client = ICPRequestClient()
-        service = try! DABTokens.Service("b7hhy-tyaaa-aaaah-abbja-cai", client: client)
+        service = DABTokens.Service(DABService.tokenRegistry, client: client)
     }
     
     public func `actor`(for token: ICPToken) -> ICPTokenActor? {
@@ -23,24 +25,25 @@ public class DABTokenService {
     }
     
     public func allTokens() async throws -> [ICPToken] {
+        if let cachedTokens = cachedTokens { return cachedTokens }
         let dabTokens = try await service.get_all()
-        let tokens = try dabTokens.map(ICPToken.init)
-        return tokens
+        cachedTokens = try dabTokens.map(ICPToken.init)
+        return cachedTokens!
     }
     
-    public func balanceOf(_ principal: ICPPrincipal) async throws -> [(ICPToken, BigUInt)] {
+    public func balanceOf(_ principal: ICPPrincipal) async throws -> [ICPTokenBalance] {
         let tokens = try await allTokens()
-        let holdings = await withTaskGroup(of: (ICPToken, BigUInt)?.self) { group in
+        let holdings = await withTaskGroup(of: ICPTokenBalance?.self) { group in
             for token in tokens {
                 group.addTask {
                     let actor = ICPTokenActorFactory.actor(for: token.standard, token.canister, self.client)
                     guard let actor = actor else { return nil }
                     guard let balance = try? await actor.balance(principal),
                           balance > .zero else { return nil }
-                    return (token, balance)
+                    return ICPTokenBalance(token: token, balance: balance)
                 }
             }
-            var holdings: [(ICPToken, BigUInt)] = []
+            var holdings: [ICPTokenBalance] = []
             for await holding in group.compactMap({ $0 }) {
                 holdings.append(holding)
             }
@@ -117,6 +120,8 @@ private extension ICPTokenStandard {
         case "XTC": self = .xtc
         case "WICP": self = .wIcp
         case "EXT": self = .ext
+        case "DRC20": self = .drc20
+        case "ROSETTA": self = .rosetta
         default: return nil
         }
     }

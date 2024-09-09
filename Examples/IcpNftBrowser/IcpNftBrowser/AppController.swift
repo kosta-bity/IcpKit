@@ -10,16 +10,11 @@ import DAB
 import IcpKit
 import BigInt
 
-struct TokenHolding {
-    let token: ICPToken
-    let balance: BigUInt
-}
-
 class AppController: ObservableObject {
     @Published var collections: [ICPNftCollection]?
     @Published var tokens: [ICPToken]?
     @Published var myNFTs: [ICPNftDetails]? = []
-    @Published var myTokens: [TokenHolding] = []
+    @Published var myTokens: [ICPTokenBalance] = []
     
     let nftService = DABNftService()
     let tokenService = DABTokenService()
@@ -72,5 +67,5 @@ class AppController: ObservableObject {
 
 private enum Balance {
     case nfts([ICPNftDetails])
-    case tokens([TokenHolding])
+    case tokens([ICPTokenBalance])
 }

@@ -17,7 +17,6 @@ struct PrincipalInput: View {
             TextField(text: $principalString) { Text("Your ICP principal") }
                 .onChange(of: principalString) {
                     isValid = principalString.isEmpty || ((try? ICPPrincipal(principalString)) != nil)
-                    print(isValid)
                 }
                 .textFieldStyle(.roundedBorder)
                 .textInputAutocapitalization(.never)
@@ -29,5 +28,5 @@ struct PrincipalInput: View {
 }
 
 #Preview {
-    PrincipalInput(principalString: .constant("42cjv-glyli-7erx2-uovp2-vcevd-f7lqz-2qtix-eijra-5r2hk-ysmgb-rqe"))
+    PrincipalInput(principalString: .constant(PreviewModels.mockPrincipal.string))
 }

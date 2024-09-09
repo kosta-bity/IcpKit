@@ -345,7 +345,7 @@ enum DIP721 {
 	class Service: ICPService {
 		/// approve : (principal, nat) -> (Result);
 		func approve(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, Result>(canister, "approve")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, Result>(canister, "approve")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -387,7 +387,7 @@ enum DIP721 {
 	
 		/// dip721_approve : (principal, nat) -> (Result);
 		func dip721_approve(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, Result>(canister, "dip721_approve")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, Result>(canister, "dip721_approve")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -422,7 +422,7 @@ enum DIP721 {
 	
 		/// dip721_is_approved_for_all : (principal, principal) -> (Result_1) query;
 		func dip721_is_approved_for_all(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> Result_1 {
-			let caller = ICPQuery<CandidTuple2<ICPPrincipal, ICPPrincipal>, Result_1>(canister, "dip721_is_approved_for_all")
+			let caller = ICPQuery<ICPFunctionArgs2<ICPPrincipal, ICPPrincipal>, Result_1>(canister, "dip721_is_approved_for_all")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -443,7 +443,7 @@ enum DIP721 {
 	
 		/// dip721_mint : (principal, nat, vec record { text; GenericValue }) -> (Result);
 		func dip721_mint(_ arg0: ICPPrincipal, _ arg1: BigUInt, _ arg2: [CandidTuple2<String, GenericValue>], sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, BigUInt, [CandidTuple2<String, GenericValue>]>, Result>(canister, "dip721_mint")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, BigUInt, [CandidTuple2<String, GenericValue>]>, Result>(canister, "dip721_mint")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -499,7 +499,7 @@ enum DIP721 {
 	
 		/// dip721_set_approval_for_all : (principal, bool) -> (Result);
 		func dip721_set_approval_for_all(_ arg0: ICPPrincipal, _ arg1: Bool, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, Bool>, Result>(canister, "dip721_set_approval_for_all")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, Bool>, Result>(canister, "dip721_set_approval_for_all")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -579,14 +579,14 @@ enum DIP721 {
 	
 		/// dip721_transfer : (principal, nat) -> (Result);
 		func dip721_transfer(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, Result>(canister, "dip721_transfer")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, Result>(canister, "dip721_transfer")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
 	
 		/// dip721_transfer_from : (principal, principal, nat) -> (Result);
 		func dip721_transfer_from(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, Result>(canister, "dip721_transfer_from")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, ICPPrincipal, BigUInt>, Result>(canister, "dip721_transfer_from")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -600,7 +600,7 @@ enum DIP721 {
 	
 		/// isApprovedForAll : (principal, principal) -> (Result_1) query;
 		func isApprovedForAll(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> Result_1 {
-			let caller = ICPQuery<CandidTuple2<ICPPrincipal, ICPPrincipal>, Result_1>(canister, "isApprovedForAll")
+			let caller = ICPQuery<ICPFunctionArgs2<ICPPrincipal, ICPPrincipal>, Result_1>(canister, "isApprovedForAll")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -621,7 +621,7 @@ enum DIP721 {
 	
 		/// dip721_mint : (principal, nat, vec record { text; GenericValue }) -> (Result);
 		func mint(_ arg0: ICPPrincipal, _ arg1: BigUInt, _ arg2: [CandidTuple2<String, GenericValue>], sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, BigUInt, [CandidTuple2<String, GenericValue>]>, Result>(canister, "mint")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, BigUInt, [CandidTuple2<String, GenericValue>]>, Result>(canister, "mint")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}
@@ -684,7 +684,7 @@ enum DIP721 {
 	
 		/// setApprovalForAll : (principal, bool) -> (Result);
 		func setApprovalForAll(_ arg0: ICPPrincipal, _ arg1: Bool, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, Bool>, Result>(canister, "setApprovalForAll")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, Bool>, Result>(canister, "setApprovalForAll")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -764,14 +764,14 @@ enum DIP721 {
 	
 		/// dip721_transfer : (principal, nat) -> (Result);
 		func transfer(_ arg0: ICPPrincipal, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, BigUInt>, Result>(canister, "transfer")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, BigUInt>, Result>(canister, "transfer")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
 	
 		/// transferFrom : (principal, principal, nat) -> (Result);
 		func transferFrom(_ arg0: ICPPrincipal, _ arg1: ICPPrincipal, _ arg2: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple3<ICPPrincipal, ICPPrincipal, BigUInt>, Result>(canister, "transferFrom")
+			let caller = ICPCall<ICPFunctionArgs3<ICPPrincipal, ICPPrincipal, BigUInt>, Result>(canister, "transferFrom")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2), client, sender: sender)
 			return response
 		}

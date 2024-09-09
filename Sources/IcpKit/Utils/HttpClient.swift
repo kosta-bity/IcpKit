@@ -6,21 +6,19 @@
 
 import Foundation
 
-protocol HttpClient: AnyObject {
+public protocol HttpClient: AnyObject {
     func fetch(_ request: HttpRequest) async throws -> HttpResponse
 }
 
-
-
-struct HttpRequest {
-    let method: String
-    let url: URL
-    let body: Data?
-    let headers: [String: String]
-    let timeout: TimeInterval
+public struct HttpRequest {
+    public let method: String
+    public let url: URL
+    public let body: Data?
+    public let headers: [String: String]
+    public let timeout: TimeInterval
 }
 
-struct HttpResponse {
-    let data: Data?
-    let statusCode: Int
+public struct HttpResponse {
+    public let data: Data?
+    public let statusCode: Int
 }

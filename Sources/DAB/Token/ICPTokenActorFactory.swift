@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  ICPTokenActorFactory.swift
+//
 //
 //  Created by Konstantinos Gaitanis on 02.09.24.
 //
@@ -11,14 +11,13 @@ import IcpKit
 public class ICPTokenActorFactory {
     public static func actorType(for standard: ICPTokenStandard) -> (any ICPTokenActor.Type)? {
         switch standard {
-        case .dip20: return nil
+        case .dip20: return DIP20TokenActor.self
         case .xtc: return nil
         case .wIcp: return nil
         case .ext: return nil
         case .icp: return nil
         case .rosetta: return nil
-        case .icrc1: return ICRC1TokenActor.self
-        case .icrc2: return nil
+        case .icrc1, .icrc2: return ICRC1TokenActor.self
         case .drc20: return nil
         }
     }

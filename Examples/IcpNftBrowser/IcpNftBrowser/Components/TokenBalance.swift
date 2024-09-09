@@ -10,7 +10,7 @@ import DAB
 import BigInt
 
 struct TokenBalance: View {
-    let holding: TokenHolding
+    let holding: ICPTokenBalance
     
     private var token: ICPToken { holding.token }
     
@@ -20,7 +20,7 @@ struct TokenBalance: View {
                 .frame(width: 20, height: 20)
             Text(token.name)
             Spacer()
-            Text(holding.balanceString)
+            Text(holding.decimalBalance.formatted())
             Text(token.symbol)
         }
     }
@@ -28,12 +28,4 @@ struct TokenBalance: View {
 
 #Preview {
     TokenBalance(holding: PreviewModels.mockHolding[3])
-}
-
-private extension TokenHolding {
-    var balanceString: String {
-        let base = BigUInt(10).power(Int(token.decimals))
-        let decimal = Decimal(exactly: balance)! / Decimal(exactly: base)!
-        return decimal.formatted()
-    }
 }

@@ -1064,7 +1064,7 @@ enum EXT {
 	
 		/// add_template: (text, Template) -> (Result_7);
 		func add_template(_ arg0: String, _ arg1: Template, sender: ICPSigningPrincipal? = nil) async throws -> Result_7 {
-			let caller = ICPCall<CandidTuple2<String, Template>, Result_7>(canister, "add_template")
+			let caller = ICPCall<ICPFunctionArgs2<String, Template>, Result_7>(canister, "add_template")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -1101,7 +1101,7 @@ enum EXT {
 	
 		/// can_settle: (principal, TokenIdentifier__1) -> (Result__1_2);
 		func can_settle(_ arg0: ICPPrincipal, _ arg1: TokenIdentifier__1, sender: ICPSigningPrincipal? = nil) async throws -> Result__1_2 {
-			let caller = ICPCall<CandidTuple2<ICPPrincipal, TokenIdentifier__1>, Result__1_2>(canister, "can_settle")
+			let caller = ICPCall<ICPFunctionArgs2<ICPPrincipal, TokenIdentifier__1>, Result__1_2>(canister, "can_settle")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -1114,7 +1114,7 @@ enum EXT {
 	
 		/// create_accessory: (text, nat) -> (Result__1_1);
 		func create_accessory(_ arg0: String, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws -> Result__1_1 {
-			let caller = ICPCall<CandidTuple2<String, BigUInt>, Result__1_1>(canister, "create_accessory")
+			let caller = ICPCall<ICPFunctionArgs2<String, BigUInt>, Result__1_1>(canister, "create_accessory")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -1271,7 +1271,7 @@ enum EXT {
 		/// lock: (TokenIdentifier, nat64, AccountIdentifier__2, vec nat8) ->
 		///    (LockResponse);
 		func lock(_ arg0: TokenIdentifier, _ arg1: UInt64, _ arg2: AccountIdentifier__2, _ arg3: Data, sender: ICPSigningPrincipal? = nil) async throws -> LockResponse {
-			let caller = ICPCall<CandidTuple4<TokenIdentifier, UInt64, AccountIdentifier__2, Data>, LockResponse>(canister, "lock")
+			let caller = ICPCall<ICPFunctionArgs4<TokenIdentifier, UInt64, AccountIdentifier__2, Data>, LockResponse>(canister, "lock")
 			let response = try await caller.callMethod(.init(arg0, arg1, arg2, arg3), client, sender: sender)
 			return response
 		}
@@ -1299,26 +1299,26 @@ enum EXT {
 	
 		/// record_icps: (AccountIdentifier__2, nat) -> () oneway;
 		func record_icps(_ arg0: AccountIdentifier__2, _ arg1: BigUInt, sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPCallNoResult<CandidTuple2<AccountIdentifier__2, BigUInt>>(canister, "record_icps")
+			let caller = ICPCallNoResult<ICPFunctionArgs2<AccountIdentifier__2, BigUInt>>(canister, "record_icps")
 			let _ = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 		}
 	
 		/// record_nft: (AccountIdentifier__2, principal, text, text) -> () oneway;
 		func record_nft(_ arg0: AccountIdentifier__2, _ arg1: ICPPrincipal, _ arg2: String, _ arg3: String, sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPCallNoResult<CandidTuple4<AccountIdentifier__2, ICPPrincipal, String, String>>(canister, "record_nft")
+			let caller = ICPCallNoResult<ICPFunctionArgs4<AccountIdentifier__2, ICPPrincipal, String, String>>(canister, "record_nft")
 			let _ = try await caller.callMethod(.init(arg0, arg1, arg2, arg3), client, sender: sender)
 		}
 	
 		/// record_token: (AccountIdentifier__2, nat, text, nat8, principal) ->
 		///    () oneway;
 		func record_token(_ arg0: AccountIdentifier__2, _ arg1: BigUInt, _ arg2: String, _ arg3: UInt8, _ arg4: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPCallNoResult<CandidTuple5<AccountIdentifier__2, BigUInt, String, UInt8, ICPPrincipal>>(canister, "record_token")
+			let caller = ICPCallNoResult<ICPFunctionArgs5<AccountIdentifier__2, BigUInt, String, UInt8, ICPPrincipal>>(canister, "record_token")
 			let _ = try await caller.callMethod(.init(arg0, arg1, arg2, arg3, arg4), client, sender: sender)
 		}
 	
 		/// remove_accessory: (TokenIdentifier, TokenIdentifier) -> (Result__1);
 		func remove_accessory(_ arg0: TokenIdentifier, _ arg1: TokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> Result__1 {
-			let caller = ICPCall<CandidTuple2<TokenIdentifier, TokenIdentifier>, Result__1>(canister, "remove_accessory")
+			let caller = ICPCall<ICPFunctionArgs2<TokenIdentifier, TokenIdentifier>, Result__1>(canister, "remove_accessory")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
@@ -1331,7 +1331,7 @@ enum EXT {
 	
 		/// remove_record_nft: (AccountIdentifier__2, text) -> () oneway;
 		func remove_record_nft(_ arg0: AccountIdentifier__2, _ arg1: String, sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPCallNoResult<CandidTuple2<AccountIdentifier__2, String>>(canister, "remove_record_nft")
+			let caller = ICPCallNoResult<ICPFunctionArgs2<AccountIdentifier__2, String>>(canister, "remove_record_nft")
 			let _ = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 		}
 	
@@ -1357,7 +1357,7 @@ enum EXT {
 	
 		/// stats: () -> (nat64, nat64, nat64, nat64, nat, nat, nat) query;
 		func stats(sender: ICPSigningPrincipal? = nil) async throws -> (UInt64, UInt64, UInt64, UInt64, BigUInt, BigUInt, BigUInt) {
-			let caller = ICPQueryNoArgs<CandidTuple7<UInt64, UInt64, UInt64, UInt64, BigUInt, BigUInt, BigUInt>>(canister, "stats")
+			let caller = ICPQueryNoArgs<ICPFunctionArgs7<UInt64, UInt64, UInt64, UInt64, BigUInt, BigUInt, BigUInt>>(canister, "stats")
 			let response = try await caller.callMethod(client, sender: sender)
 			return response.tuple
 		}
@@ -1409,7 +1409,7 @@ enum EXT {
 	
 		/// wear_accessory: (TokenIdentifier, TokenIdentifier) -> (Result);
 		func wear_accessory(_ arg0: TokenIdentifier, _ arg1: TokenIdentifier, sender: ICPSigningPrincipal? = nil) async throws -> Result {
-			let caller = ICPCall<CandidTuple2<TokenIdentifier, TokenIdentifier>, Result>(canister, "wear_accessory")
+			let caller = ICPCall<ICPFunctionArgs2<TokenIdentifier, TokenIdentifier>, Result>(canister, "wear_accessory")
 			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}

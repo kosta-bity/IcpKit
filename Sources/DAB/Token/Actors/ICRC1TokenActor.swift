@@ -11,14 +11,16 @@ import BigInt
 
 enum ICRC1TokenError: Error {
     case invalidMetadata
+    case approveNotSupported
 }
 
 class ICRC1TokenActor: ICPTokenActor {
     let standard: ICPTokenStandard = .icrc1
     private let service: ICRC1.Service
+    private lazy var service2: ICRC2.Service = { ICRC2.Service(service.canister, client: service.client) }()
     
     required init(_ canister: IcpKit.ICPPrincipal, _ client: IcpKit.ICPRequestClient) {
-        self.service = ICRC1.Service(canister, client: client)
+        service = ICRC1.Service(canister, client: client)
     }
     
     func balance(_ principal: ICPPrincipal) async throws -> BigUInt {
@@ -44,12 +46,41 @@ class ICRC1TokenActor: ICPTokenActor {
         return .height(response)
     }
     
-    func approve(_ args: ICPTokenApproveArgs) async throws -> ICPTokenApproveResult {
-        // TODO: approve might be supported through 'icrc1_supported_standards()'
-        // see https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-1/README.md#extensions-
-        return .error
+    func approve(_ args: ICPTokenApproveArgs) async throws {
+        let supportedStandards = try await service.icrc1_supported_standards()
+        if supportedStandards.map({ $0.name }).contains("ICRC-2") {
+            // see https://github.com/dfinity/ICRC-1/blob/main/standards/ICRC-1/README.md#extensions-
+            let fee = try await service.icrc1_fee()
+            let _ = try await service2.icrc2_approve(ICRC2.ApproveArgs(fee, args)).get()
+        }
+        throw ICRC1TokenError.approveNotSupported
     }
 }
+
+private extension ICRC2.ApproveArgs {
+    init(_ fee: BigUInt, _ args: ICPTokenApproveArgs) {
+        self.fee = fee
+        memo = args.memo
+        from_subaccount = nil
+        created_at_time = Date().nanoSecondsSince1970
+        amount = args.amount
+        expected_allowance = nil
+        expires_at = Date().addingTimeInterval(1 * 24 * 60 * 60).nanoSecondsSince1970    // + 1 day
+        spender = .init(owner: args.spender, subaccount: nil)
+    }
+}
+
+private extension ICRC2.ApproveResult {
+    func get() throws -> BigUInt {
+        switch self {
+        case .Ok(let allowance): return allowance
+        case .Err(let error): throw error
+        }
+    }
+}
+
+extension ICRC2.ApproveError: Error {}
+
 
 private extension ICRC1.TransferArgs {
     init(_ args: ICPTokenTransferArgs) {

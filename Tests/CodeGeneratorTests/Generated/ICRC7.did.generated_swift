@@ -281,7 +281,7 @@ enum ICRC7 {
 		/// icrc7_tokens : (prev : opt nat, take : opt nat)
 		///       -> (vec nat) query;
 		func icrc7_tokens(prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPQuery<CandidTuple2<BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens")
+			let caller = ICPQuery<ICPFunctionArgs2<BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens")
 			let response = try await caller.callMethod(.init(prev, take), client, sender: sender)
 			return response
 		}
@@ -289,7 +289,7 @@ enum ICRC7 {
 		/// icrc7_tokens_of : (account : Account, prev : opt nat, take : opt nat)
 		///       -> (vec nat) query;
 		func icrc7_tokens_of(account: Account, prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPQuery<CandidTuple3<Account, BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens_of")
+			let caller = ICPQuery<ICPFunctionArgs3<Account, BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens_of")
 			let response = try await caller.callMethod(.init(account, prev, take), client, sender: sender)
 			return response
 		}

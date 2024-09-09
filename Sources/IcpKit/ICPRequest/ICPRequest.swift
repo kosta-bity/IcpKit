@@ -38,7 +38,7 @@ public enum ICPRequestType {
 /// https://internetcomputer.org/docs/current/references/ic-interface-spec#http-interface
 public struct ICPRequest {
     public let requestId: Data
-    let httpRequest: HttpRequest
+    public let httpRequest: HttpRequest
     
     public init(_ request: ICPRequestType, canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws {
         let content = try ICPRequestBuilder.buildContent(request, sender: sender?.principal)

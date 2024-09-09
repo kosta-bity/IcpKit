@@ -7,7 +7,8 @@
 
 import XCTest
 import Candid
-import IcpKit
+@testable import IcpKit
+import BigInt
 @testable import DAB
 
 final class DABTests: XCTestCase {
@@ -24,8 +25,8 @@ final class DABTests: XCTestCase {
     }
     
     func testAccountHolding() async throws {
-        let holdings = try await nftService.holdings(kostaPrincipal)
-        for nft in holdings {
+        let nfts = try await nftService.holdings(devWallet1.principal)
+        for nft in nfts {
             let details = try await nftService.actor(for: nft)!.nftDetails(nft.index)
             print(details)
         }
@@ -61,78 +62,108 @@ final class DABTests: XCTestCase {
             count[token.standard] = count[token.standard]! + 1
         }
         print(count)
+        print(allTokens.filter { $0.standard == .dip20 }.map { ($0.name, $0.canister) })
         
-        let icrc1Tokens = allTokens.filter { $0.standard == .icrc1 }
-        for token in icrc1Tokens {      
-            let actor = tokenService.actor(for: token)!
+//        let icrc1Tokens = allTokens.filter { $0.standard == .icrc1 }
+//        await withTaskGroup(of: Void.self) { group in
+//            for token in icrc1Tokens {
+//                let actor = tokenService.actor(for: token)!
+//                group.addTask {
+//                    do {
+//                        try await actor.approve(.init(spender: devWallet1, amount: 0, memo: nil))
+//
+//                    } catch (let error) {
+//                        if error is ICRC1TokenError {
+//                            print("\(token.name): Approve not supported")
+//                        } else if let error = error as? ICRC2.ApproveError {
+//                            if case .BadFee(let expected_fee) = error {
+//                                let fee = try! await actor.fee()
+//                                print("\(token.name): BadFee used \(fee) but expecting \(expected_fee)")
+//                            } else if case .InsufficientFunds = error {
+//                                print("\(token.name): OK")
+//                            } else {
+//                                print("\(token.name): ApproveError: \(error)")
+//                            }
+//                        } else {
+//                            print("\(token.name): unknown error: \(error)")
+//                        }
+//                    }
+//                }
+//            }
+//            await group.waitForAll()
+//        }
+    }
+    
+    func testTokenBalance() async throws {
+        let tokenHolding = try await tokenService.balanceOf(devWallet2.principal)
+        for holding in tokenHolding {
+            print("\(holding.token.name): \(holding.decimalBalance)")
+        }
+    }
+    
+    func testDip20Tokens() async throws {
+        let tokens = try await tokenService.allTokens()
+        let dip20Tokens = tokens.filter({ $0.standard == .dip20 })
+        for dip20Token in dip20Tokens {
+            let actor = tokenService.actor(for: dip20Token)!
             do {
+                let balance = try await actor.balance(devWallet1.principal)
                 let metadata = try await actor.metaData()
-                if metadata.totalSupply != token.totalSupply && token.totalSupply != .zero {
-                    print("TOTAL SUPPLY \(token.name): \(metadata.totalSupply) != \(token.totalSupply)")
-                }
+                print(balance)
+                print(metadata)
+                print(dip20Token.canister)
             } catch (let error) {
-                print("FAILED \(token.name) \(token.canister)")
+                print(dip20Token.name)
                 print(error)
             }
         }
     }
     
-    func testTokenBalance() async throws {
-        let holdings = try await tokenService.balanceOf(kostaPrincipal)
-        print(holdings)
-    }
-    
-//    func testCrack() async {
-//        await crackCandidHash(3933747005)
-//        //await crackCandidHash(1169352569) // icon
-//        await crackCandidHash(2781795542)
-//    }
-}
-
-
-
-let kostaPrincipal: ICPPrincipal = "42cjv-glyli-7erx2-uovp2-vcevd-f7lqz-2qtix-eijra-5r2hk-ysmgb-rqe"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-private let letters = firstLetter
-private let firstLetter = "abcdefghijklmnopqrstyuvwxyz_".split(separator: "").map(String.init)
-private let maxLetters = 6
-
-private func crackCandidHash(_ expected: Int) async {
-    let found = await withTaskGroup(of: String?.self) { group in
-        for letter in firstLetter {
-            group.addTask { testAllChars(letter, expected, firstLetter) }
+    func testTransfer() async throws {
+        var tokenHolding1 = try await tokenService.balanceOf(devWallet1.principal)
+        var tokenHolding2 = try await tokenService.balanceOf(devWallet2.principal)
+        
+        print("Balance Before:")
+        print(devWallet1Name, tokenHolding1)
+        print(devWallet2Name, tokenHolding2)
+        
+        for holding in tokenHolding1 {
+            if holding.token.standard == .icrc1 { continue }
+            let actor = tokenService.actor(for: holding.token)!
+            let amount = BigUInt(10).power(Int(holding.token.decimals))
+            let fee = try await actor.fee()
+            let transferArgs = ICPTokenTransferArgs(
+                sender: devWallet1,
+                from: .mainAccount(of: devWallet1.principal),
+                to: .mainAccount(of: devWallet2.principal),
+                amount: amount,
+                fee: fee,
+                memo: "Test",
+                createdAtTime: .now
+            )
+            print("Transferring \(holding.token.decimal(amount)) \(holding.token.name) from \(devWallet1Name) to \(devWallet2Name) (fee: \(holding.token.decimal(fee)))")
+            let receipt = try await actor.transfer(transferArgs)
+            print("SUCCESS! \(receipt)")
         }
-        if let found = await group.first(where: { $0 != nil }) { return found }
-        return nil
+        
+        tokenHolding1 = try await tokenService.balanceOf(devWallet1.principal)
+        tokenHolding2 = try await tokenService.balanceOf(devWallet2.principal)
+        
+        print("Balance After:")
+        print(devWallet1Name, tokenHolding1)
+        print(devWallet2Name, tokenHolding2)
     }
     
-    guard let found = found else {
-        print("Nothing found for \(expected) with \(maxLetters) letters")
-        return
+    func testFoo() throws {
+        let t6 = ICPFunctionArgs6(0, 1, "2", 3, 4, true)
+        let encoded = try t6.map { try CandidEncoder().encode($0) }
+        print(encoded)
     }
-    print("FOUND IT!: \(found) = \(expected)")
 }
 
-private func testAllChars(_ word: String, _ expected: Int, _ letterSet: any Sequence<String>) -> String? {
-    if CandidKey.candidHash(word) == expected { return word }
-    guard word.count < maxLetters else { return nil }
-    for letter in letters {
-        let newWord = word + letter
-        if let found = testAllChars(newWord, expected, letters) { return found }
-    }
-    return nil
-}
+
+let devWallet1Name = "Development Wallet 1"
+let devWallet2Name = "Development Wallet 2"
+let devWallet1 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet1, uncompressedPublicKey: PublicKeys.devWallet1)
+let devWallet2 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet2, uncompressedPublicKey: PublicKeys.devWallet2)
+

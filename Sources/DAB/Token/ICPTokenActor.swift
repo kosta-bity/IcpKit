@@ -22,14 +22,10 @@ public struct ICPTokenTransferArgs {
 }
 
 public struct ICPTokenApproveArgs {
+    public let sender: ICPSigningPrincipal
     public let spender: ICPPrincipal
     public let amount: BigUInt
-    public let nonce: BigUInt?
-}
-
-public enum ICPTokenApproveResult {
-    case ok(String)
-    case error
+    public let memo: Data?
 }
 
 public enum ICPTokenTransferResponse {
@@ -48,7 +44,7 @@ public protocol ICPTokenActor {
     
     func balance(_ principal: ICPPrincipal) async throws -> BigUInt
     func transfer(_ args: ICPTokenTransferArgs) async throws -> ICPTokenTransferResponse
-    func approve(_ args: ICPTokenApproveArgs) async throws -> ICPTokenApproveResult
+    func approve(_ args: ICPTokenApproveArgs) async throws
 }
 
 public extension ICPTokenActor {
