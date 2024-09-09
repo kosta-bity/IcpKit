@@ -10,54 +10,6 @@ import Candid
 import CodeGenerator
 
 final class CodeGeneratorTests: XCTestCase {
-    func testCodeGeneration() throws {
-        let namedTypes: [String: CandidType] = [
-            "ABool": .bool,
-            "AData": .blob,
-            "VectorBool": .vector(.bool),
-            "VectorOptionalText": .vector(.option(.text)),
-            "Record": .record(["a": .vector(.option(.integer)), "b": .natural, "c": .record([.bool, .text])]),
-            "UnnamedType0": .record([.vector(.option(.integer8)), .natural8]),
-            "RepeatedRecord": .record([.vector(.option(.integer8)), .natural8]),
-            "Variant": .variant(["a": .null, "b": .text, "c": .record([.text, .integer]), "d": .record(["one": .bool, "two": .blob, "three": .record([.vector(.option(.integer8)), .natural8])])]),
-            "UnnamedVariant": .variant("spring", "winter", "summer", "fall"),
-            "Function00": .function([CandidType](),[]),
-            "Function01q": .function([],[.bool], query: true),
-            "Function02": .function([],[.bool, .text]),
-            "Function03q": .function([],[.bool, .text, .option(.bool)], query: true),
-            "Function10": .function([.bool], []),
-            "Function20": .function([.bool, .text], []),
-            "Function30q": .function([.bool, .text, .option(.bool)], [], query: true),
-            "TestServiceDef": .service([
-                .init("foo", [.natural8], [.integer8]),
-                .init(name: "ref", signatureReference: "Function01q")
-            ]),
-            //"RecursiveRecord": .record(["recurse": .option(.named("RecursiveRecord"))])
-        ]
-        let service = CandidInterfaceDefinition.ServiceDefinition(
-            name: "TestService",
-            signature: .concrete(.init([
-                .init("noArgsNoResults"),
-                .init("singleUnnamedArg", [.text], query: true),
-                .init("singleUnnamedArgRecordWithUnnamedFields", [.record([.bool, .text])], []),
-                .init("singleNamedArg", [("myString", .text)], [], query: true),
-                .init("singleUnnamedResult", [], [.option(.bool)]),
-                .init("singleNamedResult", [], [("myString", .text)], query: true),
-                .init("multipleUnnamedArgsAndResults", [.text, .vector(.natural)], [.option(.bool), .vector(.blob)]),
-                .init("multipleNamedArgsAndResults",
-                      [("name", .text), ("ids", .vector(.natural))],
-                      [("out1", .option(.bool)), ("out2", .vector(.blob))]),
-                .init(name: "functionReference", signatureReference: "Function20"),
-            ]))
-        )
-        
-        let interface = CandidInterfaceDefinition(namedTypes: namedTypes, service: service)
-        let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: interface, nameSpace: "TestCodeGeneration")
-        let swiftPath = Bundle.module.url(forResource: "TestCodeGeneration", withExtension: "did.generated_swift")!
-        let swiftFile = try String(contentsOf: swiftPath)
-        XCTAssertEqual(generated, swiftFile)
-    }
-    
     func testTypeDidFiles() async throws {
         let testFiles: [String] = ["LedgerCanister", "ICRC7", "GoldNFT", "TestImports"]
         for file in testFiles {

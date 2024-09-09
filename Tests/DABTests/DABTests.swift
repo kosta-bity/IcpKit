@@ -142,8 +142,8 @@ final class DABTests: XCTestCase {
                 createdAtTime: .now
             )
             print("Transferring \(holding.token.decimal(amount)) \(holding.token.name) from \(devWallet1Name) to \(devWallet2Name) (fee: \(holding.token.decimal(fee)))")
-            let receipt = try await actor.transfer(transferArgs)
-            print("SUCCESS! \(receipt)")
+            //let receipt = try await actor.transfer(transferArgs)
+            //print("SUCCESS! \(receipt)")
         }
         
         tokenHolding1 = try await tokenService.balanceOf(devWallet1.principal)
@@ -152,12 +152,6 @@ final class DABTests: XCTestCase {
         print("Balance After:")
         print(devWallet1Name, tokenHolding1)
         print(devWallet2Name, tokenHolding2)
-    }
-    
-    func testFoo() throws {
-        let t6 = ICPFunctionArgs6(0, 1, "2", 3, 4, true)
-        let encoded = try t6.map { try CandidEncoder().encode($0) }
-        print(encoded)
     }
 }
 

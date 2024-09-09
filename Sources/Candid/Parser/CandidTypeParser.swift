@@ -121,16 +121,17 @@ private extension CandidTypeParser {
         let importService = try stream.takeIfNext(is: .word("service"))
         let fileName = try stream.expectNextTextOrWord()
         try stream.expectNext(.semicolon)
+        stream.setMarker()
+        
         let fileContents = try await provider.read(contentsOf: fileName)
-        let stream = try CandidParserStream(string: fileContents)
-        let interface = try await parseInterfaceDescription(provider, stream)
+        let importedStream = try CandidParserStream(string: fileContents)
+        let interface = try await parseInterfaceDescription(provider, importedStream)
         for namedType in interface.namedTypes {
             try context.add(namedType)
         }
         if importService, let service = interface.service {
             try context.setService(service)
         }
-        stream.setMarker()
     }
     
     /// <def>   ::= type <id> = <datatype> | import service? <text>
