@@ -8,23 +8,8 @@
 import Foundation
 import Candid
 
-// MARK: Protocols
-protocol ICPFunctionArgs2Protocol { associatedtype T0; associatedtype T1 }
-protocol ICPFunctionArgs3Protocol: ICPFunctionArgs2Protocol { associatedtype T1 }
-protocol ICPFunctionArgs4Protocol: ICPFunctionArgs3Protocol { associatedtype T3 }
-protocol ICPFunctionArgs5Protocol: ICPFunctionArgs4Protocol { associatedtype T4 }
-protocol ICPFunctionArgs6Protocol: ICPFunctionArgs5Protocol { associatedtype T5 }
-protocol ICPFunctionArgs7Protocol: ICPFunctionArgs6Protocol { associatedtype T6 }
-
-protocol ICPFunctionArgsDecodable: Decodable {
-    init(_ values: [CandidValue]) throws
-}
-protocol ICPFunctionArgsEncodable: Encodable {
-    func candidEncode() throws -> [CandidValue]
-}
-
 // MARK: Implementations
-public struct ICPFunctionArgs2<T0, T1>: ICPFunctionArgs2Protocol {
+public struct ICPFunctionArgs2<T0, T1> {
     public let _0: T0
     public let _1: T1
     public var tuple: (T0, T1) { (_0, _1) }
@@ -34,7 +19,7 @@ public struct ICPFunctionArgs2<T0, T1>: ICPFunctionArgs2Protocol {
     }
 }
 
-public struct ICPFunctionArgs3<T0, T1, T2>: ICPFunctionArgs3Protocol {
+public struct ICPFunctionArgs3<T0, T1, T2> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -46,7 +31,7 @@ public struct ICPFunctionArgs3<T0, T1, T2>: ICPFunctionArgs3Protocol {
     }
 }
 
-public struct ICPFunctionArgs4<T0, T1, T2, T3>: ICPFunctionArgs4Protocol {
+public struct ICPFunctionArgs4<T0, T1, T2, T3> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -60,7 +45,7 @@ public struct ICPFunctionArgs4<T0, T1, T2, T3>: ICPFunctionArgs4Protocol {
     }
 }
 
-public struct ICPFunctionArgs5<T0, T1, T2, T3, T4>: ICPFunctionArgs5Protocol {
+public struct ICPFunctionArgs5<T0, T1, T2, T3, T4> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -76,7 +61,7 @@ public struct ICPFunctionArgs5<T0, T1, T2, T3, T4>: ICPFunctionArgs5Protocol {
     }
 }
 
-public struct ICPFunctionArgs6<T0, T1, T2, T3, T4, T5>: ICPFunctionArgs6Protocol {
+public struct ICPFunctionArgs6<T0, T1, T2, T3, T4, T5> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -94,7 +79,7 @@ public struct ICPFunctionArgs6<T0, T1, T2, T3, T4, T5>: ICPFunctionArgs6Protocol
     }
 }
 
-public struct ICPFunctionArgs7<T0, T1, T2, T3, T4, T5, T6>: ICPFunctionArgs7Protocol {
+public struct ICPFunctionArgs7<T0, T1, T2, T3, T4, T5, T6> {
     public let _0: T0
     public let _1: T1
     public let _2: T2
@@ -114,77 +99,98 @@ public struct ICPFunctionArgs7<T0, T1, T2, T3, T4, T5, T6>: ICPFunctionArgs7Prot
     }
 }
 
+// MARK: Protocols
+protocol ICPFunctionArgsDecodable: Decodable {
+    init(_ values: [CandidValue]) throws
+}
+protocol ICPFunctionArgsEncodable: Encodable {
+    func candidEncode() throws -> [CandidValue]
+}
+
 // MARK: Decoding from CandidValues
 extension ICPFunctionArgs2: Decodable, ICPFunctionArgsDecodable where T0: Decodable, T1: Decodable {
     init(_ values: [Candid.CandidValue]) throws {
         guard values.count == 2 else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "should have 2 Candid values"))
+            throw decodingError(2, values.count)
         }
-        _0 = try CandidDecoder().decode(values[0])
-        _1 = try CandidDecoder().decode(values[1])
+        self.init(
+            try CandidDecoder().decode(values[0]),
+            try CandidDecoder().decode(values[1])
+        )
     }
 }
 extension ICPFunctionArgs3: Decodable, ICPFunctionArgsDecodable where T0: Decodable, T1: Decodable, T2: Decodable {
     init(_ values: [Candid.CandidValue]) throws {
         guard values.count == 3 else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "should have 3 Candid values"))
+            throw decodingError(3, values.count)
         }
-        _0 = try CandidDecoder().decode(values[0])
-        _1 = try CandidDecoder().decode(values[1])
-        _2 = try CandidDecoder().decode(values[2])
+        self.init(
+            try CandidDecoder().decode(values[0]),
+            try CandidDecoder().decode(values[1]),
+            try CandidDecoder().decode(values[2])
+        )
     }
 }
 extension ICPFunctionArgs4: Decodable, ICPFunctionArgsDecodable where T0: Decodable, T1: Decodable, T2: Decodable, T3: Decodable {
     init(_ values: [Candid.CandidValue]) throws {
         guard values.count == 4 else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "should have 4 Candid values"))
+            throw decodingError(4, values.count)
         }
-        _0 = try CandidDecoder().decode(values[0])
-        _1 = try CandidDecoder().decode(values[1])
-        _2 = try CandidDecoder().decode(values[2])
-        _3 = try CandidDecoder().decode(values[3])
+        self.init(
+            try CandidDecoder().decode(values[0]),
+            try CandidDecoder().decode(values[1]),
+            try CandidDecoder().decode(values[2]),
+            try CandidDecoder().decode(values[3])
+        )
     }
 }
 extension ICPFunctionArgs5: Decodable, ICPFunctionArgsDecodable where T0: Decodable, T1: Decodable, T2: Decodable, T3: Decodable, T4: Decodable {
     init(_ values: [Candid.CandidValue]) throws {
         guard values.count == 5 else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "should have 5 Candid values"))
+            throw decodingError(5, values.count)
         }
-        _0 = try CandidDecoder().decode(values[0])
-        _1 = try CandidDecoder().decode(values[1])
-        _2 = try CandidDecoder().decode(values[2])
-        _3 = try CandidDecoder().decode(values[3])
-        _4 = try CandidDecoder().decode(values[4])
+        self.init(
+            try CandidDecoder().decode(values[0]),
+            try CandidDecoder().decode(values[1]),
+            try CandidDecoder().decode(values[2]),
+            try CandidDecoder().decode(values[3]),
+            try CandidDecoder().decode(values[4])
+        )
     }
 }
 extension ICPFunctionArgs6: Decodable, ICPFunctionArgsDecodable where T0: Decodable, T1: Decodable, T2: Decodable, T3: Decodable, T4: Decodable, T5: Decodable {
     init(_ values: [Candid.CandidValue]) throws {
         guard values.count == 6 else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "should have 6 Candid values"))
+            throw decodingError(6, values.count)
         }
-        _0 = try CandidDecoder().decode(values[0])
-        _1 = try CandidDecoder().decode(values[1])
-        _2 = try CandidDecoder().decode(values[2])
-        _3 = try CandidDecoder().decode(values[3])
-        _4 = try CandidDecoder().decode(values[4])
-        _5 = try CandidDecoder().decode(values[5])
+        self.init(
+            try CandidDecoder().decode(values[0]),
+            try CandidDecoder().decode(values[1]),
+            try CandidDecoder().decode(values[2]),
+            try CandidDecoder().decode(values[3]),
+            try CandidDecoder().decode(values[4]),
+            try CandidDecoder().decode(values[5])
+        )
     }
 }
 extension ICPFunctionArgs7: Decodable, ICPFunctionArgsDecodable where T0: Decodable, T1: Decodable, T2: Decodable, T3: Decodable, T4: Decodable, T5: Decodable, T6: Decodable {
     init(_ values: [Candid.CandidValue]) throws {
         guard values.count == 7 else {
-            throw DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "should have 7 Candid values"))
+            throw decodingError(7, values.count)
         }
-        _0 = try CandidDecoder().decode(values[0])
-        _1 = try CandidDecoder().decode(values[1])
-        _2 = try CandidDecoder().decode(values[2])
-        _3 = try CandidDecoder().decode(values[3])
-        _4 = try CandidDecoder().decode(values[4])
-        _5 = try CandidDecoder().decode(values[5])
-        _6 = try CandidDecoder().decode(values[6])
+        self.init(
+            try CandidDecoder().decode(values[0]),
+            try CandidDecoder().decode(values[1]),
+            try CandidDecoder().decode(values[2]),
+            try CandidDecoder().decode(values[3]),
+            try CandidDecoder().decode(values[4]),
+            try CandidDecoder().decode(values[5]),
+            try CandidDecoder().decode(values[6])
+        )
     }
 }
 
+private func decodingError(_ expecting: Int, _ got: Int) -> Error { DecodingError.dataCorrupted(.init(codingPath: [], debugDescription: "Trying to decode \(expecting) values but instead have \(got) Candid Values")) }
 
 // MARK: Encoding to CandidValues
 extension ICPFunctionArgs2: Encodable, ICPFunctionArgsEncodable where T0: Encodable, T1: Encodable {
@@ -255,3 +261,10 @@ extension ICPFunctionArgs7: Encodable, ICPFunctionArgsEncodable where T0: Encoda
         ]
     }
 }
+
+extension ICPFunctionArgs2: Equatable where T0: Equatable, T1: Equatable {}
+extension ICPFunctionArgs3: Equatable where T0: Equatable, T1: Equatable, T2: Equatable {}
+extension ICPFunctionArgs4: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable {}
+extension ICPFunctionArgs5: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable, T4: Equatable {}
+extension ICPFunctionArgs6: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable, T4: Equatable, T5: Equatable {}
+extension ICPFunctionArgs7: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable, T4: Equatable, T5: Equatable, T6: Equatable {}

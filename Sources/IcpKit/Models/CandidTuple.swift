@@ -161,3 +161,9 @@ extension CandidTuple6: Decodable where T0: Decodable, T1: Decodable, T2: Decoda
 extension CandidTuple7: Encodable where T0: Encodable, T1: Encodable, T2: Encodable, T3: Encodable, T4: Encodable, T5: Encodable, T6: Encodable {}
 extension CandidTuple7: Decodable where T0: Decodable, T1: Decodable, T2: Decodable, T3: Decodable, T4: Decodable, T5: Decodable, T6: Decodable {}
 
+extension CandidTuple2: Equatable where T0: Equatable, T1: Equatable {}
+extension CandidTuple3: Equatable where T0: Equatable, T1: Equatable, T2: Equatable {}
+extension CandidTuple4: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable {}
+extension CandidTuple5: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable, T4: Equatable {}
+extension CandidTuple6: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable, T4: Equatable, T5: Equatable {}
+extension CandidTuple7: Equatable where T0: Equatable, T1: Equatable, T2: Equatable, T3: Equatable, T4: Equatable, T5: Equatable, T6: Equatable {}

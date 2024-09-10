@@ -42,10 +42,10 @@ public extension ICPFunction where Argument: Encodable, Result: Decodable {
         let method = ICPMethod(
             canister: canister,
             methodName: methodName,
-            args: try encodeArguments(argument)
+            args: try ICPFunctionArgsCoder().encode(argument)
         )
         let response = try await callOrQuery(method, client, sender)
-        let decoded: Result = try decodeResult(response)
+        let decoded: Result = try ICPFunctionArgsCoder().decode(response)
         return decoded
     }
 }
@@ -55,7 +55,7 @@ public extension ICPFunctionNoResult where Argument: Encodable {
         let method = ICPMethod(
             canister: canister,
             methodName: methodName,
-            args: try encodeArguments(argument)
+            args: try ICPFunctionArgsCoder().encode(argument)
         )
         let _ = try await callOrQuery(method, client, sender)
     }
@@ -65,7 +65,7 @@ public extension ICPFunctionNoArgs where Result: Decodable {
     func callMethod(_ client: ICPRequestClient, sender: ICPSigningPrincipal? = nil) async throws -> Result {
         let method = ICPMethod(canister: canister, methodName: methodName)
         let response = try await callOrQuery(method, client, sender)
-        let decoded: Result = try decodeResult(response)
+        let decoded: Result = try ICPFunctionArgsCoder().decode(response)
         return decoded
     }
 }
@@ -83,26 +83,6 @@ fileprivate extension CandidFunctionProtocol {
             return try await client.query(method, effectiveCanister: canister, sender: sender)
         } else {
             return try await client.callAndPoll(method, effectiveCanister: canister, sender: sender)
-        }
-    }
-    
-    func encodeArguments<T>(_ args: T) throws -> [CandidValue] where T: Encodable {
-        if let multiArgs = args as? any ICPFunctionArgsEncodable {
-            return try multiArgs.candidEncode()
-            
-        } else {
-            return [try CandidEncoder().encode(args)]
-        }
-    }
-    
-    func decodeResult<T>(_ result: [CandidValue]) throws -> T where T: Decodable {
-        if let multiResultDecodableType = T.self as? any ICPFunctionArgsDecodable.Type {
-            return try multiResultDecodableType.init(result) as! T
-        } else {
-            guard let firstValue = result.first else {
-                throw ICPRemoteClientError.malformedResponse
-            }
-            return try CandidDecoder().decode(firstValue)
         }
     }
 }

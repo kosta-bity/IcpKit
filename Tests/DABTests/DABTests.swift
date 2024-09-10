@@ -41,17 +41,16 @@ final class DABTests: XCTestCase {
         print(count)
         
         
-        let standard = ICPNftStandard.icrc7
-        let collection = allCollections.first(where: { $0.canister.string == "auw3m-7yaaa-aaaal-qjf6q-cai" })!
-        let actor = nftService.actor(for: collection)!
-        let nfts = try await actor.allNfts()
+//        let standard = ICPNftStandard.icrc7
+//        let collection = allCollections.first(where: { $0.canister.string == "auw3m-7yaaa-aaaal-qjf6q-cai" })!
+//        let actor = nftService.actor(for: collection)!
+//        let nfts = try await actor.allNfts()
         
         let standard2 = ICPNftStandard.ext
-        let collection2 = allCollections.first(where: { $0.standard == standard2 })!
-        let actor2 = nftService.actor(for: collection2)!
-        let nfts2 = try await actor2.allNfts()
-        for nft2 in nfts2 {
-            //print(nft2)
+        let extCollections = allCollections.filter { $0.standard == standard2 }
+        for extCollection in extCollections {
+            let actor2 = nftService.actor(for: extCollection)!
+            let nfts2 = try await actor2.allNfts()
         }
     }
     
