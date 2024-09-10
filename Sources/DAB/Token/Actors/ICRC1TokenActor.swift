@@ -31,6 +31,11 @@ class ICRC1TokenActor: ICPTokenActor {
         return balance
     }
     
+    func transactions(of user: ICPPrincipal) async throws -> [ICPTokenTransaction] {
+        // TODO: Query Index canister? where is he?
+        return []
+    }
+    
     func fee() async throws -> BigUInt {
         try await service.icrc1_fee()
     }

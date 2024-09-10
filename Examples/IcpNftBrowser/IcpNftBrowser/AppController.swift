@@ -52,7 +52,7 @@ class AppController: ObservableObject {
         Task {
             try await withThrowingTaskGroup(of: Balance.self) { group in
                 group.addTask { .nfts(try await self.nftService.holdings(principal)) }
-                group.addTask { .tokens(try await self.tokenService.balanceOf(principal).map { .init(token: $0.0, balance: $0.1) }) }
+                group.addTask { .tokens(try await self.tokenService.balanceOf(principal)) }
                 
                 for try await result in group {
                     switch result {

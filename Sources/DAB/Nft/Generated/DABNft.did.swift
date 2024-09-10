@@ -124,7 +124,7 @@ enum DABNft {
 	///     "get"    : (nft_id: principal) -> (opt nft_canister) query;
 	///     "add"    : (trusted_source: opt principal, nft: add_nft_input) -> (operation_response);
 	///     "remove" : (trusted_source: opt principal, nft_id: principal) -> (operation_response);
-	///     // Canister ethods    
+	///     // Canister methods
 	///     "get_all"      : () -> (vec nft_canister) query;
 	///     "add_admin"    : (admin: principal) -> (operation_response);
 	/// }

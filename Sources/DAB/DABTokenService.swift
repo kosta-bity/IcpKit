@@ -20,6 +20,19 @@ public class DABTokenService {
         service = DABTokens.Service(DABService.tokenRegistry, client: client)
     }
     
+    public func tokenStandard(for canister: ICPPrincipal) async throws -> ICPTokenStandard? {
+        try await allTokens().first(where: { $0.canister == canister })?.standard
+    }
+    
+    public func `actor`(for standard: ICPTokenStandard, _ canister: ICPPrincipal) -> ICPTokenActor? {
+        ICPTokenActorFactory.actor(for: standard, canister, client)
+    }
+    
+    public func `actor`(for canister: ICPPrincipal) async throws -> ICPTokenActor? {
+        guard let standard = try await tokenStandard(for: canister) else { return nil }
+        return ICPTokenActorFactory.actor(for: standard, canister, client)
+    }
+    
     public func `actor`(for token: ICPToken) -> ICPTokenActor? {
         ICPTokenActorFactory.actor(for: token, client)
     }

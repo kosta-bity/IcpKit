@@ -152,6 +152,16 @@ final class DABTests: XCTestCase {
         print(devWallet1Name, tokenHolding1)
         print(devWallet2Name, tokenHolding2)
     }
+    
+    func testTransactions() async throws {
+        let tokenHolding = try await tokenService.balanceOf(devWallet2.principal)
+        for token in tokenHolding.map({$0.token}) {
+            print(token.canister)
+            let actor = tokenService.actor(for: token)!
+            let transactions = try await actor.transactions(of: devWallet2.principal)
+            print(transactions)
+        }
+    }
 }
 
 
