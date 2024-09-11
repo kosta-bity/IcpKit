@@ -167,6 +167,7 @@ final class DABTests: XCTestCase {
 
 let devWallet1Name = "Development Wallet 1"
 let devWallet2Name = "Development Wallet 2"
-let devWallet1 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet1, uncompressedPublicKey: PublicKeys.devWallet1)
-let devWallet2 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet2, uncompressedPublicKey: PublicKeys.devWallet2)
-
+//let devWallet1 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet1, uncompressedPublicKey: PublicKeys.devWallet1)
+//let devWallet2 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet2, uncompressedPublicKey: PublicKeys.devWallet2)
+let devWallet1 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet1)
+let devWallet2 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet2)
