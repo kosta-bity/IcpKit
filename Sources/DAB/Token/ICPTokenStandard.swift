@@ -7,14 +7,14 @@
 
 import Foundation
 
-public enum ICPTokenStandard: CaseIterable {
-    case dip20
-    case xtc
-    case wIcp
-    case ext
-    case icp
-    case rosetta
-    case icrc1
-    case icrc2
-    case drc20
+public enum ICPTokenStandard: String, CaseIterable {
+    case dip20 = "DIP20"
+    case xtc = "XTC"
+    case wIcp = "WICP"
+    case ext = "EXT"
+    case icp = "ICP"
+    case rosetta = "ROSETTA"
+    case icrc1 = "ICRC1"
+    case icrc2 = "ICRC2"
+    case drc20 = "DRC20"
 }

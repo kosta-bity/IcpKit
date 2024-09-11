@@ -126,16 +126,7 @@ private extension DABTokens.detail_value {
 
 private extension ICPTokenStandard {
     init?(_ string: String?) {
-        switch string?.uppercased() {
-        case "DIP20": self = .dip20
-        case "ICRC1": self = .icrc1
-        case "ICRC2": self = .icrc2
-        case "XTC": self = .xtc
-        case "WICP": self = .wIcp
-        case "EXT": self = .ext
-        case "DRC20": self = .drc20
-        case "ROSETTA": self = .rosetta
-        default: return nil
-        }
+        guard let string = string else { return nil }
+        self.init(rawValue: string)
     }
 }
