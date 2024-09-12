@@ -15,8 +15,8 @@ public class DABTokenService {
     
     private var cachedTokens: [ICPToken]?
     
-    public init() {
-        client = ICPRequestClient()
+    public init(_ client: ICPRequestClient = ICPRequestClient()) {
+        self.client = client
         service = DABTokens.Service(DABService.tokenRegistry, client: client)
     }
     
