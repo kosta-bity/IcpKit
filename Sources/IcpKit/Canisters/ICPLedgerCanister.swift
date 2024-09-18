@@ -44,7 +44,7 @@ public enum ICPLedgerCanister {
     /// Sends a transaction request to the Ledger Canister and waits for its response
     /// - Parameters:
     ///   - sendingAccount: The `from` account
-    ///   - receivingAddress: The `to` account
+    ///   - receivingAddress: The `to` address (aka AccountId)
     ///   - amount: How much to the `to` account will receive. The sender will send this amount + the fee
     ///   - signingPrincipal: The signing principal
     ///   - fee: The fee to use. Defaults to the standard ICP fee of 0.0001 ICP

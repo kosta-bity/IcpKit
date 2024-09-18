@@ -58,14 +58,16 @@ final class ICPCryptographyTests: XCTestCase {
         }
     }
     
-    func testAccountTextualRepresentation() {
+    func testAccountTextualRepresentation() throws {
         let principal: ICPPrincipal = "k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae"
         let testVectors: [(ICPAccount, String)] = [
             (.mainAccount(of: principal), principal.string),
             (try! ICPAccount(principal: principal, subAccountId: Data([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32])), "k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae-dfxgiyy.102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20")
         ]
         for (account, text) in testVectors {
+            let decodedAccount = try ICPAccount(textualRepresentation: text)
             XCTAssertEqual(account.textualRepresentation(), text)
+            XCTAssertEqual(decodedAccount.textualRepresentation(), text)
         }
     }
     

@@ -21,6 +21,11 @@ public struct CandidPrincipal: Equatable, Codable, ExpressibleByStringLiteral, C
         self.bytes = bytes
         self.string = CanonicalText.encode(bytes)
     }
+    
+    public static func isValid(_ string: String) -> Bool {
+        guard let _ = try? CanonicalText.decode(string) else { return false }
+        return true
+    }
 }
 
 public extension CandidPrincipal {

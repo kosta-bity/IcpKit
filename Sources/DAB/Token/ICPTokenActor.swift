@@ -19,6 +19,16 @@ public struct ICPTokenTransferArgs {
     public let fee: BigUInt?
     public let memo: String?
     public let createdAtTime: Date?
+    
+    public init(sender: ICPSigningPrincipal, from: ICPAccount, to: ICPAccount, amount: BigUInt, fee: BigUInt?, memo: String?, createdAtTime: Date?) {
+        self.sender = sender
+        self.from = from
+        self.to = to
+        self.amount = amount
+        self.fee = fee
+        self.memo = memo
+        self.createdAtTime = createdAtTime
+    }
 }
 
 public struct ICPTokenApproveArgs {
