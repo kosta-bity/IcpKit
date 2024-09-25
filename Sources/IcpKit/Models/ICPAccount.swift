@@ -25,8 +25,8 @@ public struct ICPAccount {
             subAccountId: defaultSubAccountId
         )
     }
-    static let subAccountIdLength = 32
-    static let defaultSubAccountId = Data(repeating: 0, count: subAccountIdLength)
+    public static let subAccountIdLength = 32
+    public static let defaultSubAccountId = Data(repeating: 0, count: subAccountIdLength)
 }
 
 

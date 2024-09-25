@@ -44,14 +44,14 @@ public class DABTokenService {
         return cachedTokens!
     }
     
-    public func balanceOf(_ principal: ICPPrincipal) async throws -> [ICPTokenBalance] {
+    public func balance(of user: ICPAccount) async throws -> [ICPTokenBalance] {
         let tokens = try await allTokens()
         let holdings = await withTaskGroup(of: ICPTokenBalance?.self) { group in
             for token in tokens {
                 group.addTask {
                     let actor = ICPTokenActorFactory.actor(for: token.standard, token.canister, self.client)
                     guard let actor = actor else { return nil }
-                    guard let balance = try? await actor.balance(principal),
+                    guard let balance = try? await actor.balance(of: user),
                           balance > .zero else { return nil }
                     return ICPTokenBalance(token: token, balance: balance)
                 }

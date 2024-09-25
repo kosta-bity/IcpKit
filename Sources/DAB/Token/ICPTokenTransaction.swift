@@ -11,26 +11,39 @@ import BigInt
 
 public struct ICPTokenTransaction {
     public enum Operation {
-        case mint
-        case approve
-        case transfer
-        case transferFrom
+        case mint(to: ICPAccount)
+        case burn(from: ICPAccount)
+        case approve(from: ICPAccount, expectedAllowance: BigUInt?, expires: Date?) //spender
+        case transfer(from: ICPAccount, to: ICPAccount)
     }
-    public enum Status {
-        case failed
-        case succeeded
-    }
-    
-    public let operation: Operation
-    public let from: ICPPrincipal
-    public let to: ICPPrincipal
-    public let amount: BigUInt
-    public let fee: BigUInt
-    public let status: Status
-    public let timeStamp: Date
-    public let caller: ICPPrincipal?
     /// The block height
     public let index: BigUInt
-    /// The token canister
-    public let canister: ICPPrincipal
+    public let operation: Operation
+    public let memo: Data?
+    public let amount: BigUInt
+    public let fee: BigUInt
+    public let created: Date?
+    public let timeStamp: Date
+    public let spender: ICPAccount?
+    public let tokenCanister: ICPPrincipal
+    
+    public var from: ICPAccount? {
+        switch operation {
+        case .mint: return nil
+        case .transfer(let from, _),
+             .approve(let from, _, _),
+             .burn(let from):
+            return from
+        }
+    }
+    
+    public var to: ICPAccount? {
+        switch operation {
+        case .mint(let to),
+             .transfer(_, let to): return to
+        case .approve, .burn:
+            return nil
+        }
+    }
 }
+

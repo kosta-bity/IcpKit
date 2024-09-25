@@ -94,7 +94,7 @@ final class DABTests: XCTestCase {
     }
     
     func testTokenBalance() async throws {
-        let tokenHolding = try await tokenService.balanceOf(devWallet2.principal)
+        let tokenHolding = try await tokenService.balance(of: devWallet2Account)
         for holding in tokenHolding {
             print("\(holding.token.name): \(holding.decimalBalance)")
         }
@@ -106,7 +106,7 @@ final class DABTests: XCTestCase {
         for dip20Token in dip20Tokens {
             let actor = tokenService.actor(for: dip20Token)!
             do {
-                let balance = try await actor.balance(devWallet1.principal)
+                let balance = try await actor.balance(of: devWallet1Account)
                 let metadata = try await actor.metaData()
                 print(balance)
                 print(metadata)
@@ -119,8 +119,8 @@ final class DABTests: XCTestCase {
     }
     
     func testTransfer() async throws {
-        var tokenHolding1 = try await tokenService.balanceOf(devWallet1.principal)
-        var tokenHolding2 = try await tokenService.balanceOf(devWallet2.principal)
+        var tokenHolding1 = try await tokenService.balance(of: devWallet1Account)
+        var tokenHolding2 = try await tokenService.balance(of: devWallet2Account)
         
         print("Balance Before:")
         print(devWallet1Name, tokenHolding1)
@@ -145,8 +145,8 @@ final class DABTests: XCTestCase {
             //print("SUCCESS! \(receipt)")
         }
         
-        tokenHolding1 = try await tokenService.balanceOf(devWallet1.principal)
-        tokenHolding2 = try await tokenService.balanceOf(devWallet2.principal)
+        tokenHolding1 = try await tokenService.balance(of: devWallet1Account)
+        tokenHolding2 = try await tokenService.balance(of: devWallet2Account)
         
         print("Balance After:")
         print(devWallet1Name, tokenHolding1)
@@ -154,11 +154,12 @@ final class DABTests: XCTestCase {
     }
     
     func testTransactions() async throws {
-        let tokenHolding = try await tokenService.balanceOf(devWallet2.principal)
+        let tokenHolding = try await tokenService.balance(of: devWallet1Account)
         for token in tokenHolding.map({$0.token}) {
-            print(token.canister)
+            print("\(token.name): \(token.canister)")
             let actor = tokenService.actor(for: token)!
-            let transactions = try await actor.transactions(of: devWallet2.principal)
+            let transactions = try await actor.transactions(of: devWallet1Account)
+            print(transactions.count)
             print(transactions)
         }
     }
@@ -171,3 +172,5 @@ let devWallet2Name = "Development Wallet 2"
 //let devWallet2 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet2, uncompressedPublicKey: PublicKeys.devWallet2)
 let devWallet1 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet1)
 let devWallet2 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet2)
+let devWallet1Account = ICPAccount.mainAccount(of: devWallet1.principal)
+let devWallet2Account = ICPAccount.mainAccount(of: devWallet2.principal)

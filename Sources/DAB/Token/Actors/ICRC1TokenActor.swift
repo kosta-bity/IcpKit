@@ -23,17 +23,14 @@ class ICRC1TokenActor: ICPTokenActor {
         service = ICRC1.Service(canister, client: client)
     }
     
-    func balance(_ principal: ICPPrincipal) async throws -> BigUInt {
-        let balance = try await service.icrc1_balance_of(.init(
-            owner: principal,
-            subaccount: nil
-        ))
+    func balance(of user: ICPAccount) async throws -> BigUInt {
+        let balance = try await service.icrc1_balance_of(.init(user))
         return balance
     }
     
-    func transactions(of user: ICPPrincipal) async throws -> [ICPTokenTransaction] {
-        // TODO: Query Index canister? where is he?
-        return []
+    func transactions(of user: ICPAccount) async throws -> [ICPTokenTransaction] {
+        let snsProvider = SNSTransactionPRovider(service.canister, service.client)
+        return try await snsProvider.transactions(of: user)
     }
     
     func fee() async throws -> BigUInt {
@@ -157,4 +154,11 @@ private extension ICRC1.Value {
         }
         return bigUInt
     }}
+}
+
+private extension ICRC1.Account {
+    init(_ account: ICPAccount) {
+        owner = account.principal
+        subaccount = account.subAccountId
+    }
 }
