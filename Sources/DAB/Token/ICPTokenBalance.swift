@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ICPTokenBalance.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 06.09.24.

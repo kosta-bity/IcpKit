@@ -12,11 +12,13 @@ import BigInt
 public class DABTokenService {
     private let client: ICPRequestClient
     private let service: DABTokens.Service
+    private let transactionProvider: ICPTransactionProvider
     
     private var cachedTokens: [ICPToken]?
     
     public init(_ client: ICPRequestClient = ICPRequestClient()) {
         self.client = client
+        transactionProvider = ICPTransactionProvider(client)
         service = DABTokens.Service(DABService.tokenRegistry, client: client)
     }
     
@@ -39,8 +41,15 @@ public class DABTokenService {
     
     public func allTokens() async throws -> [ICPToken] {
         if let cachedTokens = cachedTokens { return cachedTokens }
-        let dabTokens = try await service.get_all()
-        cachedTokens = try dabTokens.map(ICPToken.init)
+        cachedTokens = try await withThrowingTaskGroup(of: [ICPToken].self) { group in
+            group.addTask { try await self.service.get_all().map(ICPToken.init) }
+            group.addTask { [try await self.buildIcpToken()] }
+            var tokens: [ICPToken] = []
+            for try await tokenList in group {
+                tokens.append(contentsOf: tokenList)
+            }
+            return tokens
+        }
         return cachedTokens!
     }
     
@@ -63,6 +72,22 @@ public class DABTokenService {
             return holdings
         }
         return holdings
+    }
+    
+    public func transactions(of user: ICPAccount, for token: ICPToken) async throws -> [ICPTokenTransaction] {
+        return try await transactions(of: user, for: token.canister)
+    }
+    
+    public func transactions(of user: ICPAccount, for tokenCanister: ICPPrincipal) async throws -> [ICPTokenTransaction] {
+        return try await transactionProvider.transactions(of: user, tokenCanister: tokenCanister)
+    }
+}
+
+private extension DABTokenService {
+    func buildIcpToken() async throws -> ICPToken {
+        let actor = ICPTokenActorFactory.actor(for: .icp, ICPSystemCanisters.ledger, client)!
+        let metadata = try await actor.metaData()
+        return ICPToken(standard: .icp, canister: ICPSystemCanisters.ledger, description: "Internet Computer Protocol", metadata: metadata)
     }
 }
 

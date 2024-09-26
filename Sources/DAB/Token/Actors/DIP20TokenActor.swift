@@ -80,18 +80,18 @@ private extension ICPTokenTransaction {
         
         switch tx.op {
         case .transferFrom, .transfer:
-            operation = .transfer(from: .mainAccount(of: tx.from), to: .mainAccount(of: tx.to))
+            operation = .transfer(from: .account(.mainAccount(of: tx.from)), to: .account(.mainAccount(of: tx.to)))
         case .mint:
-            operation = .mint(to: .mainAccount(of: tx.to))
+            operation = .mint(to: .account(.mainAccount(of: tx.to)))
         case .approve:
-            operation = .approve(from: .mainAccount(of: tx.from), expectedAllowance: nil, expires: nil)
+            operation = .approve(from: .account(.mainAccount(of: tx.from)), expectedAllowance: nil, expires: nil)
         }
         
         amount = tx.amount
         fee = tx.fee
         timeStamp = Date(nanoSecondsSince1970: tx.timestamp.timestamp_nanos)
         created = timeStamp
-        spender = tx.caller.map { .mainAccount(of: $0) }
+        spender = tx.caller.map { .account(.mainAccount(of: $0)) }
         index = tx.index
         tokenCanister = canister
         memo = nil

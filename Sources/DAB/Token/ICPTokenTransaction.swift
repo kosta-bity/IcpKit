@@ -10,11 +10,16 @@ import IcpKit
 import BigInt
 
 public struct ICPTokenTransaction {
+    public enum Destination {
+        case accountId(String)
+        case account(ICPAccount)
+    }
+    
     public enum Operation {
-        case mint(to: ICPAccount)
-        case burn(from: ICPAccount)
-        case approve(from: ICPAccount, expectedAllowance: BigUInt?, expires: Date?) //spender
-        case transfer(from: ICPAccount, to: ICPAccount)
+        case mint(to: Destination)
+        case burn(from: Destination)
+        case approve(from: Destination, expectedAllowance: BigUInt?, expires: Date?) //spender
+        case transfer(from: Destination, to: Destination)
     }
     /// The block height
     public let index: BigUInt
@@ -23,11 +28,11 @@ public struct ICPTokenTransaction {
     public let amount: BigUInt
     public let fee: BigUInt
     public let created: Date?
-    public let timeStamp: Date
-    public let spender: ICPAccount?
+    public let timeStamp: Date?
+    public let spender: Destination?
     public let tokenCanister: ICPPrincipal
     
-    public var from: ICPAccount? {
+    public var from: Destination? {
         switch operation {
         case .mint: return nil
         case .transfer(let from, _),
@@ -37,7 +42,7 @@ public struct ICPTokenTransaction {
         }
     }
     
-    public var to: ICPAccount? {
+    public var to: Destination? {
         switch operation {
         case .mint(let to),
              .transfer(_, let to): return to

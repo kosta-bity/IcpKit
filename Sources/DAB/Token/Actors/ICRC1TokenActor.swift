@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ICRC1TokenActor.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 02.09.24.
@@ -26,11 +26,6 @@ class ICRC1TokenActor: ICPTokenActor {
     func balance(of user: ICPAccount) async throws -> BigUInt {
         let balance = try await service.icrc1_balance_of(.init(user))
         return balance
-    }
-    
-    func transactions(of user: ICPAccount) async throws -> [ICPTokenTransaction] {
-        let snsProvider = SNSTransactionPRovider(service.canister, service.client)
-        return try await snsProvider.transactions(of: user)
     }
     
     func fee() async throws -> BigUInt {

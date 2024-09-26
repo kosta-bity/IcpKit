@@ -15,9 +15,8 @@ public class ICPTokenActorFactory {
         case .xtc: return nil
         case .wIcp: return nil
         case .ext: return nil
-        case .icp: return nil
         case .rosetta: return nil
-        case .icrc1, .icrc2: return ICRC1TokenActor.self
+        case .icrc1, .icrc2, .icp: return ICRC1TokenActor.self
         case .drc20: return nil
         }
     }

@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  ICPNftActorFactory.swift
 //  
 //
 //  Created by Konstantinos Gaitanis on 28.08.24.

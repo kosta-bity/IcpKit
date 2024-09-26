@@ -108,7 +108,7 @@ private extension EXT.Result_4 {
 private extension EXT.Metadata {
     func `get`() throws -> Data? {
         switch self {
-        case .fungible(let decimals, let metadata, let name, let symbol):
+        case .fungible:
             throw ICPNftActorError.invalidMetaData
         case .nonfungible(let metadata):
             return metadata

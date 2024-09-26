@@ -50,3 +50,19 @@ public extension ICPToken {
         return decimal
     }
 }
+
+extension ICPToken {
+    init(standard: ICPTokenStandard, canister: ICPPrincipal, description: String, metadata: ICPTokenMetadata, verified: Bool = true, website: URL? = nil) {
+        self.standard = standard
+        self.canister = canister
+        self.description = description
+        self.verified = verified
+        self.website = website
+        name = metadata.name
+        symbol = metadata.symbol
+        decimals = UInt(metadata.decimals)
+        totalSupply = metadata.totalSupply ?? .zero
+        logo = metadata.logo
+        
+    }
+}

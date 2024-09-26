@@ -53,8 +53,6 @@ public protocol ICPTokenActor {
     func metaData() async throws -> ICPTokenMetadata
     
     func balance(of user: ICPAccount) async throws -> BigUInt
-    func transactions(of user: ICPAccount) async throws -> [ICPTokenTransaction]
-    
     func transfer(_ args: ICPTokenTransferArgs) async throws -> ICPTokenTransferResponse
     func approve(_ args: ICPTokenApproveArgs) async throws
 }

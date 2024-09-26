@@ -46,12 +46,12 @@ final class DABTests: XCTestCase {
 //        let actor = nftService.actor(for: collection)!
 //        let nfts = try await actor.allNfts()
         
-        let standard2 = ICPNftStandard.ext
-        let extCollections = allCollections.filter { $0.standard == standard2 }
-        for extCollection in extCollections {
-            let actor2 = nftService.actor(for: extCollection)!
-            let nfts2 = try await actor2.allNfts()
-        }
+//        let standard2 = ICPNftStandard.ext
+//        let extCollections = allCollections.filter { $0.standard == standard2 }
+//        for extCollection in extCollections {
+//            let actor2 = nftService.actor(for: extCollection)!
+//            //let nfts2 = try? await actor2.allNfts()
+//        }
     }
     
     func testAllTokens() async throws {
@@ -93,10 +93,16 @@ final class DABTests: XCTestCase {
 //        }
     }
     
+    func testIcpToken() async throws {
+        let actor = tokenService.actor(for: .icrc1, ICPSystemCanisters.ledger)!
+        let metadata = try await actor.metaData()
+        print(metadata)
+    }
+    
     func testTokenBalance() async throws {
         let tokenHolding = try await tokenService.balance(of: devWallet2Account)
         for holding in tokenHolding {
-            print("\(holding.token.name): \(holding.decimalBalance)")
+            print("\(holding.token.name): \(holding.decimalBalance) \(holding.token.symbol)")
         }
     }
     
@@ -131,15 +137,15 @@ final class DABTests: XCTestCase {
             let actor = tokenService.actor(for: holding.token)!
             let amount = BigUInt(10).power(Int(holding.token.decimals))
             let fee = try await actor.fee()
-            let transferArgs = ICPTokenTransferArgs(
-                sender: devWallet1,
-                from: .mainAccount(of: devWallet1.principal),
-                to: .mainAccount(of: devWallet2.principal),
-                amount: amount,
-                fee: fee,
-                memo: "Test",
-                createdAtTime: .now
-            )
+//            let transferArgs = ICPTokenTransferArgs(
+//                sender: devWallet1,
+//                from: .mainAccount(of: devWallet1.principal),
+//                to: .mainAccount(of: devWallet2.principal),
+//                amount: amount,
+//                fee: fee,
+//                memo: "Test",
+//                createdAtTime: .now
+//            )
             print("Transferring \(holding.token.decimal(amount)) \(holding.token.name) from \(devWallet1Name) to \(devWallet2Name) (fee: \(holding.token.decimal(fee)))")
             //let receipt = try await actor.transfer(transferArgs)
             //print("SUCCESS! \(receipt)")
@@ -157,8 +163,7 @@ final class DABTests: XCTestCase {
         let tokenHolding = try await tokenService.balance(of: devWallet1Account)
         for token in tokenHolding.map({$0.token}) {
             print("\(token.name): \(token.canister)")
-            let actor = tokenService.actor(for: token)!
-            let transactions = try await actor.transactions(of: devWallet1Account)
+            let transactions = try await tokenService.transactions(of: devWallet1Account, for: token)
             print(transactions.count)
             print(transactions)
         }

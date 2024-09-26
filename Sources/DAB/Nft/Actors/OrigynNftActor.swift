@@ -77,7 +77,7 @@ struct OrigynNftMetadata {
             libraries = []
         }
         if case .Array(let apps) = properties["__apps"] {
-            self.customProperties = apps.flatMap { app in
+            self.customProperties = apps.compactMap { app in
                 guard case .Class(let appProperties) = app,
                       case .Class(let data) = appProperties["data"] else { return [] }
                 return data.compactMap(OrigynNftProperty.init)

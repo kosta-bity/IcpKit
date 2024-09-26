@@ -1,57 +1,31 @@
 //
-//  File.swift
+//  ICPICRC1IndexTransactionProvider.swift
 //  IcpKit
 //
-//  Created by Konstantinos Gaitanis on 25.09.2024.
+//  Created by Konstantinos Gaitanis on 26.09.2024.
 //
-
 import Foundation
 import IcpKit
 
-class SNSTransactionPRovider {
-    static let NNS_SNS_W_Canister: ICPPrincipal = "qaa6y-5yaaa-aaaaa-aaafa-cai"
-    
+class ICPICRC1IndexTransactionProvider: ICPTransactionProviderProtocol {
+    let client: ICPRequestClient
     let tokenCanister: ICPPrincipal
-    let service: NNS_SNS_W.Service
+    let indexCanister: ICPPrincipal
     
-    init(_ tokenCanister: ICPPrincipal, _ client: ICPRequestClient) {
+    init(client: ICPRequestClient, tokenCanister: ICPPrincipal, indexCanister: ICPPrincipal) {
+        self.client = client
         self.tokenCanister = tokenCanister
-        service = NNS_SNS_W.Service(Self.NNS_SNS_W_Canister, client: client)
-    }
- 
-    func findIndexCanister() async throws -> ICPPrincipal? {
-        let deployed = try await service.list_deployed_snses()
-        let sns = deployed.first(containing: tokenCanister)
-        return sns?.index_canister_id
+        self.indexCanister = indexCanister
     }
     
-    func transactions(of user: ICPAccount) async throws -> [ICPTokenTransaction] {
-        guard let index = try await findIndexCanister() else {
-            return []
-        }
-        let indexService = Index.Service(index, client: service.client)
+    func transactions(of user: IcpKit.ICPAccount) async throws -> [ICPTokenTransaction] {
+        let indexService = Index.Service(indexCanister, client: client)
         let transactions = try await indexService.get_account_transactions(Index.GetAccountTransactionsArgs(
             max_results: 1000,
             start: nil,
             account: Index.Account(owner: user.principal, subaccount: user.subAccountId)
         )).get()
         return transactions.transactions.compactMap { try? ICPTokenTransaction($0, tokenCanister) }
-    }
-}
-
-private extension NNS_SNS_W.ListDeployedSnsesResponse {
-    func first(containing canister: ICPPrincipal) -> NNS_SNS_W.DeployedSns? {
-        instances.first { $0.contains(canister) }
-    }
-}
-
-private extension NNS_SNS_W.DeployedSns {
-    func contains(_ canister: ICPPrincipal) -> Bool {
-        governance_canister_id == canister ||
-        index_canister_id == canister ||
-        ledger_canister_id == canister ||
-        root_canister_id == canister ||
-        swap_canister_id == canister
     }
 }
 
@@ -69,32 +43,32 @@ extension Index.GetTransactionsErr: Error {}
 private extension ICPTokenTransaction {
     init?(_ transaction: Index.TransactionWithId, _ tokenCanister: ICPPrincipal) throws {
         if let burn = transaction.transaction.burn {
-            operation = .burn(from: try ICPAccount(burn.from))
+            operation = .burn(from: try ICPTokenTransaction.Destination(burn.from))
             amount = burn.amount
             fee = .zero
-            spender = try burn.spender.map(ICPAccount.init)
+            spender = try burn.spender.map(ICPTokenTransaction.Destination.init)
             created = burn.created_at_time.map { Date(nanoSecondsSince1970: $0) }
             
         } else if let approve = transaction.transaction.approve {
             operation = .approve(
-                from: try ICPAccount(approve.from),
+                from: try ICPTokenTransaction.Destination(approve.from),
                 expectedAllowance: approve.expected_allowance,
                 expires: approve.expires_at.map { Date(nanoSecondsSince1970: $0) }
             )
             amount = approve.amount
             fee = approve.fee ?? .zero
-            spender = try ICPAccount(approve.spender)
+            spender = try ICPTokenTransaction.Destination(approve.spender)
             created = approve.created_at_time.map { Date(nanoSecondsSince1970: $0) }
             
         } else if let transfer = transaction.transaction.transfer {
-            operation = .transfer(from: try ICPAccount(transfer.from), to: try ICPAccount(transfer.to))
+            operation = .transfer(from: try ICPTokenTransaction.Destination(transfer.from), to: try ICPTokenTransaction.Destination(transfer.to))
             amount = transfer.amount
             fee = transfer.fee ?? .zero
-            spender = try transfer.spender.map(ICPAccount.init)
+            spender = try transfer.spender.map(ICPTokenTransaction.Destination.init)
             created = transfer.created_at_time.map { Date(nanoSecondsSince1970: $0) }
             
         } else if let mint = transaction.transaction.mint {
-            operation = .mint(to: try ICPAccount(mint.to))
+            operation = .mint(to: try ICPTokenTransaction.Destination(mint.to))
             amount = mint.amount
             fee = .zero
             spender = nil
@@ -114,5 +88,11 @@ private extension ICPTokenTransaction {
 private extension ICPAccount {
     init(_ account: Index.Account) throws {
         try self.init(principal: account.owner, subAccountId: account.subaccount ?? ICPAccount.defaultSubAccountId)
+    }
+}
+
+private extension ICPTokenTransaction.Destination {
+    init(_ account: Index.Account) throws {
+        self = .account(try ICPAccount(account))
     }
 }
