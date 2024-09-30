@@ -9,6 +9,10 @@ import Foundation
 import IcpKit
 import BigInt
 
+public enum DABTokenServiceError: Error {
+    case tokenNotFound
+}
+
 public class DABTokenService {
     private let client: ICPRequestClient
     private let service: DABTokens.Service
@@ -37,6 +41,10 @@ public class DABTokenService {
     
     public func `actor`(for token: ICPToken) -> ICPTokenActor? {
         ICPTokenActorFactory.actor(for: token, client)
+    }
+    
+    public func token(for canister: ICPPrincipal) -> ICPToken? {
+        cachedTokens?.first { $0.canister == canister }
     }
     
     public func allTokens() async throws -> [ICPToken] {
@@ -79,7 +87,10 @@ public class DABTokenService {
     }
     
     public func transactions(of user: ICPAccount, for tokenCanister: ICPPrincipal) async throws -> [ICPTokenTransaction] {
-        return try await transactionProvider.transactions(of: user, tokenCanister: tokenCanister)
+        guard let token = token(for: tokenCanister) else {
+            throw DABTokenServiceError.tokenNotFound
+        }
+        return try await transactionProvider.transactions(of: user, token: token)
     }
 }
 

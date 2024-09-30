@@ -13,6 +13,13 @@ public struct ICPTokenTransaction {
     public enum Destination {
         case accountId(String)
         case account(ICPAccount)
+        
+        public var address: String {
+            switch self {
+            case .accountId(let address): return address
+            case .account(let icpAccount): return icpAccount.address
+            }
+        }
     }
     
     public enum Operation {
@@ -30,7 +37,7 @@ public struct ICPTokenTransaction {
     public let created: Date?
     public let timeStamp: Date?
     public let spender: Destination?
-    public let tokenCanister: ICPPrincipal
+    public let token: ICPToken
     
     public var from: Destination? {
         switch operation {
@@ -49,6 +56,18 @@ public struct ICPTokenTransaction {
         case .approve, .burn:
             return nil
         }
+    }
+    
+    public init(index: BigUInt, operation: Operation, memo: Data?, amount: BigUInt, fee: BigUInt, created: Date?, timeStamp: Date?, spender: Destination?, token: ICPToken) {
+        self.index = index
+        self.operation = operation
+        self.memo = memo
+        self.amount = amount
+        self.fee = fee
+        self.created = created
+        self.timeStamp = timeStamp
+        self.spender = spender
+        self.token = token
     }
 }
 

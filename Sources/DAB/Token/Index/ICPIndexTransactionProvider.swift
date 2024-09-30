@@ -10,8 +10,10 @@ import Foundation
 
 class ICPIndexTransactionProvider: ICPTransactionProviderProtocol {
     let client: ICPRequestClient
+    let icpToken: ICPToken
     
-    init(client: ICPRequestClient) {
+    init(client: ICPRequestClient, icpToken: ICPToken) {
+        self.icpToken = icpToken
         self.client = client
     }
     
@@ -22,7 +24,7 @@ class ICPIndexTransactionProvider: ICPTransactionProviderProtocol {
             start: nil,
             account: ICPIndex.Account(owner: user.principal, subaccount: user.subAccountId)
         )).get()
-        return transactions.transactions.map { ICPTokenTransaction($0, ICPSystemCanisters.ledger) }
+        return transactions.transactions.map { ICPTokenTransaction($0, icpToken) }
     }
 }
 
@@ -36,7 +38,7 @@ private extension ICPIndex.GetAccountIdentifierTransactionsResult {
 }
 
 private extension ICPTokenTransaction {
-    init(_ transaction: ICPIndex.TransactionWithId, _ tokenCanister: ICPPrincipal) {
+    init(_ transaction: ICPIndex.TransactionWithId, _ token: ICPToken) {
         switch transaction.transaction.operation {
         case .Burn(let from, let amount, let spender):
             operation = .burn(from: .accountId(from))
@@ -70,7 +72,7 @@ private extension ICPTokenTransaction {
         timeStamp = transaction.transaction.timestamp.map { Date(nanoSecondsSince1970: $0.timestamp_nanos) }
         created = transaction.transaction.created_at_time.map { Date(nanoSecondsSince1970: $0.timestamp_nanos) }
         index = BigUInt(transaction.id)
-        self.tokenCanister = tokenCanister
+        self.token = token
         memo = transaction.transaction.icrc1_memo
     }
 }

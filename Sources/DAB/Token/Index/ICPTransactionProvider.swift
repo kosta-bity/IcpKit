@@ -17,8 +17,8 @@ class ICPTransactionProvider {
         service = NNS_SNS_W.Service(ICPSystemCanisters.nns_sns_w, client: client)
     }
  
-    func transactions(of user: ICPAccount, tokenCanister: ICPPrincipal) async throws -> [ICPTokenTransaction] {
-        guard let provider = try await transactionProvider(for: tokenCanister) else {
+    func transactions(of user: ICPAccount, token: ICPToken) async throws -> [ICPTokenTransaction] {
+        guard let provider = try await transactionProvider(for: token) else {
             return []
         }
         return try await provider.transactions(of: user)
@@ -36,15 +36,15 @@ class ICPTransactionProvider {
         return sns?.index_canister_id
     }
     
-    private func transactionProvider(for tokenCanister: ICPPrincipal) async throws -> ICPTransactionProviderProtocol? {
+    private func transactionProvider(for token: ICPToken) async throws -> ICPTransactionProviderProtocol? {
         // TODO: Support DIP20 tokens
-        if tokenCanister == ICPSystemCanisters.ledger {
-            return ICPIndexTransactionProvider(client: service.client)
+        if token.canister == ICPSystemCanisters.ledger {
+            return ICPIndexTransactionProvider(client: service.client, icpToken: token)
         }
-        guard let index = try await findIndexCanisterInSNS(tokenCanister: tokenCanister) else {
+        guard let index = try await findIndexCanisterInSNS(tokenCanister: token.canister) else {
             return nil
         }
-        return ICPICRC1IndexTransactionProvider(client: service.client, tokenCanister: tokenCanister, indexCanister: index)
+        return ICPICRC1IndexTransactionProvider(client: service.client, token: token, indexCanister: index)
     }
 }
 
