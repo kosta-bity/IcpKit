@@ -36,7 +36,7 @@ class ICPTransactionProvider {
     
     private func deployedSnses() async throws -> [NNS_SNS_W.DeployedSns] {
         if let cachedSnses = cachedSnses { return cachedSnses }
-        cachedSnses = try await service.list_deployed_snses().instances
+        cachedSnses = try await service.list_deployed_snses(.init()).instances
         return cachedSnses!
     }
     

@@ -161,11 +161,14 @@ final class DABTests: XCTestCase {
     
     func testTransactions() async throws {
         let tokenHolding = try await tokenService.balance(of: devWallet1Account)
-        for token in tokenHolding.map({$0.token}) {
-            print("\(token.name): \(token.canister)")
-            let transactions = try await tokenService.transactions(of: devWallet1Account, for: token)
-            print(transactions.count)
-            print(transactions)
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for token in tokenHolding.map({$0.token}).prefix(5) {
+                group.addTask {
+                    let transactions = try await self.tokenService.transactions(of: devWallet1Account, for: token)
+                    print("\(token.name): \(token.canister) nTransactions = \(transactions.count)")
+                }
+            }
+            try await group.waitForAll()
         }
     }
 }

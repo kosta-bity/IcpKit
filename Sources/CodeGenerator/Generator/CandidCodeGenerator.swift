@@ -324,8 +324,7 @@ fileprivate extension CandidType {
     
     func swiftType() -> String {
         switch self {
-        case .null, .reserved, .empty: 
-            return "" // ???
+        case .null, .reserved, .empty: return "CandidTuple0"
         case .bool: return "Bool"
         case .natural: return "BigUInt"
         case .integer: return "BigInt"
@@ -347,6 +346,9 @@ fileprivate extension CandidType {
         case .record(let keyedTypes):
             guard keyedTypes.isTuple else {
                 fatalError("all non-tuple records should be named by now")
+            }
+            guard keyedTypes.count > 0 else {
+                return "CandidTuple0"
             }
             return "CandidTuple\(keyedTypes.count)<\(keyedTypes.map { $0.type.swiftType() }.joined(separator: ", "))>"
         case .variant:

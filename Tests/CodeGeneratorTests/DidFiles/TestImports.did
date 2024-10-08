@@ -8,6 +8,7 @@ type Record = record {
     b: nat;
     c: record { bool; text };
 };
+type EmptyRecord = record {};
 type UnnamedType0 = record { vec opt int8; nat8 };
 type RepeatedRecord = record { vec opt int8; nat8 };
 type Variant = variant {

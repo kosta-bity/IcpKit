@@ -136,7 +136,7 @@ private class CandidUnkeyedDecodingContainer: UnkeyedDecodingContainer {
     var count: Int? { inputVector.count }
     var isAtEnd: Bool { currentIndex == count }
     private let inputVector: [CandidValue]
-    private (set) var currentIndex: Int = 0
+    private(set) var currentIndex: Int = 0
     private let rootCodingPath: [CodingKey]
     
     init(_ input: CandidValue, _ codingPath: [CodingKey]) throws {

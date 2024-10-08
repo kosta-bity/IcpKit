@@ -330,7 +330,7 @@ private extension CandidValueParser {
             } else {
                 exponent = 0
             }
-            let decimal = Decimal(sign: significandL.sign == .plus ? .plus : .minus, exponent: exponent, significand: significand)
+            let decimal = Decimal(sign: .plus, exponent: exponent, significand: significand)
             return .float64(Double(truncating: decimal as NSNumber))
         }
         return nil

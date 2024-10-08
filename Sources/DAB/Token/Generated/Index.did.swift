@@ -7,7 +7,7 @@ import Foundation
 import IcpKit
 import BigInt
 
-enum Index {    
+enum Index {
 	/// type Block = Value;
 	typealias Block = Value
 	

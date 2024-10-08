@@ -7,6 +7,23 @@
 
 import Foundation
 
+public struct CandidTuple0 {
+    public init() {}
+}
+
+public struct CandidTuple1<T0> {
+    public let _0: T0
+    public var tuple: (T0) { (_0) }
+    
+    public init(_ _0: T0) {
+        self._0 = _0
+    }
+    
+    enum CodingKeys: Int, CodingKey {
+        case _0
+    }
+}
+
 public struct CandidTuple2<T0, T1> {
     public let _0: T0
     public let _1: T1
@@ -147,7 +164,9 @@ public struct CandidTuple7<T0, T1, T2, T3, T4, T5, T6> {
         case _6
     }
 }
-
+extension CandidTuple0: Codable {}
+extension CandidTuple1: Encodable where T0: Encodable {}
+extension CandidTuple1: Decodable where T0: Decodable {}
 extension CandidTuple2: Encodable where T0: Encodable, T1: Encodable {}
 extension CandidTuple2: Decodable where T0: Decodable, T1: Decodable {}
 extension CandidTuple3: Encodable where T0: Encodable, T1: Encodable, T2: Encodable {}

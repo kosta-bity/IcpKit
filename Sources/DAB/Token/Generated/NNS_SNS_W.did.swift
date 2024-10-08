@@ -8,8 +8,6 @@ import IcpKit
 import BigInt
 
 enum NNS_SNS_W {
-    struct EmptyRecord: Codable {}
-    
 	/// type GetWasmRequest = record {
 	///     hash : blob;
 	/// };
@@ -665,9 +663,9 @@ enum NNS_SNS_W {
 		}
 	
 		/// get_allowed_principals : (record {}) -> (GetAllowedPrincipalsResponse) query;
-		func get_allowed_principals(sender: ICPSigningPrincipal? = nil) async throws -> GetAllowedPrincipalsResponse {
-			let caller = ICPQueryNoArgs<GetAllowedPrincipalsResponse>(canister, "get_allowed_principals")
-			let response = try await caller.callMethod(client, sender: sender)
+		func get_allowed_principals(_ arg0: CandidTuple0, sender: ICPSigningPrincipal? = nil) async throws -> GetAllowedPrincipalsResponse {
+			let caller = ICPQuery<CandidTuple0, GetAllowedPrincipalsResponse>(canister, "get_allowed_principals")
+			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
@@ -681,9 +679,9 @@ enum NNS_SNS_W {
 		}
 	
 		/// get_latest_sns_version_pretty : (null) -> (vec record { text; text }) query;
-		func get_latest_sns_version_pretty(sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<String, String>] {
-			let caller = ICPQueryNoArgs<[CandidTuple2<String, String>]>(canister, "get_latest_sns_version_pretty")
-			let response = try await caller.callMethod(client, sender: sender)
+		func get_latest_sns_version_pretty(_ arg0: CandidTuple0, sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<String, String>] {
+			let caller = ICPQuery<CandidTuple0, [CandidTuple2<String, String>]>(canister, "get_latest_sns_version_pretty")
+			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
@@ -706,9 +704,9 @@ enum NNS_SNS_W {
 		}
 	
 		/// get_sns_subnet_ids : (record {}) -> (GetSnsSubnetIdsResponse) query;
-		func get_sns_subnet_ids(sender: ICPSigningPrincipal? = nil) async throws -> GetSnsSubnetIdsResponse {
-			let caller = ICPQueryNoArgs<GetSnsSubnetIdsResponse>(canister, "get_sns_subnet_ids")
-			let response = try await caller.callMethod(client, sender: sender)
+		func get_sns_subnet_ids(_ arg0: CandidTuple0, sender: ICPSigningPrincipal? = nil) async throws -> GetSnsSubnetIdsResponse {
+			let caller = ICPQuery<CandidTuple0, GetSnsSubnetIdsResponse>(canister, "get_sns_subnet_ids")
+			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	
@@ -738,9 +736,9 @@ enum NNS_SNS_W {
 		}
 	
 		/// list_deployed_snses : (record {}) -> (ListDeployedSnsesResponse) query;
-		func list_deployed_snses(sender: ICPSigningPrincipal? = nil) async throws -> ListDeployedSnsesResponse {
-			let caller = ICPQuery<EmptyRecord, ListDeployedSnsesResponse>(canister, "list_deployed_snses")
-			let response = try await caller.callMethod(EmptyRecord(), client, sender: sender)
+		func list_deployed_snses(_ arg0: CandidTuple0, sender: ICPSigningPrincipal? = nil) async throws -> ListDeployedSnsesResponse {
+			let caller = ICPQuery<CandidTuple0, ListDeployedSnsesResponse>(canister, "list_deployed_snses")
+			let response = try await caller.callMethod(arg0, client, sender: sender)
 			return response
 		}
 	

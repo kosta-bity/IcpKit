@@ -335,8 +335,8 @@ private extension CandidTypeParser {
 }
 
 private class ParsingContext {
-    private (set) var namedTypes: [CandidNamedType] = []
-    private (set) var service: CandidInterfaceDefinition.ServiceDefinition?
+    private(set) var namedTypes: [CandidNamedType] = []
+    private(set) var service: CandidInterfaceDefinition.ServiceDefinition?
     
     subscript (_ name: String) -> CandidType? {
         return namedTypes[name]

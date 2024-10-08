@@ -174,7 +174,7 @@ private extension CandidParserToken {
 private struct CommentSkippingIterator: IteratorProtocol {
     private let array: [CandidParsedRange]
     private var iterator: [CandidParsedRange].Iterator
-    private (set) var currentStringIndex: String.Index?
+    private(set) var currentStringIndex: String.Index?
     
     init(_ array: [CandidParsedRange]) {
         self.array = array

@@ -56,9 +56,9 @@ private extension ICPBlock.Transaction.Operation {
                     3: [0: CBOR(fee)],
                 ]
             ]
-        case .approve(let from, let allowance, _, let fee, _, let spender):
-            return nil
+        default: return nil
             // TODO: Can not find any docs for this...
+//        case .approve(let from, let allowance, _, let fee, _, let spender):
 //            return [
 //                3: [
 //                    0: CBOR(from.hex),

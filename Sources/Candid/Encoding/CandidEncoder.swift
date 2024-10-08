@@ -39,7 +39,7 @@ public enum CandidEncoderError: Error {
 private class CandidValueEncoder: Encoder {
     let userInfo: [CodingUserInfoKey : Any] = [:]
     let codingPath: [CodingKey]
-    private (set) var encodingValue: CandidEncodingValue!
+    private(set) var encodingValue: CandidEncodingValue!
     var candidValue: CandidValue { encodingValue.candidValue }
     
     init(_ codingPath: [CodingKey] = []) {
@@ -254,7 +254,7 @@ private protocol CandidEncodingValue: AnyObject {
 }
 
 private class CandidSingleEncodingValue: CandidEncodingValue {
-    private (set) var candidValue: CandidValue!
+    private(set) var candidValue: CandidValue!
     
     func set(_ value: CandidValue) { candidValue = value }
     func set(_ value: Bool) { candidValue = .bool(value) }

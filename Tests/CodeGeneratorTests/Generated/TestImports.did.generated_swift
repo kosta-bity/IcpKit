@@ -14,6 +14,8 @@ enum TestImports {
 	/// type AData = blob;
 	typealias AData = Data
 	
+	typealias EmptyRecord = CandidTuple0
+	
 	/// type Function00 = func () -> ();
 	typealias Function00 = ICPCallNoArgsNoResult
 	

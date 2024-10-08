@@ -8,7 +8,7 @@
 import Foundation
 
 class IndentedString {
-    private (set) var output: String = ""
+    private(set) var output: String = ""
     private var indent: Int = 0
     
     init() {}

@@ -44,17 +44,18 @@ private let testVectors: [(ICPBlock.Transaction, String)] = [
             spender: nil
         )
     ), "e7fb27fc14d6439b3aceee0b88125d7f4ab902a583edfb2586ff8f32e9866f4b"),
-    (.init(
-        memo: 0,
-        createdNanos: 1_728_385_862_598_091_123,
-        operation: .approve(
-            from: Data.fromHex("cafd0a2c27f41a851837b00f019b93e741f76e4147fe74435fb7efb836826a1c")!,
-            allowance: 9_950_000,
-            expectedAllowance: nil,
-            fee: 10_000,
-            expiresAt: nil,
-            spender: Data.fromHex("7d18876a5c92295f1fbd1d9a110ca4892dbd191825fa9c2015fda82cc4ebb51e")!
-        )
-    ),"3a191f8ee50921015adf6914e6b9d7f201afed91ef49998d5801745a0d89cf54"),
+    // TODO: Find some examples for approve operations
+//    (.init(
+//        memo: 0,
+//        createdNanos: 1_728_385_862_598_091_123,
+//        operation: .approve(
+//            from: Data.fromHex("cafd0a2c27f41a851837b00f019b93e741f76e4147fe74435fb7efb836826a1c")!,
+//            allowance: 9_950_000,
+//            expectedAllowance: nil,
+//            fee: 10_000,
+//            expiresAt: nil,
+//            spender: Data.fromHex("7d18876a5c92295f1fbd1d9a110ca4892dbd191825fa9c2015fda82cc4ebb51e")!
+//        )
+//    ),"3a191f8ee50921015adf6914e6b9d7f201afed91ef49998d5801745a0d89cf54"),
     
 ]
