@@ -14,6 +14,10 @@ public extension ICPCryptography {
         let txHash = Cryptography.sha256(serialised)
         return txHash
     }
+    
+    static func transactionHash(_ operation: ICPBlock.Transaction.Operation, memo: UInt64, createdNanos: UInt64) throws -> Data {
+        try transactionHash(ICPBlock.Transaction(memo: memo, createdNanos: createdNanos, operation: operation))
+    }
 }
 
 private extension ICPBlock.Transaction {
@@ -29,21 +33,21 @@ private extension ICPBlock.Transaction {
 private extension ICPBlock.Transaction.Operation {
     var cbor: CBOR {
         switch self {
-        case .burn(from: let from, amount: let amount):
+        case .burn(let from, let amount, _):
             return [
                 0: [
                     0: CBOR(from.hex),
                     1: CBOR(amount),
                 ]
             ]
-        case .mint(to: let to, amount: let amount):
+        case .mint(let to, let amount):
             return [
                 1: [
                     0: CBOR(to.hex),
                     1: CBOR(amount),
                 ]
             ]
-        case .transfer(from: let from, to: let to, amount: let amount, fee: let fee):
+        case .transfer(let from, let to, let amount, let fee, _):
             return [
                 2: [
                     0: CBOR(from.hex),
@@ -52,6 +56,17 @@ private extension ICPBlock.Transaction.Operation {
                     3: [0: CBOR(fee)],
                 ]
             ]
+        case .approve(let from, let allowance, _, let fee, _, let spender):
+            return nil
+            // TODO: Can not find any docs for this...
+//            return [
+//                3: [
+//                    0: CBOR(from.hex),
+//                    1: CBOR(spender.hex),
+//                    2: [0: CBOR(allowance)],
+//                    3: [0: CBOR(fee)],
+//                ]
+//            ]
         }
     }
 }

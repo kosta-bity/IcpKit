@@ -24,16 +24,25 @@ class ICPTransactionProvider {
         return try await provider.transactions(of: user)
     }
     
+    func explorerUrl(tokenCanister: ICPPrincipal, transactionIndex: String) async throws -> URL? {
+        if tokenCanister == ICPSystemCanisters.ledger {
+            return URL(string: "https://dashboard.internetcomputer.org/transaction/\(transactionIndex)")
+        }
+        guard let root = try await findSNS(containing: tokenCanister)?.root_canister_id else {
+            return nil
+        }
+        return URL(string: "https://dashboard.internetcomputer.org/sns/\(root)/transaction/\(transactionIndex)")
+    }
+    
     private func deployedSnses() async throws -> [NNS_SNS_W.DeployedSns] {
         if let cachedSnses = cachedSnses { return cachedSnses }
         cachedSnses = try await service.list_deployed_snses().instances
         return cachedSnses!
     }
     
-    private func findIndexCanisterInSNS(tokenCanister: ICPPrincipal) async throws -> ICPPrincipal? {
+    private func findSNS(containing canister: ICPPrincipal) async throws -> NNS_SNS_W.DeployedSns? {
         let deployed = try await deployedSnses()
-        let sns = deployed.first { $0.contains(tokenCanister) }
-        return sns?.index_canister_id
+        return deployed.first { $0.contains(canister) }
     }
     
     private func transactionProvider(for token: ICPToken) async throws -> ICPTransactionProviderProtocol? {
@@ -41,7 +50,7 @@ class ICPTransactionProvider {
         if token.canister == ICPSystemCanisters.ledger {
             return ICPIndexTransactionProvider(client: service.client, icpToken: token)
         }
-        guard let index = try await findIndexCanisterInSNS(tokenCanister: token.canister) else {
+        guard let index = try await findSNS(containing: token.canister)?.index_canister_id else {
             return nil
         }
         return ICPICRC1IndexTransactionProvider(client: service.client, token: token, indexCanister: index)

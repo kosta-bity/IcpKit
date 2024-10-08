@@ -17,10 +17,10 @@ public struct ICPTokenTransferArgs {
     
     // options
     public let fee: BigUInt?
-    public let memo: String?
+    public let memo: Data?
     public let createdAtTime: Date?
     
-    public init(sender: ICPSigningPrincipal, from: ICPAccount, to: ICPAccount, amount: BigUInt, fee: BigUInt?, memo: String?, createdAtTime: Date?) {
+    public init(sender: ICPSigningPrincipal, from: ICPAccount, to: ICPAccount, amount: BigUInt, fee: BigUInt?, memo: Data?, createdAtTime: Date?) {
         self.sender = sender
         self.from = from
         self.to = to

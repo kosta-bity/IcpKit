@@ -17,7 +17,7 @@ public struct ICPTokenTransaction {
         public var address: String {
             switch self {
             case .accountId(let address): return address
-            case .account(let icpAccount): return icpAccount.address
+            case .account(let icpAccount): return icpAccount.textualRepresentation()
             }
         }
     }
@@ -31,7 +31,9 @@ public struct ICPTokenTransaction {
     /// The block height
     public let index: BigUInt
     public let operation: Operation
-    public let memo: Data?
+    /// only available for ICP transactions
+    public let memo: UInt64?
+    public let icrc1Memo: Data?
     public let amount: BigUInt
     public let fee: BigUInt
     public let created: Date?
@@ -58,10 +60,11 @@ public struct ICPTokenTransaction {
         }
     }
     
-    public init(index: BigUInt, operation: Operation, memo: Data?, amount: BigUInt, fee: BigUInt, created: Date?, timeStamp: Date?, spender: Destination?, token: ICPToken) {
+    public init(index: BigUInt, operation: Operation, memo: UInt64?, icrc1Memo: Data?, amount: BigUInt, fee: BigUInt, created: Date?, timeStamp: Date?, spender: Destination?, token: ICPToken) {
         self.index = index
         self.operation = operation
         self.memo = memo
+        self.icrc1Memo = icrc1Memo
         self.amount = amount
         self.fee = fee
         self.created = created

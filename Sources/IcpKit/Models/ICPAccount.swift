@@ -7,7 +7,7 @@
 import Foundation
 import Candid
 
-public struct ICPAccount {
+public struct ICPAccount: Equatable {
     public let principal: ICPPrincipal
     public var address: String { accountId.hex }
     public let accountId: Data

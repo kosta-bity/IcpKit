@@ -73,7 +73,8 @@ private extension ICPTokenTransaction {
         created = transaction.transaction.created_at_time.map { Date(nanoSecondsSince1970: $0.timestamp_nanos) }
         index = BigUInt(transaction.id)
         self.token = token
-        memo = transaction.transaction.icrc1_memo
+        icrc1Memo = transaction.transaction.icrc1_memo
+        memo = transaction.transaction.memo
     }
 }
 

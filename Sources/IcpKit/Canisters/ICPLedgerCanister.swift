@@ -127,9 +127,11 @@ private extension ICPBlock {
 private extension ICPBlock.Transaction.Operation {
     init(_ operation: LedgerCanister.Operation) {
         switch operation {
-        case .Burn(let from, let amount): self = .burn(from: from, amount: amount.e8s)
+        case .Approve(let from, let allowance, let fee, let expires_at, let expected_allowance, let spender):
+            self = .approve(from: from, allowance: allowance.e8s, expectedAllowance: expected_allowance?.e8s, fee: fee.e8s, expiresAt: expires_at?.date, spender: spender)
+        case .Burn(let from, let amount, let spender): self = .burn(from: from, amount: amount.e8s, spender: spender)
         case .Mint(let to, let amount): self = .mint(to: to, amount: amount.e8s)
-        case .Transfer(let to, let fee, let from, let amount): self = .transfer(from: from, to: to, amount: amount.e8s, fee: fee.e8s)
+        case .Transfer(let to, let fee, let from, let amount, let spender): self = .transfer(from: from, to: to, amount: amount.e8s, fee: fee.e8s, spender: spender)
         }
     }
 }
@@ -155,4 +157,5 @@ private extension LedgerCanister.TimeStamp {
     static var now: LedgerCanister.TimeStamp {
         return LedgerCanister.TimeStamp(timestamp_nanos: UInt64(Date.now.timeIntervalSince1970) * 1_000_000_000)
     }
+    var date: Date { Date(nanoSecondsSince1970: timestamp_nanos) }
 }

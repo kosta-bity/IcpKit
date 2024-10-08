@@ -50,7 +50,7 @@ final class ICPIntegrationTests: XCTestCase {
         XCTAssertEqual(block.transaction.createdNanos, 1723103842536019792)
         XCTAssertEqual(block.transaction.memo, 0)
         XCTAssertEqual(block.parentHash, Data.fromHex("7f944c23b83cc7d5457b6503f95430cb751f8cfe561374470e672c70fb850342"))
-        guard case .transfer(let from, let to, let amount, let fee) = block.transaction.operation else {
+        guard case .transfer(let from, let to, let amount, let fee, _) = block.transaction.operation else {
             XCTFail("operation is not a transfer")
             return
         }
@@ -77,5 +77,5 @@ private let testWallet1PublicKey: Data = Data.fromHex("046acf4c93dd993cd73642030
 private let testWallet2PublicKey: Data = Data.fromHex("04723cdc9bd653014a501159fb89dcc6e2cf03f242955b987b53dd6193815d8a9d4a4f5b902b2819d270c28f0710ad96fea5b13f5fe30c6e244bf2941ebf4ec36e")!
 
 private let principal1 = try! ICPCryptography.selfAuthenticatingPrincipal(uncompressedPublicKey: testWallet1PublicKey)
-private let mainAccount1 = try! ICPAccount.mainAccount(of: principal1)
+private let mainAccount1 = ICPAccount.mainAccount(of: principal1)
 

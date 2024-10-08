@@ -17,21 +17,23 @@ public struct ICPBlock {
         public let operation: Operation
         
         public enum Operation {
-            case burn(from: Data, amount: UInt64)
+            case approve(from: Data, allowance: UInt64, expectedAllowance: UInt64?, fee: UInt64, expiresAt: Date?, spender: Data)
+            case burn(from: Data, amount: UInt64, spender: Data?)
             case mint(to: Data, amount: UInt64)
-            case transfer(from: Data, to: Data, amount: UInt64, fee: UInt64)
+            case transfer(from: Data, to: Data, amount: UInt64, fee: UInt64, spender: Data?)
             
             public var amount: UInt64 {
                 switch self {
-                case .burn(_, let amount),
+                case .approve(_, let amount, _, _, _, _),
+                     .burn(_, let amount, _),
                      .mint(_, let amount),
-                     .transfer(_,_, let amount, _):
+                     .transfer(_,_, let amount, _, _):
                     return amount
                 }
             }
             
             public var fee: UInt64? {
-                guard case .transfer(_,_,_, let fee) = self else { return nil }
+                guard case .transfer(_,_,_, let fee, _) = self else { return nil }
                 return fee
             }
         }
@@ -53,9 +55,10 @@ public struct ICPBlock {
 private extension ICPTransactionType {
     static func from(_ operation: ICPBlock.Transaction.Operation) -> ICPTransactionType {
         switch operation {
-        case .burn(let from, _): return .burn(from: from.hex)
+        case .approve(let from, _, _, _, _, _): return .approve(from: from.hex)
+        case .burn(let from, _, _): return .burn(from: from.hex)
         case .mint(let to, _): return .mint(to: to.hex)
-        case .transfer(let from, let to, _, _): return .send(from: from.hex, to: to.hex)
+        case .transfer(let from, let to, _, _, _): return .send(from: from.hex, to: to.hex)
         }
     }
 }

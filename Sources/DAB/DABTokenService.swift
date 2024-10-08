@@ -92,6 +92,10 @@ public class DABTokenService {
         }
         return try await transactionProvider.transactions(of: user, token: token)
     }
+    
+    public func explorerUrl(tokenCanister: ICPPrincipal, transactionIndex: String) async throws -> URL? {
+        try await transactionProvider.explorerUrl(tokenCanister: tokenCanister, transactionIndex: transactionIndex)
+    }
 }
 
 private extension DABTokenService {

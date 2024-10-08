@@ -100,7 +100,7 @@ final class DABTests: XCTestCase {
     }
     
     func testTokenBalance() async throws {
-        let tokenHolding = try await tokenService.balance(of: devWallet2Account)
+        let tokenHolding = try await tokenService.balance(of: devWallet1Account)
         for holding in tokenHolding {
             print("\(holding.token.name): \(holding.decimalBalance) \(holding.token.symbol)")
         }

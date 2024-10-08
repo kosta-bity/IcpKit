@@ -99,6 +99,14 @@ enum LedgerCanister {
     
     /// //There are three types of operations: minting tokens, burning tokens & transferring tokens
     /// type Operation = variant {
+    ///     Approve : record {
+    ///         fee : Tokens;
+    ///         from : AccountIdentifier;
+    ///         allowance : Tokens;
+    ///         expires_at : opt TimeStamp;
+    ///         spender : AccountIdentifier;
+    ///         expected_allowance : opt Tokens;
+    ///     };
     ///     Mint: record {
     ///         to: AccountIdentifier;
     ///         amount: Tokens;
@@ -106,27 +114,40 @@ enum LedgerCanister {
     ///     Burn: record {
     ///          from: AccountIdentifier;
     ///          amount: Tokens;
+    ///          spender : opt AccountIdentifier;
     ///    };
     ///     Transfer: record {
     ///         from: AccountIdentifier;
     ///         to: AccountIdentifier;
     ///         amount: Tokens;
     ///         fee: Tokens;
+    ///         spender : opt AccountIdentifier;
     ///     };
     /// };
     enum Operation: Codable {
-        case Burn(from: AccountIdentifier, amount: Tokens)
+        case Approve(from: AccountIdentifier, allowance: Tokens, fee: Tokens, expires_at: TimeStamp?, expected_allowance: Tokens?, spender: AccountIdentifier)
+        case Burn(from: AccountIdentifier, amount: Tokens, spender: AccountIdentifier?)
         case Mint(to: AccountIdentifier, amount: Tokens)
-        case Transfer(to: AccountIdentifier, fee: Tokens, from: AccountIdentifier, amount: Tokens)
+        case Transfer(to: AccountIdentifier, fee: Tokens, from: AccountIdentifier, amount: Tokens, spender: AccountIdentifier?)
         
         enum CodingKeys: String, CandidCodingKey {
+            case Approve
             case Burn
             case Mint
             case Transfer
         }
+        enum ApproveCodingKeys: String, CandidCodingKey {
+            case from
+            case allowance
+            case fee
+            case expires_at
+            case expected_allowance
+            case spender
+        }
         enum BurnCodingKeys: String, CandidCodingKey {
             case from
             case amount
+            case spender
         }
         enum MintCodingKeys: String, CandidCodingKey {
             case to
@@ -137,6 +158,7 @@ enum LedgerCanister {
             case fee
             case from
             case amount
+            case spender
         }
     }
     

@@ -48,6 +48,7 @@ private extension ICPTokenTransaction {
             fee = .zero
             spender = try burn.spender.map(ICPTokenTransaction.Destination.init)
             created = burn.created_at_time.map { Date(nanoSecondsSince1970: $0) }
+            icrc1Memo = burn.memo
             
         } else if let approve = transaction.transaction.approve {
             operation = .approve(
@@ -59,6 +60,7 @@ private extension ICPTokenTransaction {
             fee = approve.fee ?? .zero
             spender = try ICPTokenTransaction.Destination(approve.spender)
             created = approve.created_at_time.map { Date(nanoSecondsSince1970: $0) }
+            icrc1Memo = approve.memo
             
         } else if let transfer = transaction.transaction.transfer {
             operation = .transfer(from: try ICPTokenTransaction.Destination(transfer.from), to: try ICPTokenTransaction.Destination(transfer.to))
@@ -66,6 +68,7 @@ private extension ICPTokenTransaction {
             fee = transfer.fee ?? .zero
             spender = try transfer.spender.map(ICPTokenTransaction.Destination.init)
             created = transfer.created_at_time.map { Date(nanoSecondsSince1970: $0) }
+            icrc1Memo = transfer.memo
             
         } else if let mint = transaction.transaction.mint {
             operation = .mint(to: try ICPTokenTransaction.Destination(mint.to))
@@ -73,6 +76,7 @@ private extension ICPTokenTransaction {
             fee = .zero
             spender = nil
             created = mint.created_at_time.map { Date(nanoSecondsSince1970: $0) }
+            icrc1Memo = mint.memo
             
         } else {
             return nil

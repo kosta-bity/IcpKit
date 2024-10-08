@@ -83,7 +83,7 @@ private extension ICRC1.TransferArgs {
     init(_ args: ICPTokenTransferArgs) {
         to = .init(owner: args.to.principal, subaccount: args.to.subAccountId)
         fee = args.fee
-        memo = args.memo.map { Data($0.utf8) }
+        memo = args.memo
         from_subaccount = args.from.subAccountId
         created_at_time = args.createdAtTime?.nanoSecondsSince1970
         amount = args.amount
