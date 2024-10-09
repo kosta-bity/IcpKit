@@ -102,7 +102,7 @@ private extension DABTokenService {
     func buildIcpToken() async throws -> ICPToken {
         let actor = ICPTokenActorFactory.actor(for: .icp, ICPSystemCanisters.ledger, client)!
         let metadata = try await actor.metaData()
-        return ICPToken(standard: .icp, canister: ICPSystemCanisters.ledger, description: "Internet Computer Protocol", metadata: metadata)
+        return ICPToken(standard: .icp, canister: ICPSystemCanisters.ledger, metadata: metadata)
     }
 }
 
@@ -111,7 +111,6 @@ private extension ICPToken {
         guard let standard = ICPTokenStandard(try dabToken.details["standard"]?.textValue),
               let decimals = try dabToken.details["decimals"]?.u64Value,
               let symbol = try dabToken.details["symbol"]?.textValue,
-              let totalSupply = try dabToken.details["total_supply"]?.u64Value,
               let verified = try dabToken.details["verified"]?.boolValue else {
             throw DABTokens.detail_value.TypeError.invalidType
         }
@@ -120,11 +119,8 @@ private extension ICPToken {
         self.name = dabToken.name
         self.decimals = UInt(decimals)
         self.symbol = symbol
-        self.description = dabToken.description
-        self.totalSupply = BigUInt(totalSupply)
         self.verified = verified
         self.logo = URL(string: dabToken.thumbnail)
-        self.website = URL(string: dabToken.frontend ?? "")
     }
 }
 

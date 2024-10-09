@@ -7,7 +7,7 @@ import Foundation
 import IcpKit
 import BigInt
 
-enum icrc1_oracle {
+enum ICRC1Oracle {
 	/// type Category = variant {
 	///     Sns;
 	///     Known;

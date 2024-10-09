@@ -14,6 +14,7 @@ import BigInt
 final class DABTests: XCTestCase {
     let nftService = DABNftService()
     let tokenService = DABTokenService()
+    let oracle = TokenOracle()
     
     func testAllCollections() async throws {
         let allCollections = try await nftService.allCollections()
@@ -52,6 +53,10 @@ final class DABTests: XCTestCase {
 //            let actor2 = nftService.actor(for: extCollection)!
 //            //let nfts2 = try? await actor2.allNfts()
 //        }
+    }
+    
+    func testIcrc1Oracle() async throws {
+        let _ = try await oracle.allTokens()
     }
     
     func testAllTokens() async throws {
