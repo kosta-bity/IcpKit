@@ -33,8 +33,12 @@ public struct ICPBlock {
             }
             
             public var fee: UInt64? {
-                guard case .transfer(_,_,_, let fee, _) = self else { return nil }
-                return fee
+                switch self {
+                case .approve(_,_,_, let fee, _,_),
+                     .transfer(_,_,_, let fee, _):
+                    return fee
+                default: return nil
+                }
             }
         }
     }
