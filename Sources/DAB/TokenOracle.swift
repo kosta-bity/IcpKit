@@ -46,7 +46,7 @@ public class TokenOracle {
         if let cachedCanisters = cachedCanisters {
             return cachedCanisters.compactMap { try? ICPToken($0) }
         }
-        cachedCanisters = try await service.get_all_icrc1_canisters()
+        cachedCanisters = try await fetchAllIcrc1Canisters()
         return cachedCanisters!.compactMap { try? ICPToken($0) }
     }
     
@@ -97,6 +97,29 @@ public class TokenOracle {
     
     public func explorerUrl(tokenCanister: ICPPrincipal, transactionIndex: String) async throws -> URL? {
         try await transactionProvider.explorerUrl(tokenCanister: tokenCanister, transactionIndex: transactionIndex)
+    }
+}
+
+private extension TokenOracle {
+    private static let pageSize: UInt64 = 50
+    func fetchAllIcrc1Canisters() async throws -> [ICRC1Oracle.ICRC1] {
+        let canisterCount = try await service.count_icrc1_canisters()
+        let nPages = canisterCount / Self.pageSize + 1
+        let canisters = await withTaskGroup(of: [ICRC1Oracle.ICRC1].self) { [weak self] group in
+            for i in 0..<nPages {
+                group.addTask {
+                    let startAt = i * Self.pageSize
+                    let canisters = try? await self?.service.get_icrc1_paginated(startAt, Self.pageSize)
+                    return canisters ?? []
+                }
+            }
+            var canisters: [ICRC1Oracle.ICRC1] = []
+            while let finished = await group.next() {
+                canisters.append(contentsOf: finished)
+            }
+            return canisters
+        }
+        return canisters
     }
 }
 

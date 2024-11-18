@@ -87,18 +87,34 @@ enum ICRC1Oracle {
 	}
 	
 
-	/// service : (opt Conf) -> {
-	///     get_all_icrc1_canisters : () -> (vec ICRC1) query;
-	///     replace_icrc1_canisters : (vec ICRC1) -> ();
-	///     store_new_icrc1_canisters : (vec ICRC1) -> ();
-	///     store_icrc1_canister : (ICRC1Request) -> ();
-	///     sync_controllers: () -> (vec text);
+	/// service : {
+	///   count_icrc1_canisters : () -> (nat64) query;
+	///   get_all_icrc1_canisters : () -> (vec ICRC1) query;
+	///   get_icrc1_paginated : (nat64, nat64) -> (vec ICRC1) query;
+	///   replace_icrc1_canisters : (vec ICRC1) -> ();
+	///   set_operator : (principal) -> ();
+	///   store_icrc1_canister : (ICRC1Request) -> ();
+	///   store_new_icrc1_canisters : (vec ICRC1) -> ();
 	/// }
 	class Service: ICPService {
+		/// count_icrc1_canisters : () -> (nat64) query;
+		func count_icrc1_canisters(sender: ICPSigningPrincipal? = nil) async throws -> UInt64 {
+			let caller = ICPQueryNoArgs<UInt64>(canister, "count_icrc1_canisters")
+			let response = try await caller.callMethod(client, sender: sender)
+			return response
+		}
+	
 		/// get_all_icrc1_canisters : () -> (vec ICRC1) query;
 		func get_all_icrc1_canisters(sender: ICPSigningPrincipal? = nil) async throws -> [ICRC1] {
 			let caller = ICPQueryNoArgs<[ICRC1]>(canister, "get_all_icrc1_canisters")
 			let response = try await caller.callMethod(client, sender: sender)
+			return response
+		}
+	
+		/// get_icrc1_paginated : (nat64, nat64) -> (vec ICRC1) query;
+		func get_icrc1_paginated(_ arg0: UInt64, _ arg1: UInt64, sender: ICPSigningPrincipal? = nil) async throws -> [ICRC1] {
+			let caller = ICPQuery<ICPFunctionArgs2<UInt64, UInt64>, [ICRC1]>(canister, "get_icrc1_paginated")
+			let response = try await caller.callMethod(.init(arg0, arg1), client, sender: sender)
 			return response
 		}
 	
@@ -108,9 +124,9 @@ enum ICRC1Oracle {
 			let _ = try await caller.callMethod(arg0, client, sender: sender)
 		}
 	
-		/// store_new_icrc1_canisters : (vec ICRC1) -> ();
-		func store_new_icrc1_canisters(_ arg0: [ICRC1], sender: ICPSigningPrincipal? = nil) async throws {
-			let caller = ICPCallNoResult<[ICRC1]>(canister, "store_new_icrc1_canisters")
+		/// set_operator : (principal) -> ();
+		func set_operator(_ arg0: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws {
+			let caller = ICPCallNoResult<ICPPrincipal>(canister, "set_operator")
 			let _ = try await caller.callMethod(arg0, client, sender: sender)
 		}
 	
@@ -120,11 +136,10 @@ enum ICRC1Oracle {
 			let _ = try await caller.callMethod(arg0, client, sender: sender)
 		}
 	
-		/// sync_controllers: () -> (vec text);
-		func sync_controllers(sender: ICPSigningPrincipal? = nil) async throws -> [String] {
-			let caller = ICPCallNoArgs<[String]>(canister, "sync_controllers")
-			let response = try await caller.callMethod(client, sender: sender)
-			return response
+		/// store_new_icrc1_canisters : (vec ICRC1) -> ();
+		func store_new_icrc1_canisters(_ arg0: [ICRC1], sender: ICPSigningPrincipal? = nil) async throws {
+			let caller = ICPCallNoResult<[ICRC1]>(canister, "store_new_icrc1_canisters")
+			let _ = try await caller.callMethod(arg0, client, sender: sender)
 		}
 	
 	}

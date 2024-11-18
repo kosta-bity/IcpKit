@@ -56,7 +56,8 @@ final class DABTests: XCTestCase {
     }
     
     func testIcrc1Oracle() async throws {
-        let _ = try await oracle.allTokens()
+        let tokens = try await oracle.allTokens()
+        print(tokens.count)
     }
     
     func testAllTokens() async throws {
