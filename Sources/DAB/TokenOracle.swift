@@ -101,7 +101,7 @@ public class TokenOracle {
 }
 
 private extension TokenOracle {
-    private static let pageSize: UInt64 = 50
+    private static let pageSize: UInt64 = 25
     func fetchAllIcrc1Canisters() async throws -> [ICRC1Oracle.ICRC1] {
         let canisterCount = try await service.count_icrc1_canisters()
         let nPages = canisterCount / Self.pageSize + 1
