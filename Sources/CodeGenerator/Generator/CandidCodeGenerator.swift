@@ -324,8 +324,7 @@ fileprivate extension CandidType {
     
     func swiftType() -> String {
         switch self {
-        case .null, .reserved, .empty: 
-            return "" // ???
+        case .null, .reserved, .empty: return "CandidTuple0"
         case .bool: return "Bool"
         case .natural: return "BigUInt"
         case .integer: return "BigInt"
@@ -347,6 +346,9 @@ fileprivate extension CandidType {
         case .record(let keyedTypes):
             guard keyedTypes.isTuple else {
                 fatalError("all non-tuple records should be named by now")
+            }
+            guard keyedTypes.count > 0 else {
+                return "CandidTuple0"
             }
             return "CandidTuple\(keyedTypes.count)<\(keyedTypes.map { $0.type.swiftType() }.joined(separator: ", "))>"
         case .variant:
@@ -474,11 +476,9 @@ private extension Array where Element == CandidFunctionSignature.Parameter {
         switch count {
         case 0: return ""
         case 1: return first!.type.swiftType()
-        case 2...6:
-            let types = map { $0.type.swiftType() }.joined(separator: ", ")
-            return "CandidTuple\(count)<\(types)>"
         default:
-            fatalError("function has too many arguments/parameters... not implemented")
+            let types = map { $0.type.swiftType() }.joined(separator: ", ")
+            return "ICPFunctionArgs\(count)<\(types)>"
         }
     }
     
@@ -486,7 +486,7 @@ private extension Array where Element == CandidFunctionSignature.Parameter {
         switch count {
         case 0: return ""
         case 1: return "\(first!.name ?? "arg0"), "
-        case 2...6:
+        default:
             var count = 0
             let args = map {
                 if let name = $0.name { return name }
@@ -495,8 +495,6 @@ private extension Array where Element == CandidFunctionSignature.Parameter {
                 return arg
             }.joined(separator: ", ")
             return ".init(\(args)), "
-        default:
-            fatalError("function has too many arguments... not implemented")
         }
     }
 }
@@ -603,7 +601,7 @@ private extension CandidValue {
 }
 
 private extension CandidPrincipal {
-    var swiftValueInit: String { "try! ICPPrincipal(\"\(string)\")" }
+    var swiftValueInit: String { "\"\(string)\"" }
 }
 
 private extension String {

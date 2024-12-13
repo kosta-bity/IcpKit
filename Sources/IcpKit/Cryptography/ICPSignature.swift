@@ -12,8 +12,8 @@ public extension ICPCryptography {
     /// The domain separators are prefix-free by construction, as their first byte indicates their length.
     static func ellipticSign(_ message: any DataProtocol, domain: ICPDomainSeparator, with key: Data) throws -> Data {
         let domainSeparatedData = domain.domainSeparatedData(message)
-        let hashedMessage = Cryptography.sha256(domainSeparatedData)
-        let extendedSignature = try Cryptography.ellipticSign(hashedMessage, privateKey: key)
+        let hashedMessage = ICPCryptography.sha256(domainSeparatedData)
+        let extendedSignature = try ICPCryptography.ellipticSign(hashedMessage, privateKey: key)
         return extendedSignature
     }
     

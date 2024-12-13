@@ -6,24 +6,24 @@
 
 import Foundation
 
-struct ICPRequestEnvelope: Encodable {
-    let content: ICPRequestContent
-    let sender_pubkey: Data?
-    let sender_sig: Data?
+public struct ICPRequestEnvelope: Encodable {
+    public let content: ICPRequestContent
+    public let sender_pubkey: Data?
+    public let sender_sig: Data?
     
-    init(content: ICPRequestContent, sender_pubkey: Data, sender_sig: Data) {
+    public init(content: ICPRequestContent, sender_pubkey: Data, sender_sig: Data) {
         self.content = content
         self.sender_pubkey = sender_pubkey
         self.sender_sig = sender_sig
     }
     
-    init(content: ICPRequestContent) {
+    public init(content: ICPRequestContent) {
         self.content = content
         self.sender_pubkey = nil
         self.sender_sig = nil
     }
     
-    func encode(to encoder: Encoder) throws {
+    public func encode(to encoder: Encoder) throws {
         enum Keys: String, CodingKey { case content, sender_pubkey, sender_sig }
         var container = encoder.container(keyedBy: Keys.self)
         if let readStateContent = content as? ReadStateRequestContent {

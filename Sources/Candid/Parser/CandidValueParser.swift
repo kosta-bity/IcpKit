@@ -218,7 +218,7 @@ private extension CandidValueParser {
             _ = try stream.takeNext()
             try stream.expectNext(.colon)
             let principal = try stream.expectNextTextOrWord()
-            return try .service([], principal)
+            return .service([], try CandidPrincipal(principal))
             
         case "func":
             _ = try stream.takeNext()
@@ -231,7 +231,7 @@ private extension CandidValueParser {
             } else {
                 throw CandidParserError.unexpectedToken(method)
             }
-            return try .function([], [], principal, method)
+            return .function([], [], try CandidPrincipal(principal), method)
             
         case "principal":
             _ = try stream.takeNext()
@@ -330,7 +330,7 @@ private extension CandidValueParser {
             } else {
                 exponent = 0
             }
-            let decimal = Decimal(sign: significandL.sign == .plus ? .plus : .minus, exponent: exponent, significand: significand)
+            let decimal = Decimal(sign: .plus, exponent: exponent, significand: significand)
             return .float64(Double(truncating: decimal as NSNumber))
         }
         return nil

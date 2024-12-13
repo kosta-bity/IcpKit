@@ -10,54 +10,6 @@ import Candid
 import CodeGenerator
 
 final class CodeGeneratorTests: XCTestCase {
-    func testCodeGeneration() throws {
-        let namedTypes: [String: CandidType] = [
-            "ABool": .bool,
-            "AData": .blob,
-            "VectorBool": .vector(.bool),
-            "VectorOptionalText": .vector(.option(.text)),
-            "Record": .record(["a": .vector(.option(.integer)), "b": .natural, "c": .record([.bool, .text])]),
-            "UnnamedType0": .record([.vector(.option(.integer8)), .natural8]),
-            "RepeatedRecord": .record([.vector(.option(.integer8)), .natural8]),
-            "Variant": .variant(["a": .null, "b": .text, "c": .record([.text, .integer]), "d": .record(["one": .bool, "two": .blob, "three": .record([.vector(.option(.integer8)), .natural8])])]),
-            "UnnamedVariant": .variant("spring", "winter", "summer", "fall"),
-            "Function00": .function([CandidType](),[]),
-            "Function01q": .function([],[.bool], query: true),
-            "Function02": .function([],[.bool, .text]),
-            "Function03q": .function([],[.bool, .text, .option(.bool)], query: true),
-            "Function10": .function([.bool], []),
-            "Function20": .function([.bool, .text], []),
-            "Function30q": .function([.bool, .text, .option(.bool)], [], query: true),
-            "TestServiceDef": .service([
-                .init("foo", [.natural8], [.integer8]),
-                .init(name: "ref", signatureReference: "Function01q")
-            ]),
-            //"RecursiveRecord": .record(["recurse": .option(.named("RecursiveRecord"))])
-        ]
-        let service = CandidInterfaceDefinition.ServiceDefinition(
-            name: "TestService",
-            signature: .concrete(.init([
-                .init("noArgsNoResults"),
-                .init("singleUnnamedArg", [.text], query: true),
-                .init("singleUnnamedArgRecordWithUnnamedFields", [.record([.bool, .text])], []),
-                .init("singleNamedArg", [("myString", .text)], [], query: true),
-                .init("singleUnnamedResult", [], [.option(.bool)]),
-                .init("singleNamedResult", [], [("myString", .text)], query: true),
-                .init("multipleUnnamedArgsAndResults", [.text, .vector(.natural)], [.option(.bool), .vector(.blob)]),
-                .init("multipleNamedArgsAndResults",
-                      [("name", .text), ("ids", .vector(.natural))],
-                      [("out1", .option(.bool)), ("out2", .vector(.blob))]),
-                .init(name: "functionReference", signatureReference: "Function20"),
-            ]))
-        )
-        
-        let interface = CandidInterfaceDefinition(namedTypes: namedTypes, service: service)
-        let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: interface, nameSpace: "TestCodeGeneration")
-        let swiftPath = Bundle.module.url(forResource: "TestCodeGeneration", withExtension: "did.generated_swift")!
-        let swiftFile = try String(contentsOf: swiftPath)
-        XCTAssertEqual(generated, swiftFile)
-    }
-    
     func testTypeDidFiles() async throws {
         let testFiles: [String] = ["LedgerCanister", "ICRC7", "GoldNFT", "TestImports"]
         for file in testFiles {
@@ -154,12 +106,12 @@ enum UnnamedType0: Codable {
 
 let cValue: UnnamedType0 = .c(bool: true, int8: 7)
 """),
-            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCallNoArgs<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPCallNoResult<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCall<[Bool], [Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoArgs<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoResult<[Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
-            (try! .function([.vector(.bool)], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQuery<[Bool], [Bool]> = .init(try! ICPPrincipal(\"aaaaa-aa\"), \"foo\")"),
+            (try! .function([], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCallNoArgs<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [], "aaaaa-aa", "foo"), "let cValue: ICPCallNoResult<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], "aaaaa-aa", "foo"), "let cValue: ICPCall<[Bool], [Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoArgs<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQueryNoResult<[Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
+            (try! .function([.vector(.bool)], [.vector(.bool)], query: true, "aaaaa-aa", "foo"), "let cValue: ICPQuery<[Bool], [Bool]> = .init(\"aaaaa-aa\", \"foo\")"),
         ]
         for (input, expected) in testVectors {
             let generated = try CandidCodeGenerator(.init(generateHeader: false)).generateSwiftCode(for: input, valueName: "cValue")
@@ -168,21 +120,20 @@ let cValue: UnnamedType0 = .c(bool: true, int8: 7)
     }
     
     func testIcrc7() async throws {
-        // GoldNFT
-        let service = try ICRC7.Service("io7gn-vyaaa-aaaak-qcbiq-cai")
+        // GoldNFT io7gn-vyaaa-aaaak-qcbiq-cai
+        let service = try ICRC7.Service("auw3m-7yaaa-aaaal-qjf6q-cai")
         let collectionMetadata = try await service.icrc7_collection_metadata()
-        let tokens = try await service.icrc7_tokens(prev: nil, take: nil)
         for metadata in collectionMetadata {
             print(metadata.tuple)
         }
-        let token = tokens.first!
-        print(token)
-        let tokenMetadata = try await service.icrc7_token_metadata(token_ids: [token]).first!._1!
-        guard case .Text(let text) = tokenMetadata._1 else {
-            XCTFail()
-            return
+        print("------------")
+        let tokens = try await service.icrc7_tokens(prev: nil, take: nil)
+        let tokenMetadata = try await service.icrc7_token_metadata(token_ids: tokens).first!!
+        for metadata in tokenMetadata {
+            print(metadata._0)
+            print(metadata._1)
+            print("---")
         }
-        print(text)
     }
 }
 

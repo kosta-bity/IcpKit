@@ -8,6 +8,7 @@ import Foundation
 
 public enum ICPTransactionType {
     // account Identifiers
+    case approve(from: String)
     case mint(to: String)
     case burn(from: String)
     case send(from: String, to: String)
@@ -15,14 +16,14 @@ public enum ICPTransactionType {
     public var from: String? {
         switch self {
         case .mint: return nil
-        case .burn(let from), .send(let from, _):
+        case .burn(let from), .send(let from, _), .approve(let from):
             return from
         }
     }
     
     public var to: String? {
         switch self {
-        case .burn: return nil
+        case .burn, .approve: return nil
         case .mint(let to), .send(_, let to): return to
         }
     }

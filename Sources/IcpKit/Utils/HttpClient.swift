@@ -5,21 +5,20 @@
 //
 
 import Foundation
-import RealHTTP
 
-typealias HttpHeaders = HTTPHeaders
-typealias HttpBody = HTTPBody
-typealias HttpRequest = HTTPRequest
-typealias HttpResponse = HTTPResponse
-typealias HttpStatusCode = HTTPStatusCode
-
-protocol HttpClient: AnyObject {
-    /// Headers which are automatically attached to each request.
-    var headers: HttpHeaders { get set }
-    /// A list of query params values which will be appended to each request.
-    var queryParams: [URLQueryItem] { get set }
-    var baseURL: URL? { get }
-    
+public protocol HttpClient: AnyObject {
     func fetch(_ request: HttpRequest) async throws -> HttpResponse
 }
 
+public struct HttpRequest {
+    public let method: String
+    public let url: URL
+    public let body: Data?
+    public let headers: [String: String]
+    public let timeout: TimeInterval
+}
+
+public struct HttpResponse {
+    public let data: Data?
+    public let statusCode: Int
+}

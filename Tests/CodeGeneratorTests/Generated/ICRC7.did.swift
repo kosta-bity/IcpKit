@@ -139,7 +139,7 @@ enum ICRC7 {
 	///   icrc7_tx_window : () -> (opt nat) query;
 	///   icrc7_permitted_drift : () -> (opt nat) query;
 	///   icrc7_token_metadata : (token_ids : vec nat)
-	///       -> (vec record { nat; opt record { text; Value } }) query;
+	///     -> (vec opt vec record { text; Value }) query;
 	///   icrc7_owner_of : (token_ids : vec nat)
 	///       -> (vec opt Account) query;
 	///   icrc7_balance_of : (vec Account) -> (vec nat) query;
@@ -256,9 +256,9 @@ enum ICRC7 {
 		}
 	
 		/// icrc7_token_metadata : (token_ids : vec nat)
-		///       -> (vec record { nat; opt record { text; Value } }) query;
-		func icrc7_token_metadata(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [CandidTuple2<BigUInt, CandidTuple2<String, Value>?>] {
-			let caller = ICPQuery<[BigUInt], [CandidTuple2<BigUInt, CandidTuple2<String, Value>?>]>(canister, "icrc7_token_metadata")
+		///     -> (vec opt vec record { text; Value }) query;
+		func icrc7_token_metadata(token_ids: [BigUInt], sender: ICPSigningPrincipal? = nil) async throws -> [[CandidTuple2<String, Value>]?] {
+			let caller = ICPQuery<[BigUInt], [[CandidTuple2<String, Value>]?]>(canister, "icrc7_token_metadata")
 			let response = try await caller.callMethod(token_ids, client, sender: sender)
 			return response
 		}
@@ -281,7 +281,7 @@ enum ICRC7 {
 		/// icrc7_tokens : (prev : opt nat, take : opt nat)
 		///       -> (vec nat) query;
 		func icrc7_tokens(prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPQuery<CandidTuple2<BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens")
+			let caller = ICPQuery<ICPFunctionArgs2<BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens")
 			let response = try await caller.callMethod(.init(prev, take), client, sender: sender)
 			return response
 		}
@@ -289,7 +289,7 @@ enum ICRC7 {
 		/// icrc7_tokens_of : (account : Account, prev : opt nat, take : opt nat)
 		///       -> (vec nat) query;
 		func icrc7_tokens_of(account: Account, prev: BigUInt?, take: BigUInt?, sender: ICPSigningPrincipal? = nil) async throws -> [BigUInt] {
-			let caller = ICPQuery<CandidTuple3<Account, BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens_of")
+			let caller = ICPQuery<ICPFunctionArgs3<Account, BigUInt?, BigUInt?>, [BigUInt]>(canister, "icrc7_tokens_of")
 			let response = try await caller.callMethod(.init(account, prev, take), client, sender: sender)
 			return response
 		}

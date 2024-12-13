@@ -7,10 +7,10 @@
 import Foundation
 import Candid
 
-enum ICPRequestBuilder {
-    static let defaultIngressExpirySeconds: TimeInterval = 4 * 60 // 4 minutes
+public enum ICPRequestBuilder {
+    public static let defaultIngressExpirySeconds: TimeInterval = 4 * 60 // 4 minutes
     
-    static func buildContent(_ request: ICPRequestType, sender: ICPPrincipal?) throws -> ICPRequestContent {
+    public static func buildContent(_ request: ICPRequestType, sender: ICPPrincipal?) throws -> ICPRequestContent {
         let nonce = try ICPCryptography.secureRandom(32)
         let ingressExpiry = createIngressExpiry()
         let senderBytes = sender?.bytes ?? Data([4])
@@ -40,13 +40,13 @@ enum ICPRequestBuilder {
         }
     }
     
-    static func buildEnvelope(_ content: ICPRequestContent, sender: ICPSigningPrincipal?) async throws -> ICPRequestEnvelope {
+    public static func buildEnvelope(_ content: ICPRequestContent, sender: ICPSigningPrincipal?) async throws -> ICPRequestEnvelope {
         guard let sender = sender else {
             return ICPRequestEnvelope(content: content)
         }
         let requestId = try content.calculateRequestId()
         let senderSignature = try await sender.sign(requestId, domain: "ic-request")
-        let senderPublicKey = try Cryptography.der(uncompressedEcPublicKey: sender.rawPublicKey)
+        let senderPublicKey = try ICPCryptography.der(uncompressedEcPublicKey: sender.rawPublicKey)
         return ICPRequestEnvelope(
             content: content,
             sender_pubkey: senderPublicKey,

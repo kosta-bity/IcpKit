@@ -118,9 +118,9 @@ private let commonTestVectors: [(any Codable, CandidValue, any Decodable.Type)] 
     (TestEnum.g(SingleValueRecord(value: 2)), .variant(.init("g", .record(["value": .integer8(2)]))), TestEnum.self),
     (TestEnum.h(a: 2), .variant(.init("h", .record(["a": .option(.natural8(2))]))), TestEnum.self),
     
-    (try! CandidPrincipal("aaaaa-aa"), try! .principal("aaaaa-aa"), CandidPrincipal.self),
+    (CandidPrincipal("aaaaa-aa"), try! .principal("aaaaa-aa"), CandidPrincipal.self),
     
-    (try! TestFunction("aaaaa-aa", "foo"), .function(try! CandidFunction(signature: .init([CandidType](), []), principal: "aaaaa-aa", methodName: "foo")), TestFunction.self),
+    (try! TestFunction("aaaaa-aa", "foo"), .function(CandidFunction(signature: .init([CandidType](), []), principal: CandidPrincipal("aaaaa-aa"), methodName: "foo")), TestFunction.self),
     (try! TestService("aaaaa-aa"), try! .service("aaaaa-aa"), TestService.self),
 ]
 
@@ -233,7 +233,7 @@ struct PassThroughCandidValue: Codable {
 struct TestFunction: CandidFunctionProtocol {
     let canister: Candid.CandidPrincipal
     let methodName: String
-    let query: Bool = true
+    let isQuery: Bool = true
     
     init(_ canister: CandidPrincipal, _ method: String) {
         self.canister = canister

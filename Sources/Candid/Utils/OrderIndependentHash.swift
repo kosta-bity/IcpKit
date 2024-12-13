@@ -72,7 +72,7 @@ private struct OIHasher: PotentCodables.EncodesToData {
                     let valueHash = try hash(value)
                     return keyHash + valueHash
                 }
-                .sorted()
+                .sorted(by: compareData)
                 .reduce(Data(), +)
             
         default:
@@ -109,11 +109,7 @@ private struct OIHasher: PotentCodables.EncodesToData {
         return Leb128.encodeUnsigned(bigInt.magnitude)
     }
     
-    
-}
-
-extension Data: Comparable {
-    public static func < (lhs: Data, rhs: Data) -> Bool {
+    private func compareData(_ lhs: Data, _ rhs: Data) -> Bool {
         guard lhs.count == rhs.count else {
             return lhs.count < rhs.count
         }

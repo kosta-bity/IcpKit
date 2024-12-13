@@ -12,11 +12,11 @@ import Candid
 final class ICPCryptographyTests: XCTestCase {
     // test vectors generated using https://pi7.org/hash/sha224
     func testSHA224() throws {
-        XCTAssertEqual(Cryptography.sha224(Data()).hex, "D14A028C2A3A2BC9476102BB288234C415A2B01F828EA62AC5B3E42F".lowercased())
-        XCTAssertEqual(Cryptography.sha224("0".data(using: .utf8)!).hex, "dfd5f9139a820075df69d7895015360b76d0360f3d4b77a845689614")
-        XCTAssertEqual(Cryptography.sha224("abcd".data(using: .utf8)!).hex, "a76654d8e3550e9a2d67a0eeb6c67b220e5885eddd3fde135806e601")
-        XCTAssertEqual(Cryptography.sha224("./`~.?!@#$".data(using: .utf8)!).hex, "c30cf54e8acd816aa0ab041605279563175199d2661f8e7aae37fa1e")
-        XCTAssertEqual(Cryptography.sha224("Lorem ipsum dolor sit amet, consectetur adipiscing elit".data(using: .utf8)!).hex, "ff40dac83c1c21b71126074ced5c2f6195b6c993b53394ffb2e75f43")
+        XCTAssertEqual(ICPCryptography.sha224(Data()).hex, "D14A028C2A3A2BC9476102BB288234C415A2B01F828EA62AC5B3E42F".lowercased())
+        XCTAssertEqual(ICPCryptography.sha224("0".data(using: .utf8)!).hex, "dfd5f9139a820075df69d7895015360b76d0360f3d4b77a845689614")
+        XCTAssertEqual(ICPCryptography.sha224("abcd".data(using: .utf8)!).hex, "a76654d8e3550e9a2d67a0eeb6c67b220e5885eddd3fde135806e601")
+        XCTAssertEqual(ICPCryptography.sha224("./`~.?!@#$".data(using: .utf8)!).hex, "c30cf54e8acd816aa0ab041605279563175199d2661f8e7aae37fa1e")
+        XCTAssertEqual(ICPCryptography.sha224("Lorem ipsum dolor sit amet, consectetur adipiscing elit".data(using: .utf8)!).hex, "ff40dac83c1c21b71126074ced5c2f6195b6c993b53394ffb2e75f43")
     }
     
     // test vectors generated using https://crccalc.com/
@@ -38,17 +38,37 @@ final class ICPCryptographyTests: XCTestCase {
     // 4. Serialize publicKey from 1 using ICPCrypto.serialiseDER
     // 5. Compare hash224 of publicKey with the one obtained at 3.d
     func testDerSerialiser() throws {
-        XCTAssertEqual(try Cryptography.der(uncompressedEcPublicKey: Data.fromHex("046acf4c93dd993cd736420302eb70da254532ec3179250a21eec4ce823ff289aaa382cb19576b2c6447db09cb45926ebd69ce288b1804580fe62c343d3252ec6e")!).hex, "3056301006072a8648ce3d020106052b8104000a034200046acf4c93dd993cd736420302eb70da254532ec3179250a21eec4ce823ff289aaa382cb19576b2c6447db09cb45926ebd69ce288b1804580fe62c343d3252ec6e")
+        XCTAssertEqual(try ICPCryptography.der(uncompressedEcPublicKey: Data.fromHex("046acf4c93dd993cd736420302eb70da254532ec3179250a21eec4ce823ff289aaa382cb19576b2c6447db09cb45926ebd69ce288b1804580fe62c343d3252ec6e")!).hex, "3056301006072a8648ce3d020106052b8104000a034200046acf4c93dd993cd736420302eb70da254532ec3179250a21eec4ce823ff289aaa382cb19576b2c6447db09cb45926ebd69ce288b1804580fe62c343d3252ec6e")
         
-        XCTAssertEqual(try Cryptography.der(uncompressedEcPublicKey: Data.fromHex("04723cdc9bd653014a501159fb89dcc6e2cf03f242955b987b53dd6193815d8a9d4a4f5b902b2819d270c28f0710ad96fea5b13f5fe30c6e244bf2941ebf4ec36e")!).hex, "3056301006072a8648ce3d020106052b8104000a03420004723cdc9bd653014a501159fb89dcc6e2cf03f242955b987b53dd6193815d8a9d4a4f5b902b2819d270c28f0710ad96fea5b13f5fe30c6e244bf2941ebf4ec36e")
+        XCTAssertEqual(try ICPCryptography.der(uncompressedEcPublicKey: Data.fromHex("04723cdc9bd653014a501159fb89dcc6e2cf03f242955b987b53dd6193815d8a9d4a4f5b902b2819d270c28f0710ad96fea5b13f5fe30c6e244bf2941ebf4ec36e")!).hex, "3056301006072a8648ce3d020106052b8104000a03420004723cdc9bd653014a501159fb89dcc6e2cf03f242955b987b53dd6193815d8a9d4a4f5b902b2819d270c28f0710ad96fea5b13f5fe30c6e244bf2941ebf4ec36e")
     }
     
     // test vectors from https://internetcomputer.org/docs/current/references/id-encoding-spec#test-vectors
-    func testCanonicalText() {
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("000102030405060708")!), "xtqug-aqaae-bagba-faydq-q")
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("00")!), "2ibo7-dia")
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("")!), "aaaaa-aa")
-        XCTAssertEqual(CanonicalText.encode(Data.fromHex("0102030405060708091011121314151617181920212223242526272829")!), "iineg-fibai-bqibi-ga4ea-searc-ijrif-iwc4m-bsibb-eirsi-jjge4-ucs")
+    func testCanonicalText() throws {
+        let testVectors: [(String, String)] = [
+            ("000102030405060708", "xtqug-aqaae-bagba-faydq-q"),
+            ("00","2ibo7-dia"),
+            ("","aaaaa-aa"),
+            ("0102030405060708091011121314151617181920212223242526272829","iineg-fibai-bqibi-ga4ea-searc-ijrif-iwc4m-bsibb-eirsi-jjge4-ucs"),
+        ]
+        for (dataHex, canonical) in testVectors {
+            let data = Data.fromHex(dataHex)!
+            XCTAssertEqual(CanonicalText.encode(data), canonical)
+            XCTAssertEqual(try CanonicalText.decode(canonical), data)
+        }
+    }
+    
+    func testAccountTextualRepresentation() throws {
+        let principal: ICPPrincipal = "k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae"
+        let testVectors: [(ICPAccount, String)] = [
+            (.mainAccount(of: principal), principal.string),
+            (try! ICPAccount(principal: principal, subAccountId: Data([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32])), "k2t6j-2nvnp-4zjm3-25dtz-6xhaa-c7boj-5gayf-oj3xs-i43lp-teztq-6ae-dfxgiyy.102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20")
+        ]
+        for (account, text) in testVectors {
+            let decodedAccount = try ICPAccount(textualRepresentation: text)
+            XCTAssertEqual(account.textualRepresentation(), text)
+            XCTAssertEqual(decodedAccount.textualRepresentation(), text)
+        }
     }
     
     // test vectors generated using keysmith https://github.com/dfinity/keysmith
@@ -116,12 +136,12 @@ final class ICPCryptographyTests: XCTestCase {
             signature: Data.fromHex("b931848dc01a3640f6610e82581b6b200ed00ae31ae3503c8dd363238c010960bc90afb295ff02dd1639aecf1efc8d4e")!))
         
         XCTAssertNoThrow(try ICPCryptography.verifyBlsSignature(
-            message: "hello".data!,
+            message: "hello".data,
             publicKey: Data.fromHex("a7623a93cdb56c4d23d99c14216afaab3dfd6d4f9eb3db23d038280b6d5cb2caaee2a19dd92c9df7001dede23bf036bc0f33982dfb41e8fa9b8e96b5dc3e83d55ca4dd146c7eb2e8b6859cb5a5db815db86810b8d12cee1588b5dbf34a4dc9a5")!,
             signature: Data.fromHex("b89e13a212c830586eaa9ad53946cd968718ebecc27eda849d9232673dcd4f440e8b5df39bf14a88048c15e16cbcaabe")!))
         
         XCTAssertThrowsError(try ICPCryptography.verifyBlsSignature(
-            message: "hallo".data!,
+            message: "hallo".data,
             publicKey: Data.fromHex("a7623a93cdb56c4d23d99c14216afaab3dfd6d4f9eb3db23d038280b6d5cb2caaee2a19dd92c9df7001dede23bf036bc0f33982dfb41e8fa9b8e96b5dc3e83d55ca4dd146c7eb2e8b6859cb5a5db815db86810b8d12cee1588b5dbf34a4dc9a5")!,
             signature: Data.fromHex("b89e13a212c830586eaa9ad53946cd968718ebecc27eda849d9232673dcd4f440e8b5df39bf14a88048c15e16cbcaabe")!))
         

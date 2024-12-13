@@ -13,7 +13,7 @@ private enum ObjectIdentifiers {
     static let secp256k1: ASN1 = .objectIdentifier([1, 3, 132, 0, 10])          // ECC Name Curves: Secp256k1
 }
 
-extension Cryptography {
+extension ICPCryptography {
     enum DERSerialisationError: Error {
         case invalidEcPublicKey
     }

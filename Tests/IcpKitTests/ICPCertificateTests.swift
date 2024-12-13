@@ -27,34 +27,34 @@ final class ICPCertificateTests: XCTestCase {
                 left: .fork(
                     left: .labeled("a", .fork(
                         left: .fork(
-                            left: .labeled("x", .leaf("hello".data!)),
+                            left: .labeled("x", .leaf("hello".data)),
                             right: .empty),
-                        right: .labeled("y", .leaf("world".data!)))),
-                    right: .labeled("b", .leaf("good".data!))),
+                        right: .labeled("y", .leaf("world".data)))),
+                    right: .labeled("b", .leaf("good".data))),
                 right: .fork(
                     left: .labeled("c", .empty),
-                    right: .labeled("d", .leaf("morning".data!)))
+                    right: .labeled("d", .leaf("morning".data)))
             )
         )
         
-        XCTAssertEqual(certificate.getNode(for: "/a/x"), .leaf("hello".data!))
-        XCTAssertEqual(certificate.getNode(for: "/a/y"), .leaf("world".data!))
-        XCTAssertEqual(certificate.getNode(for: "/b"), .leaf("good".data!))
+        XCTAssertEqual(certificate.getNode(for: "/a/x"), .leaf("hello".data))
+        XCTAssertEqual(certificate.getNode(for: "/a/y"), .leaf("world".data))
+        XCTAssertEqual(certificate.getNode(for: "/b"), .leaf("good".data))
         XCTAssertEqual(certificate.getNode(for: "/c"), .empty)
-        XCTAssertEqual(certificate.getNode(for: "/d"), .leaf("morning".data!))
+        XCTAssertEqual(certificate.getNode(for: "/d"), .leaf("morning".data))
         XCTAssertNil(certificate.getNode(for: "/x"))
         XCTAssertNil(certificate.getNode(for: "/a/c"))
         XCTAssertNil(certificate.getNode(for: "/a/x/x"))
         XCTAssertEqual(certificate.getNode(for: "/a"), .fork(
             left: .fork(
-                left: .labeled("x", .leaf("hello".data!)),
+                left: .labeled("x", .leaf("hello".data)),
                 right: .empty),
-            right: .labeled("y", .leaf("world".data!))))
+            right: .labeled("y", .leaf("world".data))))
         
-        XCTAssertEqual(certificate.getValue(for: "/a/x"), "hello".data!)
-        XCTAssertEqual(certificate.getValue(for: "/a/y"), "world".data!)
-        XCTAssertEqual(certificate.getValue(for: "/b"), "good".data!)
-        XCTAssertEqual(certificate.getValue(for: "/d"), "morning".data!)
+        XCTAssertEqual(certificate.getValue(for: "/a/x"), "hello".data)
+        XCTAssertEqual(certificate.getValue(for: "/a/y"), "world".data)
+        XCTAssertEqual(certificate.getValue(for: "/b"), "good".data)
+        XCTAssertEqual(certificate.getValue(for: "/d"), "morning".data)
         XCTAssertEqual(certificate.getValue(for: "/unknown_path"), nil)
         XCTAssertEqual(certificate.getValue(for: "/c"), nil)
         XCTAssertEqual(certificate.getValue(for: "/a"), nil)
@@ -79,22 +79,28 @@ final class ICPCertificateTests: XCTestCase {
             left: .fork(
                 left: .labeled("a", .fork(
                     left: .pruned(.fromHex("1B4FEFF9BEF8131788B0C9DC6DBAD6E81E524249C879E9F10F71CE3749F5A638")!),
-                    right: .labeled("y", .leaf("world".data!))
+                    right: .labeled("y", .leaf("world".data))
                 )),
                 right: .labeled("b", .pruned(.fromHex("7B32AC0C6BA8CE35AC82C255FC7906F7FC130DAB2A090F80FE12F9C2CAE83BA6")!))
             ),
             right: .fork(
                 left: .pruned(.fromHex("EC8324B8A1F1AC16BD2E806EDBA78006479C9877FED4EB464A25485465AF601D")!),
-                right: .labeled("d", .leaf("morning".data!)))))
+                right: .labeled("d", .leaf("morning".data)))))
         
         XCTAssertEqual(certificate.getValue(for: "/a/x"), nil)
-        XCTAssertEqual(certificate.getValue(for: "/a/y"), "world".data!)
+        XCTAssertEqual(certificate.getValue(for: "/a/y"), "world".data)
         XCTAssertEqual(certificate.getValue(for: "/b"), nil)
-        XCTAssertEqual(certificate.getValue(for: "/d"), "morning".data!)
+        XCTAssertEqual(certificate.getValue(for: "/d"), "morning".data)
         XCTAssertEqual(certificate.getValue(for: "/unknown_path"), nil)
         XCTAssertEqual(certificate.getValue(for: "/c"), nil)
         XCTAssertEqual(certificate.getValue(for: "/a"), nil)
         
         XCTAssertEqual(certificate.hash().hex, "eb5c5b2195e62d996b84c9bcc8259d19a83786a2f59e0878cec84c811f669aa0")
+    }
+}
+
+extension String {
+    var data: Data {
+        Data(utf8)
     }
 }

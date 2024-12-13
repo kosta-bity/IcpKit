@@ -62,9 +62,15 @@ public enum ICPRequestCertification {
 
 /// The HttpClient that takes care of encoding and serialising all requests
 public class ICPRequestClient {
-    private let client = SimpleHttpClient()
+    private let client: any HttpClient
     
-    public init() {}
+    public init() {
+        client = UrlSessionHttpClient()
+    }
+    
+    public init(_ client: any HttpClient) {
+        self.client = client
+    }
     
     /// Makes a Query/Call Request to the given canister and returns the result.
     /// Queries do not affect the state of the blockchain and are generally fast.
@@ -81,7 +87,7 @@ public class ICPRequestClient {
     ///   - canister: the canister
     ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
     /// - Returns: the response
-    public func query(_ certification: ICPRequestCertification, _ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> CandidValue {
+    public func query(_ certification: ICPRequestCertification, _ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> [CandidValue] {
         switch certification {
         case .uncertified: return try await query(method, effectiveCanister: canister, sender: sender)
         case .certified: return try await callAndPoll(method, effectiveCanister: canister, sender: sender)
@@ -113,11 +119,12 @@ public class ICPRequestClient {
     ///   - duration: The maximum duration of polling
     ///   - waitDuration: The wait time between two consecutive polls
     /// - Returns: The response of the request
+    // TODO: return [CandidValue]
     public func callAndPoll(_ method: ICPMethod,
                      effectiveCanister canister: ICPPrincipal,
                      sender: ICPSigningPrincipal? = nil,
                      for duration: Duration = .seconds(120),
-                     repeatEvery waitDuration: Duration = .seconds(2)) async throws -> CandidValue {
+                     repeatEvery waitDuration: Duration = .seconds(2)) async throws -> [CandidValue] {
         let requestId = try await call(method, effectiveCanister: canister, sender: sender)
         return try await pollRequestStatus(requestId: requestId,
                                            effectiveCanister: canister,
@@ -132,7 +139,8 @@ public class ICPRequestClient {
     ///   - canister: The canister
     ///   - sender: The signer of the request. If not present, no signature will be attached to the request.
     /// - Returns: The response of the query
-    public func query(_ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> CandidValue {
+    // TODO: return [CandidValue]
+    public func query(_ method: ICPMethod, effectiveCanister canister: ICPPrincipal, sender: ICPSigningPrincipal? = nil) async throws -> [CandidValue] {
         let icpRequest = try await ICPRequest(.query(method), canister: canister, sender: sender)
         guard let cborEncodedResponse = try await fetchCbor(icpRequest, canister: canister) else {
             throw ICPRemoteClientError.noResponseData
@@ -165,11 +173,12 @@ public class ICPRequestClient {
     ///   - duration: The duration for the polling will take place, defaults to 2 minutes
     ///   - waitDuration: The time between two consecutive calls, defaults to 2 seconds
     /// - Returns: The response of the query
+    // TODO: return [CandidValue]
     public func pollRequestStatus(requestId: Data,
                            effectiveCanister canister: ICPPrincipal,
                            sender: ICPSigningPrincipal? = nil,
                            for duration: Duration = .seconds(120),
-                           repeatEvery waitDuration: Duration = .seconds(2)) async throws -> CandidValue {
+                           repeatEvery waitDuration: Duration = .seconds(2)) async throws -> [CandidValue] {
             let endTime = Date.now.addingTimeInterval(TimeInterval(duration.components.seconds))
             let paths: [ICPStateTreePath] = [
                 ["time"],
@@ -198,10 +207,10 @@ public class ICPRequestClient {
                         throw ICPPollingError.requestRejected(rejectCode, rejectMessage)
                         
                     case .replied:
-                        guard let replyData = statusResponse.rawValueForPath(endingWith: "reply"),
-                              let candidValue = try CandidDeserialiser().decode(replyData).first else {
+                        guard let replyData = statusResponse.rawValueForPath(endingWith: "reply") else {
                             throw ICPPollingError.parsingError
                         }
+                        let candidValue = try CandidDeserialiser().decode(replyData)
                         return candidValue
                         
                     case .processing:
@@ -222,17 +231,15 @@ public class ICPRequestClient {
     private func fetchCbor(_ icpRequest: ICPRequest, canister: ICPPrincipal, sender: ICPPrincipal? = nil) async throws -> Data? {
         let response = try await client.fetch(icpRequest.httpRequest)
         
-        guard response.statusCode == .ok || response.statusCode == .accepted else {
+        guard response.statusCode == 200 || response.statusCode == 202 else {
             let errorString = String(data: response.data ?? Data(), encoding: .utf8)
-            if let error = response.error {
-                throw ICPRemoteClientError.httpError(error, errorString)
-            }
-            throw ICPRemoteClientError.failed(statusCode: response.statusCode.rawValue, error: errorString)
+            throw ICPRemoteClientError.failed(statusCode: response.statusCode, error: errorString)
         }
         return response.data
     }
     
-    private func parseQueryResponse(_ data: Data) throws -> CandidValue {
+    // TODO: return [CandidValue]
+    private func parseQueryResponse(_ data: Data) throws -> [CandidValue] {
         let queryResponse = try ICPCryptography.CBOR.deserialise(QueryResponseDecodable.self, from: data)
         guard queryResponse.status != .rejected else {
             throw ICPRemoteClientError.requestRejected(
@@ -244,10 +251,7 @@ public class ICPRequestClient {
             throw ICPRemoteClientError.malformedResponse
         }
         let candidResponse = try CandidDeserialiser().decode(candidRaw)
-        guard let firstCandidValue = candidResponse.first else {
-            throw ICPRemoteClientError.malformedResponse
-        }
-        return firstCandidValue
+        return candidResponse
     }
     
     private func parseCallResponse(_ data: Data) throws -> CandidValue {

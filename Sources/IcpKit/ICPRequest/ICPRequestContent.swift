@@ -7,45 +7,45 @@
 import Foundation
 import Candid
 
-protocol ICPRequestContent: Encodable {
+public protocol ICPRequestContent: Encodable {
     var request_type: ICPRequestTypeEncodable { get }
     var sender: Data { get }
     var nonce: Data { get }
     var ingress_expiry: Int { get }
 }
 
-extension ICPRequestContent {
+public extension ICPRequestContent {
     func calculateRequestId() throws -> Data {
         try OrderIndependentHasher.orderIndependentHash(self)
     }
 }
 
-struct ReadStateRequestContent: ICPRequestContent {
-    let request_type: ICPRequestTypeEncodable
-    let sender: Data
-    let nonce: Data
-    let ingress_expiry: Int
+public struct ReadStateRequestContent: ICPRequestContent {
+    public let request_type: ICPRequestTypeEncodable
+    public let sender: Data
+    public let nonce: Data
+    public let ingress_expiry: Int
     
-    let paths: [[Data]]
+    public let paths: [[Data]]
 }
 
-struct CallRequestContent: ICPRequestContent {
-    let request_type: ICPRequestTypeEncodable
-    let sender: Data
-    let nonce: Data
-    let ingress_expiry: Int
+public struct CallRequestContent: ICPRequestContent {
+    public let request_type: ICPRequestTypeEncodable
+    public let sender: Data
+    public let nonce: Data
+    public let ingress_expiry: Int
     
-    let method_name: String
-    let canister_id: Data
-    let arg: Data
+    public let method_name: String
+    public let canister_id: Data
+    public let arg: Data
 }
 
-enum ICPRequestTypeEncodable: String, Encodable {
+public enum ICPRequestTypeEncodable: String, Encodable {
     case call       = "call"
     case query      = "query"
     case readState  = "read_state"
     
-    static func from(_ requestType: ICPRequestType) -> ICPRequestTypeEncodable {
+    public static func from(_ requestType: ICPRequestType) -> ICPRequestTypeEncodable {
         switch requestType {
         case .call: return .call
         case .query: return .query

@@ -1,0 +1,490 @@
+type User = 
+ variant {
+   address: AccountIdentifier;
+   "principal": principal;
+ };
+type UpdateCallsAggregatedData = vec nat64;
+type TypeReward = 
+ variant {
+   Material: NFT;
+   NFT: NFT;
+   Other;
+   Token: Token;
+ };
+type TransferResponse = 
+ variant {
+   err:
+    variant {
+      CannotNotify: AccountIdentifier;
+      InsufficientBalance;
+      InvalidToken: TokenIdentifier__1;
+      Other: text;
+      Rejected;
+      Unauthorized: AccountIdentifier;
+    };
+   ok: Balance;
+ };
+type TransferRequest = 
+ record {
+   amount: Balance;
+   from: User;
+   memo: Memo;
+   notify: bool;
+   subaccount: opt SubAccount;
+   to: User;
+   token: TokenIdentifier__1;
+ };
+type Transaction = 
+ record {
+   bytes: vec nat8;
+   closed: opt Time;
+   from: AccountIdentifier__1;
+   id: nat;
+   initiated: Time;
+   memo: opt blob;
+   price: nat64;
+   seller: principal;
+   to: AccountIdentifier__1;
+   token: TokenIdentifier__2;
+ };
+type TokenIndex__1 = nat32;
+type TokenIndex = nat32;
+type TokenIdentifier__2 = text;
+type TokenIdentifier__1 = text;
+type TokenIdentifier = text;
+type Token = 
+ record {
+   decimals: nat8;
+   name: text;
+ };
+type Time = int;
+type Template = 
+ variant {
+   Accessory: record {
+                after_wear: text;
+                before_wear: text;
+                recipe: Recipe;
+              };
+   LegendaryAccessory: blob;
+   Material: blob;
+ };
+type Supply = nat;
+type SubAccount__2 = vec nat8;
+type SubAccount__1 = vec nat8;
+type SubAccount = vec nat8;
+type StreamingStrategy = variant {
+                           Callback:
+                            record {
+                              callback: StreamingCallback;
+                              token: StreamingCallbackToken;
+                            };};
+type StreamingCallbackToken = 
+ record {
+   content_encoding: text;
+   index: nat;
+   key: text;
+ };
+type StreamingCallbackResponse = 
+ record {
+   body: blob;
+   token: opt StreamingCallbackToken;
+ };
+type StreamingCallback = func (StreamingCallbackToken) ->
+                          (StreamingCallbackResponse) query;
+type Reward = 
+ record {
+   amount: nat;
+   category: TypeReward;
+   collection: principal;
+   date: Time;
+ };
+type Result__1_2 = 
+ variant {
+   err: CommonError__1;
+   ok;
+ };
+type Result__1_1 = 
+ variant {
+   err: text;
+   ok: TokenIdentifier;
+ };
+type Result__1 = 
+ variant {
+   err: text;
+   ok;
+ };
+type Result_7 = 
+ variant {
+   err: text;
+   ok: text;
+ };
+type Result_6 = 
+ variant {
+   err: CommonError;
+   ok: AccountIdentifier__2;
+ };
+type Result_5 = 
+ variant {
+   err: text;
+   ok: Inventory;
+ };
+type Result_4 = 
+ variant {
+   err: CommonError__1;
+   ok: Metadata;
+ };
+type Result_3 = 
+ variant {
+   err: CommonError;
+   ok;
+ };
+type Result_2 = 
+ variant {
+   err: CommonError;
+   ok: vec TokenIndex;
+ };
+type Result_1 = 
+ variant {
+   err: CommonError;
+   ok: vec record {
+             TokenIndex;
+             opt Listing;
+             opt blob;
+           };
+ };
+type Result = 
+ variant {
+   err: text;
+   ok;
+ };
+type Response = 
+ record {
+   body: blob;
+   headers: vec HeaderField;
+   status_code: nat16;
+   streaming_strategy: opt StreamingStrategy;
+ };
+type Request = 
+ record {
+   body: blob;
+   headers: vec HeaderField;
+   method: text;
+   url: text;
+ };
+type Recipe = vec text;
+type NumericEntity = 
+ record {
+   avg: nat64;
+   first: nat64;
+   last: nat64;
+   max: nat64;
+   min: nat64;
+ };
+type Nanos = nat64;
+type NFT = 
+ record {
+   identifier: text;
+   name: text;
+ };
+type MetricsGranularity = 
+ variant {
+   daily;
+   hourly;
+ };
+type Metadata__1 = 
+ variant {
+   fungible:
+    record {
+      decimals: nat8;
+      metadata: opt blob;
+      name: text;
+      symbol: text;
+    };
+   nonfungible: record {metadata: opt blob;};
+ };
+type Metadata = 
+ variant {
+   fungible:
+    record {
+      decimals: nat8;
+      metadata: opt blob;
+      name: text;
+      symbol: text;
+    };
+   nonfungible: record {metadata: opt blob;};
+ };
+type Memo = blob;
+type MaterialInventory = 
+ record {
+   name: text;
+   tokenIdentifier: text;
+ };
+type LogMessagesData = 
+ record {
+   message: text;
+   timeNanos: Nanos;
+ };
+type LockResponse = 
+ variant {
+   err: CommonError__2;
+   ok: AccountIdentifier__1;
+ };
+type Listing__1 = 
+ record {
+   locked: opt Time;
+   price: nat64;
+   seller: principal;
+   subaccount: opt SubAccount__1;
+ };
+type ListingResponse = 
+ vec record {
+       TokenIndex__1;
+       ExtListing;
+       Metadata__1;
+     };
+type Listing = 
+ record {
+   locked: opt Time;
+   price: nat64;
+   seller: principal;
+   subaccount: opt SubAccount;
+ };
+type ListResponse = 
+ variant {
+   err: CommonError__2;
+   ok;
+ };
+type ListRequest = 
+ record {
+   from_subaccount: opt SubAccount__1;
+   price: opt nat64;
+   token: TokenIdentifier__2;
+ };
+type ItemInventory = 
+ variant {
+   Accessory: AccessoryInventory;
+   Material: MaterialInventory;
+ };
+type Inventory = vec ItemInventory;
+type HourlyMetricsData = 
+ record {
+   canisterCycles: CanisterCyclesAggregatedData;
+   canisterHeapMemorySize: CanisterHeapMemoryAggregatedData;
+   canisterMemorySize: CanisterMemoryAggregatedData;
+   timeMillis: int;
+   updateCalls: UpdateCallsAggregatedData;
+ };
+type HeaderField = 
+ record {
+   text;
+   text;
+ };
+type GetMetricsParameters = 
+ record {
+   dateFromMillis: nat;
+   dateToMillis: nat;
+   granularity: MetricsGranularity;
+ };
+type GetLogMessagesParameters = 
+ record {
+   count: nat32;
+   filter: opt GetLogMessagesFilter;
+   fromTimeNanos: opt Nanos;
+ };
+type GetLogMessagesFilter = 
+ record {
+   analyzeCount: nat32;
+   messageContains: opt text;
+   messageRegex: opt text;
+ };
+type GetLatestLogMessagesParameters = 
+ record {
+   count: nat32;
+   filter: opt GetLogMessagesFilter;
+   upToTimeNanos: opt Nanos;
+ };
+type Floor = nat64;
+type Extension = text;
+type ExtListing = 
+ record {
+   locked: opt Time;
+   price: nat64;
+   seller: principal;
+ };
+type EntrepotTransaction = 
+ record {
+   buyer: AccountIdentifier__1;
+   price: nat64;
+   seller: principal;
+   time: Time;
+   token: TokenIdentifier__2;
+ };
+type Disbursement = 
+ record {
+   TokenIndex__1;
+   AccountIdentifier__1;
+   SubAccount__1;
+   nat64;
+ };
+type DetailsResponse = 
+ variant {
+   err: CommonError__2;
+   ok: record {
+         AccountIdentifier__1;
+         opt Listing__1;
+       };
+ };
+type DailyMetricsData = 
+ record {
+   canisterCycles: NumericEntity;
+   canisterHeapMemorySize: NumericEntity;
+   canisterMemorySize: NumericEntity;
+   timeMillis: int;
+   updateCalls: nat64;
+ };
+type CommonError__2 = 
+ variant {
+   InvalidToken: TokenIdentifier__1;
+   Other: text;
+ };
+type CommonError__1 = 
+ variant {
+   InvalidToken: TokenIdentifier__1;
+   Other: text;
+ };
+type CommonError = 
+ variant {
+   InvalidToken: TokenIdentifier__1;
+   Other: text;
+ };
+type CanisterMetricsData = 
+ variant {
+   daily: vec DailyMetricsData;
+   hourly: vec HourlyMetricsData;
+ };
+type CanisterMetrics = record {data: CanisterMetricsData;};
+type CanisterMemoryAggregatedData = vec nat64;
+type CanisterLogResponse = 
+ variant {
+   messages: CanisterLogMessages;
+   messagesInfo: CanisterLogMessagesInfo;
+ };
+type CanisterLogRequest = 
+ variant {
+   getLatestMessages: GetLatestLogMessagesParameters;
+   getMessages: GetLogMessagesParameters;
+   getMessagesInfo;
+ };
+type CanisterLogMessagesInfo = 
+ record {
+   count: nat32;
+   features: vec opt CanisterLogFeature;
+   firstTimeNanos: opt Nanos;
+   lastTimeNanos: opt Nanos;
+ };
+type CanisterLogMessages = 
+ record {
+   data: vec LogMessagesData;
+   lastAnalyzedMessageTimeNanos: opt Nanos;
+ };
+type CanisterLogFeature = 
+ variant {
+   filterMessageByContains;
+   filterMessageByRegex;
+ };
+type CanisterHeapMemoryAggregatedData = vec nat64;
+type CanisterCyclesAggregatedData = vec nat64;
+type BalanceResponse = 
+ variant {
+   err: CommonError__1;
+   ok: Balance;
+ };
+type BalanceRequest = 
+ record {
+   token: TokenIdentifier__1;
+   user: User;
+ };
+type Balance = nat;
+type Airdrop = vec text;
+type AccountIdentifier__2 = text;
+type AccountIdentifier__1 = text;
+type AccountIdentifier = text;
+type AccessoryInventory = 
+ record {
+   equipped: bool;
+   name: text;
+   tokenIdentifier: text;
+ };
+service : {
+  acceptCycles: () -> ();
+  add_admin: (principal) -> ();
+  add_template: (text, Template) -> (Result_7);
+  airdrop_rewards: (vec record {
+                          AccountIdentifier__2;
+                          Airdrop;
+                        }) -> ();
+  availableCycles: () -> (nat) query;
+  balance: (BalanceRequest) -> (BalanceResponse) query;
+  bearer: (TokenIdentifier) -> (Result_6) query;
+  can_settle: (principal, TokenIdentifier__1) -> (Result__1_2);
+  collectCanisterMetrics: () -> ();
+  create_accessory: (text, nat) -> (Result__1_1);
+  cron_burned: () -> ();
+  cron_disbursements: () -> ();
+  cron_events: () -> ();
+  cron_settlements: () -> ();
+  cron_verification: () -> ();
+  details: (TokenIdentifier) -> (DetailsResponse) query;
+  extensions: () -> (vec Extension) query;
+  getCanisterLog: (opt CanisterLogRequest) -> (opt CanisterLogResponse) query;
+  getCanisterMetrics: (GetMetricsParameters) -> (opt CanisterMetrics) query;
+  getInventory: () -> (Result_5) query;
+  getRegistry: () -> (vec record {
+                            TokenIndex;
+                            AccountIdentifier__2;
+                          }) query;
+  getTokens: () -> (vec record {
+                          TokenIndex;
+                          Metadata;
+                        }) query;
+  get_admins: () -> (vec principal) query;
+  get_pending_transactions: () ->
+   (vec record {
+          TokenIndex;
+          Transaction;
+        }) query;
+  get_recorded_rewards: (principal) -> (opt vec Reward) query;
+  get_stats_items: () -> (vec record {
+                                text;
+                                Supply;
+                                opt Floor;
+                              }) query;
+  http_request: (Request) -> (Response) query;
+  is_admin: (principal) -> (bool) query;
+  list: (ListRequest) -> (ListResponse);
+  listings: () -> (ListingResponse) query;
+  lock: (TokenIdentifier, nat64, AccountIdentifier__2, vec nat8) ->
+   (LockResponse);
+  metadata: (TokenIdentifier) -> (Result_4) query;
+  payments: () -> (opt vec SubAccount__2) query;
+  read_disbursements: () -> (vec Disbursement) query;
+  record_icps: (AccountIdentifier__2, nat) -> () oneway;
+  record_nft: (AccountIdentifier__2, principal, text, text) -> () oneway;
+  record_token: (AccountIdentifier__2, nat, text, nat8, principal) ->
+   () oneway;
+  remove_accessory: (TokenIdentifier, TokenIdentifier) -> (Result__1);
+  remove_admin: (principal) -> ();
+  remove_record_nft: (AccountIdentifier__2, text) -> () oneway;
+  setMaxMessagesCount: (nat) -> ();
+  settle: (TokenIdentifier) -> (Result_3);
+  size: () -> (nat) query;
+  stats: () -> (nat64, nat64, nat64, nat64, nat, nat, nat) query;
+  tokenId: (TokenIndex) -> (TokenIdentifier) query;
+  tokens: (AccountIdentifier__2) -> (Result_2) query;
+  tokens_ext: (AccountIdentifier__2) -> (Result_1) query;
+  transactions: () -> (vec EntrepotTransaction) query;
+  transfer: (TransferRequest) -> (TransferResponse);
+  update_accessories: () -> ();
+  wear_accessory: (TokenIdentifier, TokenIdentifier) -> (Result);
+}
+

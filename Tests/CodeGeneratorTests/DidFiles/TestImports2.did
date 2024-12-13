@@ -1,5 +1,25 @@
-type A = vec bool;
 
-type S = service {
-    foo: (in1: int8) -> (bool) query;
+type Function00 = func () -> ();
+type Function01q = func () -> (bool) query;
+type Function02 = func () -> (bool, text);
+type Function03q = func () -> (bool, text, opt bool) query;
+type Function10 = func (bool) -> ();
+type Function20 = func (bool, text) -> ();
+type Function30q = func (bool, text, opt bool) -> () query;
+
+type TestServiceDef = service {
+    foo: (nat8) -> (int8);
+    ref: Function01q;
+};
+
+service : {
+  noArgsNoResults: () -> ();
+  singleUnnamedArg: (text) -> () query;
+  singleUnnamedArgRecordWithUnnamedFields: (record { bool; text }) -> ();
+  singleNamedArg: (myString: text) -> () query;
+  singleUnnamedResult: () -> (opt bool);
+  singleNamedResult: () -> (myString: text) query;
+  multipleUnnamedArgsAndResults: (text, vec nat) -> (opt bool, vec bool);
+  multipleNamedArgsAndResults: (name: text, ids: vec nat) -> (out1: opt bool, out2: vec blob);
+  functionReference: Function20;
 };

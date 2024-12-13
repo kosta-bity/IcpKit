@@ -36,6 +36,9 @@ public enum CanonicalText {
         if degrouped.count % 2 != 0 { base32Encoded = degrouped + "=" }
         else { base32Encoded = degrouped }
         let decoded = try Base32.decode(base32Encoded)
+        guard decoded.count >= CRC32.length else {
+            throw CanonicalTextError.invalidChecksum
+        }
         let checksum = decoded.prefix(CRC32.length)
         let data = decoded.suffix(from: CRC32.length)
         let expectedChecksum = CRC32.checksum(data)

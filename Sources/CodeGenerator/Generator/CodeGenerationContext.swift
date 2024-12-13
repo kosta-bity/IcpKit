@@ -9,9 +9,9 @@ import Foundation
 import Candid
 
 class CodeGenerationContext {
-    private (set) var namedTypes: [CandidNamedType] = []
-    private (set) var service: CodeGeneratorCandidService?
-    private (set) var candidValueSimplifiedType: CandidType?
+    private(set) var namedTypes: [CandidNamedType] = []
+    private(set) var service: CodeGeneratorCandidService?
+    private(set) var candidValueSimplifiedType: CandidType?
     
     init(from interface: CandidInterfaceDefinition) throws {
         let swiftSanitizedInterface = replacingReservedKeywords(interface)

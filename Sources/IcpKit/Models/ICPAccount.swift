@@ -5,8 +5,9 @@
 //
 
 import Foundation
+import Candid
 
-public struct ICPAccount {
+public struct ICPAccount: Equatable {
     public let principal: ICPPrincipal
     public var address: String { accountId.hex }
     public let accountId: Data
@@ -18,12 +19,12 @@ public struct ICPAccount {
         self.accountId = try ICPCryptography.accountId(of: principal, subAccountId: subAccountId)
     }
         
-    public static func mainAccount(of principal: ICPPrincipal) throws -> ICPAccount {
-        return try ICPAccount(
+    public static func mainAccount(of principal: ICPPrincipal) -> ICPAccount {
+        return try! ICPAccount(
             principal: principal,
-            subAccountId: Data(repeating: 0, count: 32)
+            subAccountId: defaultSubAccountId
         )
     }
+    public static let subAccountIdLength = 32
+    public static let defaultSubAccountId = Data(repeating: 0, count: subAccountIdLength)
 }
-
-

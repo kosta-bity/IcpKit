@@ -10,7 +10,7 @@ import Foundation
 public protocol CandidFunctionProtocol: Codable {
     var canister: CandidPrincipal { get }
     var methodName: String { get }
-    var query: Bool { get }
+    var isQuery: Bool { get }
     
     init(_ canister: CandidPrincipal, _ methodName: String)
 }

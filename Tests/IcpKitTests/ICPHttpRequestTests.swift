@@ -8,7 +8,6 @@
 import XCTest
 import PotentCBOR
 @testable import IcpKit
-@testable import RealHTTP
 
 final class ICPHttpRequestTests: XCTestCase {
 
@@ -18,11 +17,11 @@ final class ICPHttpRequestTests: XCTestCase {
             canister: ICPSystemCanisters.ledger
         )
         let httpRequest = readStateRequest.httpRequest
-        XCTAssertEqual(httpRequest.method, .post)
-        XCTAssertEqual(httpRequest.url?.absoluteString, "https://icp-api.io/api/v2/canister/\(ICPSystemCanisters.ledger.string)/read_state")
-        XCTAssertTrue(httpRequest.body.headers.contains(.contentType("application/cbor")))
+        XCTAssertEqual(httpRequest.method, "POST")
+        XCTAssertEqual(httpRequest.url.absoluteString, "https://icp-api.io/api/v2/canister/\(ICPSystemCanisters.ledger.string)/read_state")
+        XCTAssertTrue(httpRequest.headers.contains(where: { $0.key == "Content-Type" && $0.value == "application/cbor" }))
         
-        let cborBody = httpRequest.body.asData!
+        let cborBody = httpRequest.body!
         XCTAssertEqual(cborBody.prefix(3), Data([0xD9, 0xD9, 0xF7]))
         let cborBodyWithoutTag = Data(cborBody.suffix(from: 3)) // ignore the self describing tag
         let decodedBody = try CBORDecoder.default.decode(ReadRequestDecodable.self, from: cborBodyWithoutTag)
