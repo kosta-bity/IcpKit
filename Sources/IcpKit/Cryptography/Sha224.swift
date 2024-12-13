@@ -7,7 +7,7 @@
 import Foundation
 import CommonCrypto
 
-extension Cryptography {
+extension ICPCryptography {
     static func sha224(_ message: any DataProtocol) -> Data {
         let length = CommonCrypto.CC_SHA224_DIGEST_LENGTH
         var digest = Data(count: Int(length))

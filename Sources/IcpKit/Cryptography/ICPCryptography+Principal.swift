@@ -11,8 +11,8 @@ public extension ICPCryptography {
     /// These have the form H(ec_public_key) · 0x02 (29 bytes).
     /// ec_public_key in raw uncompressed form (65 bytes) 0x04·X·Y
     static func selfAuthenticatingPrincipal(uncompressedPublicKey publicKey: Data) throws -> ICPPrincipal {
-        let serialized = try Cryptography.der(uncompressedEcPublicKey: publicKey)
-        let hash = Cryptography.sha224(serialized)
+        let serialized = try ICPCryptography.der(uncompressedEcPublicKey: publicKey)
+        let hash = ICPCryptography.sha224(serialized)
         let bytes = hash + Data([0x02])
         return ICPPrincipal(bytes)
     }

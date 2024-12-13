@@ -11,7 +11,7 @@ public extension ICPCryptography {
     /// https://internetcomputer.org/docs/current/references/ledger#_chaining_ledger_blocks
     static func transactionHash(_ transaction: ICPBlock.Transaction) throws -> Data {
         let serialised = try CBORSerialization.data(from: transaction.cbor)
-        let txHash = Cryptography.sha256(serialised)
+        let txHash = ICPCryptography.sha256(serialised)
         return txHash
     }
     

@@ -41,6 +41,6 @@ extension ICPStateCertificate.HashTreeNode {
             // already hashed, just return it
             return hash
         }
-        return Cryptography.sha256(dataToHash)
+        return ICPCryptography.sha256(dataToHash)
     }
 }

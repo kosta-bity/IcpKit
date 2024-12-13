@@ -23,9 +23,9 @@ let package = Package(
         .package(url: "https://github.com/attaswift/BigInt.git", .upToNextMajor(from: "5.3.0")),
         .package(url: "https://github.com/outfoxx/PotentCodables.git", .upToNextMajor(from: "3.2.0")),
         .package(url: "https://github.com/swift-libp2p/swift-bases.git", .upToNextMajor(from: "0.0.1")),
-        .package(url: "https://github.com/horizontalsystems/HsCryptoKit.Swift.git", .upToNextMajor(from: "1.2.1")),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
-    ], 
+        .package(url: "https://github.com/GigaBitcoin/secp256k1.swift.git", exact: "0.10.0"),
+    ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
@@ -34,7 +34,7 @@ let package = Package(
             dependencies: [
                 "Candid",
                 "BigInt",
-                .product(name: "HsCryptoKit", package: "HsCryptoKit.Swift"),
+                .product(name: "secp256k1", package: "secp256k1.swift"),
 //                .target(name: "bls12381"),
             ]
 //            cSettings: [.headerSearchPath("Sources/bls12381/include"),

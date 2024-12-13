@@ -22,7 +22,7 @@ public extension ICPCryptography {
                    principal.bytes +
                    subAccountId.bytes
         
-        let hashed = Cryptography.sha224(data)
+        let hashed = ICPCryptography.sha224(data)
         let checksum = CRC32.checksum(hashed)
         let accountId = checksum + hashed
         return accountId
