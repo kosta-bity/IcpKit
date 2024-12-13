@@ -15,7 +15,7 @@ jobs:
       - name: List iOS Simulators
         run:  xcrun simctl list
       - name: Build and Test
-        run:  xcodebuild test -quiet -scheme IcpKit-Package -sdk iphonesimulator18.1 -destination "OS=18.1,name=iPhone 15 Pro" '-skip-testing:IcpKitTests/ICPCryptographyTests/testBlsSignatureVerification'
+        run:  xcodebuild test -quiet -scheme IcpKit-Package -destination "OS=18.1,name=iPhone 15 Pro" '-skip-testing:IcpKitTests/ICPCryptographyTests/testBlsSignatureVerification'
       - name: Upload coverage to codecov.io
         uses: codecov/codecov-action@v4.5.0
         with:
