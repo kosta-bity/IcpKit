@@ -13,9 +13,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: swift-actions/setup-swift@65540b95f51493d65f5e59e97dcef9629ddf11bf
+    - uses: swift-actions/setup-swift
       with:
-        swift-version: "6.0.0"
+        swift-version: "6.0"
     - name: Run tests
       run: swift test --enable-code-coverage --parallel
     - name: Upload coverage to codecov.io
