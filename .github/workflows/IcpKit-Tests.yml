@@ -13,7 +13,7 @@ jobs:
       - name: Test
         uses: actions/checkout@v1
       - name: Build and Test
-        run:  xcrun simctl list\
+        run:  xcrun simctl list/
               xcodebuild test -quiet -scheme IcpKit-Package -sdk iphonesimulator18.1 -destination "OS=18.1,name=iPhone 16 Pro" '-skip-testing:IcpKitTests/ICPCryptographyTests/testBlsSignatureVerification'
       - name: Upload coverage to codecov.io
         uses: codecov/codecov-action@v4.5.0
