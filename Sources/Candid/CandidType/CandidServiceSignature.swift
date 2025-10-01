@@ -7,9 +7,9 @@
 
 import Foundation
 
-public struct CandidServiceSignature: Equatable, Codable {
-    public struct Method: Equatable, Codable {
-        public enum FunctionSignatureType: Equatable, Codable {
+public struct CandidServiceSignature: Equatable, Codable, Sendable {
+    public struct Method: Equatable, Codable, Sendable {
+        public enum FunctionSignatureType: Equatable, Codable, Sendable {
             case concrete(CandidFunctionSignature)
             case reference(String)
         }

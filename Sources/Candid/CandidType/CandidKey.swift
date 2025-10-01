@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol CandidKeyProtocol: Equatable, Hashable, Comparable, Codable {
+public protocol CandidKeyProtocol: Equatable, Hashable, Comparable, Codable, Sendable {
     var intValue: Int { get }
     var stringValue: String? { get }
 }

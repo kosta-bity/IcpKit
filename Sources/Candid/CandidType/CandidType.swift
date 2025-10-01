@@ -9,7 +9,7 @@ import OrderedCollections
 
 /// Contains the necessary data to fully describe the Candid Value
 /// and its contained child values
-public indirect enum CandidType: Equatable, Codable {
+public indirect enum CandidType: Equatable, Codable, Sendable {
     case null
     case bool
     case natural

@@ -9,8 +9,8 @@ import Foundation
 import IcpKit
 import BigInt
 
-public struct ICPTokenTransaction {
-    public enum Destination {
+public struct ICPTokenTransaction: Sendable {
+    public enum Destination: Sendable {
         case accountId(String)
         case account(ICPAccount)
         
@@ -22,7 +22,7 @@ public struct ICPTokenTransaction {
         }
     }
     
-    public enum Operation {
+    public enum Operation: Sendable {
         case mint(to: Destination)
         case burn(from: Destination)
         case approve(from: Destination, expectedAllowance: BigUInt?, expires: Date?) //spender

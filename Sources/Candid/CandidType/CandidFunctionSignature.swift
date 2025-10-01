@@ -7,12 +7,12 @@
 
 import Foundation
 
-public struct CandidFunctionSignature: Equatable, Codable {
+public struct CandidFunctionSignature: Equatable, Codable, Sendable {
     /// https://internetcomputer.org/docs/current/developer-docs/smart-contracts/candid/candid-concepts#naming-arguments-and-results
     /// Naming the arguments or results for a method is purely for documentation purposes.
     /// The name you use does not change the method’s type or the values being passed.
     /// Instead, arguments and results are identified by their position, independent of the name.
-    public struct Parameter: Equatable, Comparable, Codable {
+    public struct Parameter: Equatable, Comparable, Codable, Sendable {
         public let index: Int
         public let name: String?
         public let type: CandidType
@@ -31,7 +31,7 @@ public struct CandidFunctionSignature: Equatable, Codable {
         }
     }
     
-    public struct Annotations: Equatable, Codable {
+    public struct Annotations: Equatable, Codable, Sendable {
         /// indicates that the referenced function is a query method,
         /// meaning it does not alter the state of its canister, and that
         /// it can be invoked using the cheaper “query call” mechanism.

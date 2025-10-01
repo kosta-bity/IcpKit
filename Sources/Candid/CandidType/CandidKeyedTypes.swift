@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence, Codable {
+public struct CandidKeyedTypes: ExpressibleByArrayLiteral, Equatable, Sequence, Codable, Sendable {
     public typealias Element = CandidKeyedType
     public typealias Iterator = Array<CandidKeyedType>.Iterator
     public let items: [CandidKeyedType]
