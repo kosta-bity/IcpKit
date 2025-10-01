@@ -9,7 +9,7 @@ import Foundation
 import Candid
 
 enum CandidTypeParserTestVectors {
-    static let passingSingleTypes: [(String, CandidType)] = [
+    nonisolated(unsafe) static let passingSingleTypes: [(String, CandidType)] = [
         ("null", .null),
         ("bool", .bool),
         ("nat", .natural),
@@ -93,7 +93,7 @@ enum CandidTypeParserTestVectors {
         """),
     ]
     
-    static let functionArgumentNames: [(String, CandidType, [String], [String])] = [
+    nonisolated(unsafe) static let functionArgumentNames: [(String, CandidType, [String], [String])] = [
         ("func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);", .function([.natural, .natural], [.natural, .natural]), ["dividend", "divisor"], ["div", "mod"]),
         (#"func ("dividend with space" : nat, "divisor" : nat) -> ("🐂" : nat, mod : nat);"#, .function([.natural, .natural], [.natural, .natural]), ["dividend with space", "divisor"], ["🐂", "mod"]),
     ]
@@ -107,7 +107,7 @@ enum CandidTypeParserTestVectors {
         "opt 0",
     ]
     
-    static let didFiles: [(String, [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
+    nonisolated(unsafe) static let didFiles: [(String, [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
         ("", [:], nil),
         ("type A = nat;", ["A": .natural], nil),
         ("type _ = nat;", ["_": .natural], nil),
@@ -175,7 +175,7 @@ enum CandidTypeParserTestVectors {
         "type ☃ = nat", // invalid id
     ]
     
-    static let importedFiles: [(mainDid: String, files: [String: String], types: [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
+    nonisolated(unsafe) static let importedFiles: [(mainDid: String, files: [String: String], types: [String: CandidType], CandidInterfaceDefinition.ServiceDefinition?)] = [
         ("import file1.did;", ["file1.did": "type A=nat;"], ["A":.natural], nil),
         ("import file1.did;type B = opt A;", ["file1.did": "type A=nat;"], ["A":.natural, "B": .option(.named("A"))], nil),
         ("type B = opt A;import file1.did;", ["file1.did": "type A=nat;"], ["A":.natural, "B": .option(.named("A"))], nil),

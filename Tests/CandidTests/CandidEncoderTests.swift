@@ -34,7 +34,7 @@ final class CandidEncoderTests: XCTestCase {
     }
 }
 
-private let commonTestVectors: [(any Codable, CandidValue, any Decodable.Type)] = [
+nonisolated(unsafe) private let commonTestVectors: [(any Codable, CandidValue, any Decodable.Type)] = [
     (true, .bool(true), Bool.self),
     (false, .bool(false), Bool.self),
     ("text", .text("text"), String.self),
@@ -125,7 +125,7 @@ private let commonTestVectors: [(any Codable, CandidValue, any Decodable.Type)] 
 ]
 
 // these cases only work when decoding from a candidvalue
-private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)] = [
+nonisolated(unsafe) private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)] = [
     (Bool?.none, .null, Bool?.self),
     (Bool?.none, .empty, Bool?.self),
     (Bool?.none, .reserved, Bool?.self),
@@ -143,12 +143,12 @@ private let decodingTestVectors: [(any Codable, CandidValue, any Decodable.Type)
     (TestEnum.e(a: nil, b: 1), .variant(CandidKeyedValue("e", .record(["b": .natural16(1)]))), TestEnum.self),  // missing optional values
 ]
 
-private let failingDecodingTestVectors: [(CandidValue, any Decodable.Type, String)] = [
+nonisolated(unsafe) private let failingDecodingTestVectors: [(CandidValue, any Decodable.Type, String)] = [
     (.integer8(-1), UInt8.self, "negative number can not convert to unsigned"),
 ]
 
 // tese cases only work when encoding to a candidvalue
-private let encodingTestVectors: [(any Encodable, CandidValue)] = [
+nonisolated(unsafe) private let encodingTestVectors: [(any Encodable, CandidValue)] = [
     //(TestRecord?.none, .option(.record(["a": .natural8, "b":.integer64]))), // returns opt empty
     (CandidFunction(signature: .init([CandidType](), []), method: nil), .function(CandidFunction(signature: .init([CandidType](), []), method: nil))),
     (CandidService(principal: nil, signature: .init([])), .service(CandidService(principal: nil, signature: .init([])))),

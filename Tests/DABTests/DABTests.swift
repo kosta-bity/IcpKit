@@ -167,10 +167,11 @@ final class DABTests: XCTestCase {
     
     func testTransactions() async throws {
         let tokenHolding = try await tokenService.balance(of: devWallet1Account)
-        try await withThrowingTaskGroup(of: Void.self) { group in
+        try await withThrowingTaskGroup(of: Void.self) { [weak self] group in
+            let service = self?.tokenService
             for token in tokenHolding.map({$0.token}).prefix(5) {
                 group.addTask {
-                    let transactions = try await self.tokenService.transactions(of: devWallet1Account, for: token)
+                    let transactions = try await service!.transactions(of: devWallet1Account, for: token)
                     print("\(token.name): \(token.canister) nTransactions = \(transactions.count)")
                 }
             }
@@ -184,7 +185,7 @@ let devWallet1Name = "Development Wallet 1"
 let devWallet2Name = "Development Wallet 2"
 //let devWallet1 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet1, uncompressedPublicKey: PublicKeys.devWallet1)
 //let devWallet2 = try! SimplePrincipal(privateKey: PrivateKeys.devWallet2, uncompressedPublicKey: PublicKeys.devWallet2)
-let devWallet1 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet1)
-let devWallet2 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet2)
+nonisolated(unsafe) let devWallet1 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet1)
+nonisolated(unsafe) let devWallet2 = try! SimplePrincipal(privateKey: Data(), uncompressedPublicKey: PublicKeys.devWallet2)
 let devWallet1Account = ICPAccount.mainAccount(of: devWallet1.principal)
 let devWallet2Account = ICPAccount.mainAccount(of: devWallet2.principal)

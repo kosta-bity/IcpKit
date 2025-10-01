@@ -9,7 +9,7 @@ import Foundation
 @testable import Candid
 
 enum CandidSerialisationTestVectors {
-    static let singleValueTestVectors: [(CandidValue, [UInt8])] = [
+    nonisolated(unsafe) static let singleValueTestVectors: [(CandidValue, [UInt8])] = [
         (.null, [0x00, 0x01, 0x7F]),
         (.bool(false), [0x00, 0x01, 0x7E, 0x00]),
         (.bool(true), [0x00, 0x01, 0x7E, 0x01]),
@@ -88,9 +88,9 @@ enum CandidSerialisationTestVectors {
         (try! .service([.init("foo", [.text], [.natural]), .init("foo2", [.text], [.natural])], "w7x7r-cok77-xa"), [0x02, 0x6a, 0x01, 0x71, 0x01, 0x7d, 0x00, 0x69, 0x02, 0x03] + foo +  [0x00, 0x04] + foo + [0x32, 0x00, 0x01, 0x01, 0x01, 0x03, 0xca, 0xff, 0xee]),
     ]
     
-    static let foo = Data("foo".utf8).bytes
-    
-    static let multipleValuesTestVectors: [([CandidValue], [UInt8])] = [
+    static var foo: [UInt8] { Data("foo".utf8).bytes }
+
+    nonisolated(unsafe) static let multipleValuesTestVectors: [([CandidValue], [UInt8])] = [
         ([], [0x00, 0x00]),
         ([.natural8(0), .natural8(1), .natural8(2)], [0x00, 0x03, 0x7B, 0x7B, 0x7B, 0, 1, 2]),
         ([.natural8(0), .natural16(258), .natural8(2)], [0x00, 0x03, 0x7B, 0x7A, 0x7B, 0, 2, 1, 2]),
@@ -107,7 +107,7 @@ enum CandidSerialisationTestVectors {
          ], [4, 0x6D, 0x7B, 0x6D, 0, 0x6C, 2, 97, 0, 98, 1, 0x6E, 2, 0x02, 3, 2, 1, 1, 0x44, 1, 2, 0x45, 0x47, 1, 0x43, 1, 2, 0x40, 0x41]),
     ]
     
-    static let recursiveExamples: [(CandidValue, String)] = [
+    nonisolated(unsafe) static let recursiveExamples: [(CandidValue, String)] = [
         (.option(.named("0")), "016e00010000"),
         (.option(CandidValue.option(.named("0"))), "016e0001000100"),
         (.option(CandidValue.option(CandidValue.option(.named("0")))), "016e000100010100"),

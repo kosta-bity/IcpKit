@@ -9,7 +9,7 @@ import Foundation
 import Candid
 
 enum CandidValueParserTestVectors {
-    static let singleValueTests: [(String, CandidValue)] = [
+    nonisolated(unsafe) static let singleValueTests: [(String, CandidValue)] = [
         ("true", .bool(true)),
         ("false", .bool(false)),
         ("false : bool", .bool(false)),
