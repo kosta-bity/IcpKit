@@ -20,8 +20,8 @@ public extension ICPCryptography {
         }
         let data = Self.domain.data +
                    principal.bytes +
-                   subAccountId.bytes
-        
+                   subAccountId
+
         let hashed = ICPCryptography.sha224(data)
         let checksum = CRC32.checksum(hashed)
         let accountId = checksum + hashed
