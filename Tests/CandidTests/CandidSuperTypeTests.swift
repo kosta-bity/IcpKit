@@ -18,7 +18,7 @@ final class CandidSuperTypeTests: XCTestCase {
 }
 
 private enum TestCases {
-    nonisolated(unsafe) static let subTypes: [(subType: CandidType, superType: CandidType, result: Bool)] = [
+    static let subTypes: [(subType: CandidType, superType: CandidType, result: Bool)] = [
         (.null, .null, true),
         (.null, .natural, false),
         (.null, .option(.natural), true),

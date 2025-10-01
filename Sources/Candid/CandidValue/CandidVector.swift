@@ -6,7 +6,7 @@
 
 import Foundation
 
-public struct CandidVector: Equatable, Codable {
+public struct CandidVector: Equatable, Codable, Sendable {
     //public typealias Element = CandidValue
     
     private enum CandidVectorError: Error {

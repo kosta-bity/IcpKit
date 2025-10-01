@@ -310,7 +310,7 @@ private extension CandidValueParser {
                   let significandLString = splitMatch["significandL"]?.substring,
                   let significandL = BigInt(significandLString, radix: 16) {
             let significandR: BigUInt
-            if let significandRString = splitMatch["significandR"]?.substring {
+            if let significandRString = splitMatch["significandR"]?.substring, !significandRString.isEmpty {
                 guard let significandRBigUInt = BigUInt(significandRString, radix: 16) else {
                     throw CandidParserError.unexpectedToken(word)
                 }

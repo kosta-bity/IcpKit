@@ -9,7 +9,7 @@ import Foundation
 import Candid
 
 enum CandidTypeParserTestVectors {
-    nonisolated(unsafe) static let passingSingleTypes: [(String, CandidType)] = [
+    static let passingSingleTypes: [(String, CandidType)] = [
         ("null", .null),
         ("bool", .bool),
         ("nat", .natural),
@@ -93,7 +93,7 @@ enum CandidTypeParserTestVectors {
         """),
     ]
     
-    nonisolated(unsafe) static let functionArgumentNames: [(String, CandidType, [String], [String])] = [
+    static let functionArgumentNames: [(String, CandidType, [String], [String])] = [
         ("func (dividend : nat, divisor : nat) -> (div : nat, mod : nat);", .function([.natural, .natural], [.natural, .natural]), ["dividend", "divisor"], ["div", "mod"]),
         (#"func ("dividend with space" : nat, "divisor" : nat) -> ("🐂" : nat, mod : nat);"#, .function([.natural, .natural], [.natural, .natural]), ["dividend with space", "divisor"], ["🐂", "mod"]),
     ]

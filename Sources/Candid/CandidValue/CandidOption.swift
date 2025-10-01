@@ -6,7 +6,7 @@
 
 import Foundation
 
-public enum CandidOption: Equatable, Codable {
+public enum CandidOption: Equatable, Codable, Sendable {
     case none(CandidType)
     case some(CandidValue)
     

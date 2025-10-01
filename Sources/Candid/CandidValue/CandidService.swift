@@ -6,7 +6,7 @@
 
 import Foundation
 
-public struct CandidService: Equatable, Codable {
+public struct CandidService: Equatable, Codable, Sendable {
     public let principal: CandidPrincipal?
     public let signature: CandidServiceSignature
     

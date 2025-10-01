@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct CandidKeyedValue: Equatable, Comparable, Codable {
+public struct CandidKeyedValue: Equatable, Comparable, Codable, Sendable {
     public let key: CandidKey
     public let value: CandidValue
     

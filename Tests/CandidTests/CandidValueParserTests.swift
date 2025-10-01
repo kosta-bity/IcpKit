@@ -13,7 +13,10 @@ final class CandidValueParserTests: XCTestCase {
     
     func testParsePrimValue() throws {
         for (string, expected) in CandidValueParserTestVectors.singleValueTests {
-            let parsed = try parser.parseValue(string)
+            guard let parsed = try? parser.parseValue(string) else {
+                XCTFail("Could not parse \(string)")
+                continue
+            }
             XCTAssertEqual(parsed, expected, "\(parsed.description) is not equal to \(string)")
         }
     }

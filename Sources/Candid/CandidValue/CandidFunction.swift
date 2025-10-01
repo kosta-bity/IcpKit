@@ -6,7 +6,7 @@
 
 import Foundation
 
-public struct CandidFunction: Equatable, Codable {
+public struct CandidFunction: Equatable, Codable, Sendable {
     public let signature: CandidFunctionSignature
     public let method: ServiceMethod?
     
@@ -20,7 +20,7 @@ public struct CandidFunction: Equatable, Codable {
         self.method = .init(name: methodName, principal: principal)
     }
     
-    public struct ServiceMethod: Equatable, Codable {
+    public struct ServiceMethod: Equatable, Codable, Sendable {
         public let name: String
         public let principal: CandidPrincipal
         
