@@ -13,7 +13,9 @@ public enum DABTokenServiceError: Error {
     case tokenNotFound
 }
 
-public class DABTokenService {
+extension DABTokens.Service: @unchecked Sendable {}
+
+public class DABTokenService: @unchecked Sendable {
     private let client: ICPRequestClient
     private let service: DABTokens.Service
     private let transactionProvider: ICPTransactionProvider

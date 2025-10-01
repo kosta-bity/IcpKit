@@ -8,7 +8,7 @@
 import Foundation
 import IcpKit
 
-public struct ICPNftCollection {
+public struct ICPNftCollection: Sendable {
     public let standard: ICPNftStandard
     
     public let name: String

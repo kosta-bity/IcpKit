@@ -469,15 +469,14 @@ private extension Collection {
 
 private extension CandidKey {
     func toVariantKey() throws -> CandidKey {
+        let regex = /_(?<number>\d+)/
         guard let stringKey = stringValue,
-            let numberString = try Self.unnamedEnumRegex.wholeMatch(in: stringKey)?["number"]?.substring,
-              let intKey = Int(numberString) else {
+              let match = stringKey.wholeMatch(of: regex),
+              let intKey = Int(match.number) else {
             return self
         }
         return CandidKey(intKey)
     }
-    
-    static let unnamedEnumRegex = try! Regex(#"_(?'number'\d+)"#)
 }
 
 private extension Array<CandidKeyedValue> {

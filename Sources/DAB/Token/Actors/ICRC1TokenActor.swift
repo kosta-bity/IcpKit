@@ -76,7 +76,7 @@ private extension ICRC2.ApproveResult {
     }
 }
 
-extension ICRC2.ApproveError: Error {}
+extension ICRC2.ApproveError: Error, @unchecked Sendable {}
 
 
 private extension ICRC1.TransferArgs {
@@ -126,7 +126,7 @@ private extension ICRC1.TransferResult {
     }
 }
 
-extension ICRC1.TransferError: Error {}
+extension ICRC1.TransferError: Error, @unchecked Sendable {}
 
 private extension [ICRC1.MetadataField] {
     subscript (_ key: String) -> ICRC1.Value? {

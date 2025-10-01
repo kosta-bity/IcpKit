@@ -7,7 +7,7 @@
 import Foundation
 import Candid
 
-public enum ICPRequestRejectCode: UInt8, Decodable {
+public enum ICPRequestRejectCode: UInt8, Decodable, Sendable {
     case systemFatal = 1
     case systemTransient = 2
     case destinationInvalid = 3
@@ -61,7 +61,7 @@ public enum ICPRequestCertification {
 }
 
 /// The HttpClient that takes care of encoding and serialising all requests
-public class ICPRequestClient {
+public final class ICPRequestClient: Sendable {
     private let client: any HttpClient
     
     public init() {

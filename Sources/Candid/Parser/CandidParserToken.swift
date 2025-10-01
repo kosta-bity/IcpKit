@@ -82,7 +82,7 @@ enum CandidParserToken: Equatable {
         }
     }
     
-    private static let quotedString = try! Regex("\"(?'string'\(CandidParserStream.quotedStringContents))\"")
-    private static let singleLineComment = try! Regex(#"\/\/(?'comment'[^\n]*)($|\n)"#)
-    private static let multiLineComment = try! Regex(#"\/\*(?'comment'[\s\S]*)\*\/"#)
+    nonisolated(unsafe) private static let quotedString = try! Regex("\"(?'string'\(CandidParserStream.quotedStringContents))\"")
+    nonisolated(unsafe) private static let singleLineComment = try! Regex(#"\/\/(?'comment'[^\n]*)($|\n)"#)
+    nonisolated(unsafe) private static let multiLineComment = try! Regex(#"\/\*(?'comment'[\s\S]*)\*\/"#)
 }

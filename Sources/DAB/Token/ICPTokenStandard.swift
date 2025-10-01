@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ICPTokenStandard: String, CaseIterable {
+public enum ICPTokenStandard: String, CaseIterable, Sendable {
     case dip20 = "DIP20"
     case xtc = "XTC"
     case wIcp = "WICP"

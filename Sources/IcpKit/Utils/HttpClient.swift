@@ -6,7 +6,7 @@
 
 import Foundation
 
-public protocol HttpClient: AnyObject {
+public protocol HttpClient: AnyObject, Sendable {
     func fetch(_ request: HttpRequest) async throws -> HttpResponse
 }
 

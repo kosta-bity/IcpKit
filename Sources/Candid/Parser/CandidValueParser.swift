@@ -336,15 +336,15 @@ private extension CandidValueParser {
         return nil
     }
     
-    private static let float10ExpRegex = try! Regex("[+-]?\(naturalNumber)(\\.(\(naturalNumber))?)?[eE][+-]?(\(naturalNumber))?")
-    private static let float10Regex = try! Regex("[+-]?\(naturalNumber)\\.(\(naturalNumber))?")
-    private static let floatHexRegex = try! Regex("[+-]?0x\(hexNumber)\\.(\(hexNumber))?")
-    private static let floatHexExpRegex = try! Regex("[+-]?0x\(hexNumber)(\\.(\(hexNumber))?)?[pP][+-]?\(naturalNumber)")
-    private static let floatHexSplitRegex = try! Regex("(?'significandL'[+-]?\(hex)+)\\.(?'significandR'\(hex)*)?[pP]?(?'exponent'[+-]?[0-9]+)?")
-    private static let integer10Regex = try! Regex("[+-]\(naturalNumber)")
-    private static let integerHexRegex = try! Regex("[+-]0x\(hexNumber)")
-    private static let natural10Regex = try! Regex(naturalNumber)
-    private static let naturalHexRegex = try! Regex("0x\(hexNumber)")
+    nonisolated(unsafe) private static let float10ExpRegex = try! Regex("[+-]?\(naturalNumber)(\\.(\(naturalNumber))?)?[eE][+-]?(\(naturalNumber))?")
+    nonisolated(unsafe) private static let float10Regex = try! Regex("[+-]?\(naturalNumber)\\.(\(naturalNumber))?")
+    nonisolated(unsafe) private static let floatHexRegex = try! Regex("[+-]?0x\(hexNumber)\\.(\(hexNumber))?")
+    nonisolated(unsafe) private static let floatHexExpRegex = try! Regex("[+-]?0x\(hexNumber)(\\.(\(hexNumber))?)?[pP][+-]?\(naturalNumber)")
+    nonisolated(unsafe) private static let floatHexSplitRegex = try! Regex("(?'significandL'[+-]?\(hex)+)\\.(?'significandR'\(hex)*)?[pP]?(?'exponent'[+-]?[0-9]+)?")
+    nonisolated(unsafe) private static let integer10Regex = try! Regex("[+-]\(naturalNumber)")
+    nonisolated(unsafe) private static let integerHexRegex = try! Regex("[+-]0x\(hexNumber)")
+    nonisolated(unsafe) private static let natural10Regex = try! Regex(naturalNumber)
+    nonisolated(unsafe) private static let naturalHexRegex = try! Regex("0x\(hexNumber)")
     private static let hex = "[A-Fa-f0-9]"
     private static let hexNumber = "\(hex)(_?\(hex))*"
     private static let naturalNumber = #"\d(_?\d)*"#

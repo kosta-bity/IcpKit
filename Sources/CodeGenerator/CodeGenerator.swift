@@ -11,7 +11,7 @@ import Candid
 
 @main
 struct CodeGenerator: AsyncParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
         abstract: "A utility for generating Swift code from Candid Interface Definition files (.did).",
         subcommands: [GenerateType.self, GenerateValue.self],
         defaultSubcommand: GenerateType.self
@@ -33,7 +33,7 @@ struct CodeGenerator: AsyncParsableCommand {
 
 extension CodeGenerator {
     struct GenerateType: AsyncParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             commandName: "type",
             abstract: "Generate Swift Types"
         )
@@ -49,7 +49,7 @@ extension CodeGenerator {
     }
     
     struct GenerateValue: ParsableCommand {
-        static var configuration = CommandConfiguration(
+        static let configuration = CommandConfiguration(
             commandName: "value",
             abstract: "Generate Swift Types"
         )

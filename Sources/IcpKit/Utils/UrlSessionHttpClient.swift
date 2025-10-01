@@ -7,7 +7,7 @@
 
 import Foundation
 
-class UrlSessionHttpClient: HttpClient {
+final class UrlSessionHttpClient: HttpClient {
     private let session: URLSession = URLSession(
         configuration: .ephemeral,
         delegate: nil,

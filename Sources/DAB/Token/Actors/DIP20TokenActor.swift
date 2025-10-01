@@ -72,7 +72,7 @@ private extension DIP20.TxReceipt {
     }
 }
 
-extension DIP20.TxError: Error {}
+extension DIP20.TxError: Error, @unchecked Sendable {}
 
 //private extension ICPTokenTransaction {
 //    init?(_ tx: DIP20.TxRecord, _ canister: ICPPrincipal) {

@@ -8,13 +8,13 @@
 import Foundation
 import IcpKit
 
-public class TokenOracle {
+public final class TokenOracle: @unchecked Sendable {
     private let client: ICPRequestClient
     private let service: ICRC1Oracle.Service
     private let transactionProvider: ICPTransactionProvider
     
     private var cachedCanisters: [ICRC1Oracle.ICRC1]?
-    
+
     public init(_ client: ICPRequestClient = ICPRequestClient()) {
         self.client = client
         transactionProvider = ICPTransactionProvider(client)
@@ -100,16 +100,20 @@ public class TokenOracle {
     }
 }
 
+extension ICRC1Oracle.ICRC1: @unchecked Sendable {}
+extension ICRC1Oracle.Service: @unchecked Sendable {}
+
 private extension TokenOracle {
-    private static let pageSize: UInt64 = 10
     func fetchAllIcrc1Canisters() async throws -> [ICRC1Oracle.ICRC1] {
+        let pageSize: UInt64 = 10
         let canisterCount = try await service.count_icrc1_canisters()
-        let nPages = canisterCount / Self.pageSize + 1
+        let nPages = canisterCount / pageSize + 1
         let canisters = await withTaskGroup(of: [ICRC1Oracle.ICRC1].self) { [weak self] group in
+            let service = self?.service
             for i in 0..<nPages {
                 group.addTask {
-                    let startAt = i * Self.pageSize
-                    let canisters = try? await self?.service.get_icrc1_paginated(startAt, Self.pageSize)
+                    let startAt = i * pageSize
+                    let canisters = try? await service?.get_icrc1_paginated(startAt, pageSize)
                     return canisters ?? []
                 }
             }

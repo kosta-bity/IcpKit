@@ -7,9 +7,9 @@
 
 import Foundation
 import IcpKit
-import BigInt
+@preconcurrency import BigInt
 
-public struct ICPNftDetails {
+public struct ICPNftDetails: @unchecked Sendable {
     public let standard: ICPNftStandard
     
     public let index: Index
@@ -29,7 +29,7 @@ public struct ICPNftDetails {
         self.canister = canister
     }
     
-    public enum Index {
+    public enum Index: Sendable {
         public enum IndexError: Error {
             case notANumber
             case notAString

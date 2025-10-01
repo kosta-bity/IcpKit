@@ -9,7 +9,7 @@ import Foundation
 import IcpKit
 import BigInt
 
-public struct ICPToken {
+public struct ICPToken: Sendable {
     public let standard: ICPTokenStandard
     
     public let canister: ICPPrincipal

@@ -9,7 +9,7 @@ import Foundation
 import IcpKit
 import BigInt
 
-class ICPTransactionProvider {
+final class ICPTransactionProvider: @unchecked Sendable {
     let service: NNS_SNS_W.Service
     private var cachedSnses: [NNS_SNS_W.DeployedSns]?
     

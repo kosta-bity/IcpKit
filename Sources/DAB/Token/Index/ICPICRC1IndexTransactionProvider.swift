@@ -38,7 +38,7 @@ private extension Index.GetTransactionsResult {
     }
 }
 
-extension Index.GetTransactionsErr: Error {}
+extension Index.GetTransactionsErr: Error, @unchecked Sendable {}
 
 private extension ICPTokenTransaction {
     init?(_ transaction: Index.TransactionWithId, _ token: ICPToken) throws {

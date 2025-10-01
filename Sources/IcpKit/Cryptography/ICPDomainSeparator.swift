@@ -7,7 +7,7 @@
 import Foundation
 import Candid
 
-public struct ICPDomainSeparator {
+public struct ICPDomainSeparator: Sendable {
     public let data: Data
     public let domain: String
     

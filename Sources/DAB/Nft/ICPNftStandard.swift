@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum ICPNftStandard: CaseIterable {
+public enum ICPNftStandard: CaseIterable, Sendable {
     case ext
     case icrc7
     case origynNft

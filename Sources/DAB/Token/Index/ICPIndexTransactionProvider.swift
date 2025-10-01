@@ -78,4 +78,4 @@ private extension ICPTokenTransaction {
     }
 }
 
-extension ICPIndex.GetAccountIdentifierTransactionsError: Error {}
+extension ICPIndex.GetAccountIdentifierTransactionsError: Error, @unchecked Sendable {}

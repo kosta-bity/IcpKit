@@ -145,7 +145,7 @@ private extension CandidParserStream {
     private static let singleCharToken = #"[={}\(\):;,]"#
     private static let quotedString = "\"\(quotedStringContents)\""
     private static let anyString = #"[^={}\(\):;,\"\s]+"#
-    private static let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(commentSingleLine)|\(commentMultiLine)|\(anyString))\(whiteSpace)")
+    nonisolated(unsafe) private static let firstTokenRegex = try! Regex("^\(whiteSpace)(?'token'\(quotedString)|\(arrow)|\(singleCharToken)|\(commentSingleLine)|\(commentMultiLine)|\(anyString))\(whiteSpace)")
 }
 
 private extension CandidParserToken {
@@ -168,7 +168,7 @@ private extension CandidParserToken {
         return id
     }
     
-    private static let validIdRegex = try! Regex(#"[A-Za-z_][A-Za-z0-9_]*"#)
+    nonisolated(unsafe) private static let validIdRegex = try! Regex(#"[A-Za-z_][A-Za-z0-9_]*"#)
 }
 
 private struct CommentSkippingIterator: IteratorProtocol {

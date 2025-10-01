@@ -233,4 +233,4 @@ private extension OrigynNFT.CollectionResult {
     }
 }
 
-extension OrigynNFT.OrigynError: Error {}
+extension OrigynNFT.OrigynError: Error, @unchecked Sendable {}

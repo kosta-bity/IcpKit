@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import BigInt
+@preconcurrency import BigInt
 
-public struct ICPTokenBalance {
+public struct ICPTokenBalance: Sendable {
     public let token: ICPToken
     public let balance: BigUInt
     

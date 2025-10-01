@@ -8,7 +8,7 @@
 import Foundation
 
 /// from https://internetcomputer.org/docs/current/references/ic-interface-spec/#principal
-public struct CandidPrincipal: Equatable, Codable, ExpressibleByStringLiteral, CustomStringConvertible {
+public struct CandidPrincipal: Equatable, Codable, ExpressibleByStringLiteral, CustomStringConvertible, Sendable {
     public let bytes: Data
     public let string: String
     

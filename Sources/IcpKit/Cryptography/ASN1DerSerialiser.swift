@@ -5,7 +5,7 @@
 //
 
 import Foundation
-import PotentASN1
+@preconcurrency import PotentASN1
 
 // https://www.ibm.com/docs/en/zos/2.1.0?topic=programming-object-identifiers
 private enum ObjectIdentifiers {

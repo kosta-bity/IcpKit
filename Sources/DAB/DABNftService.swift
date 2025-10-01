@@ -8,7 +8,7 @@
 import Foundation
 import IcpKit
 
-public class DABNftService {
+public final class DABNftService: @unchecked Sendable {
     private let client: ICPRequestClient
     private let service: DABNft.Service
     

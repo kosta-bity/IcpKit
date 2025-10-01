@@ -84,7 +84,7 @@ private extension EXTNftActor {
 }
 
 private typealias RawNft = (index: EXT.TokenIndex, listing: EXT.Listing?, metadata: Data?)
-extension EXT.CommonError: Error {}
+extension EXT.CommonError: Error, @unchecked Sendable {}
 private extension EXT.Result_1 {
     func `get`() throws -> [RawNft] {
         switch self {
